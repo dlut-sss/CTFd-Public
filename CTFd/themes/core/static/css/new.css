@@ -1,0 +1,39 @@
+@font-face {
+  font-family: 'Segoe Script';
+  src: url('/themes/core/static/fonts/segoesc.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ZhangHaiShanRuiXieTi';
+  src: url('/themes/core/static/fonts/ZhangHaiShanRuiXieTi2-0-1.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+html,
+body,
+main {
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  background-image: url(/themes/core/static/img/palebackground.jpg);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.text-muted {
+  color: #000000;
+}
+
+.logo {
+  user-select: none;
+  font-family: ZhangHaiShanRuiXieTi;
+  font-size: 100px;
+  padding: 10px;
+  padding-top: 15vh;
+  padding-bottom: 10vh;
+  color: #3f3f3f;
+}
