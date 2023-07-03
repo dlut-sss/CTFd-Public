@@ -10,11 +10,11 @@ from CTFd.utils.countries import SELECT_COUNTRIES_LIST
 
 
 def build_custom_user_fields(
-        form_cls,
-        include_entries=False,
-        fields_kwargs=None,
-        field_entries_kwargs=None,
-        blacklisted_items=("affiliation", "website"),
+    form_cls,
+    include_entries=False,
+    fields_kwargs=None,
+    field_entries_kwargs=None,
+    blacklisted_items=("affiliation", "website"),
 ):
     """
     Function used to reinject values back into forms for accessing by themes
@@ -30,8 +30,7 @@ def build_custom_user_fields(
 
     # Only include preexisting values if asked
     if include_entries is True:
-        for f in UserFieldEntries.query.filter_by(
-                **field_entries_kwargs).all():
+        for f in UserFieldEntries.query.filter_by(**field_entries_kwargs).all():
             user_fields[f.field_id] = f.value
 
     for field in new_fields:
@@ -70,13 +69,13 @@ def attach_custom_user_fields(form_cls, **kwargs):
             validators.append(InputRequired())
 
         if field.field_type == "text":
-            input_field = StringField(field.name,
-                                      description=field.description,
-                                      validators=validators)
+            input_field = StringField(
+                field.name, description=field.description, validators=validators
+            )
         elif field.field_type == "boolean":
-            input_field = BooleanField(field.name,
-                                       description=field.description,
-                                       validators=validators)
+            input_field = BooleanField(
+                field.name, description=field.description, validators=validators
+            )
 
         setattr(form_cls, f"fields[{field.id}]", input_field)
 
@@ -104,8 +103,8 @@ def attach_registration_code_field(form_cls):
             form_cls,
             "registration_code",
             StringField(
-                "Registration Code",
-                description="Registration code required to create account",
+                "注册码",
+                description="创建账户所需的注册码",
                 validators=[InputRequired()],
             ),
         )
@@ -115,53 +114,54 @@ class UserSearchForm(BaseForm):
     field = SelectField(
         "Search Field",
         choices=[
-            ("name", "Name"),
-            ("id", "ID"),
-            ("email", "Email"),
-            ("affiliation", "Affiliation"),
-            ("website", "Website"),
-            ("ip", "IP Address"),
+            ("name", "昵称"),
+            ("id", "用户ID"),
+            ("sid", "学号"),
+            ("sname", "姓名"),
+            ("email", "邮箱"),
+            ("affiliation", "签名"),
+            ("website", "网站"),
+            ("ip", "IP 地址"),
         ],
         default="name",
         validators=[InputRequired()],
     )
     q = StringField("Parameter", validators=[InputRequired()])
-    submit = SubmitField("Search")
+    submit = SubmitField("搜索")
 
 
 class PublicUserSearchForm(BaseForm):
     field = SelectField(
         "Search Field",
         choices=[
-            ("name", "Name"),
-            ("affiliation", "Affiliation"),
-            ("website", "Website"),
+            ("name", "昵称"),
+            ("affiliation", "签名"),
+            ("website", "网站"),
         ],
         default="name",
         validators=[InputRequired()],
     )
     q = StringField("Parameter", validators=[InputRequired()])
-    submit = SubmitField("Search")
+    submit = SubmitField("搜索")
 
 
 class UserBaseForm(BaseForm):
-    name = StringField("User Name", validators=[InputRequired()])
-    email = EmailField("Email", validators=[InputRequired()])
-    sname = StringField("Real Name", validators=[InputRequired()])
-    sid = StringField("Student Number", validators=[InputRequired()])
-    password = PasswordField("Password")
-    website = StringField("Website")
-    affiliation = StringField("Affiliation")
-    country = SelectField("Country", choices=SELECT_COUNTRIES_LIST)
-    type = SelectField("Type", choices=[("user", "User"), ("admin", "Admin")])
-    verified = BooleanField("Verified")
-    hidden = BooleanField("Hidden")
-    banned = BooleanField("Banned")
-    submit = SubmitField("Submit")
+    name = StringField("用户名", validators=[InputRequired()])
+    email = EmailField("邮箱地址", validators=[InputRequired()])
+    sname = StringField("真实姓名", validators=[InputRequired()])
+    sid = StringField("学号", validators=[InputRequired()])
+    password = PasswordField("密码")
+    website = StringField("网站")
+    affiliation = StringField("签名")
+    country = SelectField("国家和地区", choices=SELECT_COUNTRIES_LIST)
+    type = SelectField("类型", choices=[("user", "用户"), ("admin", "管理员")])
+    verified = BooleanField("是否已认证")
+    hidden = BooleanField("是否隐藏")
+    banned = BooleanField("是否封禁")
+    submit = SubmitField("确认")
 
 
 def UserEditForm(*args, **kwargs):
-
     class _UserEditForm(UserBaseForm):
         pass
 
@@ -189,10 +189,8 @@ def UserEditForm(*args, **kwargs):
 
 
 def UserCreateForm(*args, **kwargs):
-    
     class _UserCreateForm(UserBaseForm):
-        notify = BooleanField("Email account credentials to user",
-                              default=True)
+        notify = BooleanField("通过电子邮件将帐户凭据发送给用户", default=True)
 
         @property
         def extra(self):

@@ -1,10 +1,10 @@
+import json
 from enum import Enum
 
-import cmarkgfm
 import unicodedata
 import os
 import re
-import io
+import cmarkgfm
 from cmarkgfm.cmark import Options
 from flask import current_app as app
 
@@ -15,6 +15,7 @@ from CTFd.models import Configs, db
 string_types = (str,)
 text_type = str
 binary_type = bytes
+
 _windows_device_files = (
     "CON",
     "AUX",
@@ -32,12 +33,12 @@ _windows_device_files = (
 
 def fixed_secure_filename(filename: str) -> str:
     filename = unicodedata.normalize("NFKD", filename)
-    filename = filename.encode("utf8", "ignore").decode("utf8")   # 编码格式改变
+    filename = filename.encode("utf8", "ignore").decode("utf8")  # 编码格式改变
     for sep in os.path.sep, os.path.altsep:
         if sep:
             filename = filename.replace(sep, " ")
     _filename_utf8_add_strip_re = re.compile(r'[^A-Za-z0-9_\u2E80-\uFE4F.-]')
-    filename = str(_filename_utf8_add_strip_re.sub('', '_'.join(filename.split()))).strip('._')             # 添加新规则
+    filename = str(_filename_utf8_add_strip_re.sub('', '_'.join(filename.split()))).strip('._')  # 添加新规则
     if (
             os.name == "nt"
             and filename
@@ -58,6 +59,19 @@ def markdown(md):
 def get_app_config(key, default=None):
     value = app.config.get(key, default)
     return value
+
+
+@cache.memoize()
+def _get_asset_json(path):
+    with open(path) as f:
+        return json.loads(f.read())
+
+
+def get_asset_json(path):
+    # Ignore caching if we are in debug mode
+    if app.debug:
+        return _get_asset_json.__wrapped__(path)
+    return _get_asset_json(path)
 
 
 @cache.memoize()
@@ -108,3 +122,14 @@ def set_config(key, value):
 
     cache.delete_memoized(_get_config, key)
     return config
+
+
+def import_in_progress():
+    import_status = cache.get(key="import_status")
+    import_error = cache.get(key="import_error")
+    if import_error:
+        return False
+    elif import_status:
+        return True
+    else:
+        return False

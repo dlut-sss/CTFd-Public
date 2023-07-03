@@ -23,7 +23,7 @@ const files = {
 
     var pg = ezq.ezProgressBar({
       width: 0,
-      title: "Upload Progress"
+      title: "上传进度"
     });
     $.ajax({
       url: CTFd.config.urlRoot + "/api/v1/files",

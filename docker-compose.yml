@@ -6,7 +6,7 @@ services:
     user: root
     restart: always
     ports:
-      - "8888:8000"
+      - "8000:8000"
     environment:
       - UPLOAD_FOLDER=/var/uploads
       - DATABASE_URL=mysql+pymysql://ctfd:ctfd@db/ctfd
@@ -47,7 +47,7 @@ services:
     image: redis:4
     restart: always
     volumes:
-      - .data/redis:/data
+    - .data/redis:/data
     networks:
         internal:
 
@@ -74,8 +74,8 @@ networks:
         driver: overlay
         attachable: true
         internal: true
-        ipam:
         
+        ipam:
             config:
                 - subnet: 172.1.0.0/16
     frp_containers:
@@ -84,3 +84,4 @@ networks:
         ipam:
             config:
                 - subnet: 172.2.0.0/16
+

@@ -13,20 +13,21 @@ from CTFd.forms.users import (
 
 
 def RegistrationForm(*args, **kwargs):
-
     class _RegistrationForm(BaseForm):
-        name = StringField("User Name", validators=[InputRequired()])
-        email = EmailField("Email", validators=[InputRequired()])
-        sname = StringField("Real Name", validators=[InputRequired()])
-        sid = StringField("Student number", validators=[InputRequired()])
-        password = PasswordField("Password", validators=[InputRequired()])
-        submit = SubmitField("Submit")
+        name = StringField(
+            "用户名", validators=[InputRequired()], render_kw={"autofocus": True}
+        )
+        email = EmailField("邮箱地址", validators=[InputRequired()])
+        sname = StringField("真实姓名", validators=[InputRequired()])
+        sid = StringField("学号", validators=[InputRequired()])
+        password = PasswordField("密码", validators=[InputRequired()])
+        submit = SubmitField("提交")
 
         @property
         def extra(self):
             return build_custom_user_fields(
-                self, include_entries=False,
-                blacklisted_items=()) + build_registration_code_field(self)
+                self, include_entries=False, blacklisted_items=()
+            ) + build_registration_code_field(self)
 
     attach_custom_user_fields(_RegistrationForm)
     attach_registration_code_field(_RegistrationForm)
@@ -35,20 +36,28 @@ def RegistrationForm(*args, **kwargs):
 
 
 class LoginForm(BaseForm):
-    name = StringField("User Name or Email", validators=[InputRequired()])
-    password = PasswordField("Password", validators=[InputRequired()])
-    submit = SubmitField("Submit")
+    name = StringField(
+        "用户名或邮箱",
+        validators=[InputRequired()],
+        render_kw={"autofocus": True},
+    )
+    password = PasswordField("密码", validators=[InputRequired()])
+    submit = SubmitField("提交")
 
 
 class ConfirmForm(BaseForm):
-    submit = SubmitField("Resend Confirmation Email")
+    submit = SubmitField("重新发送确认邮件")
 
 
 class ResetPasswordRequestForm(BaseForm):
-    email = EmailField("Email", validators=[InputRequired()])
-    submit = SubmitField("Submit")
+    email = EmailField(
+        "邮箱", validators=[InputRequired()], render_kw={"autofocus": True}
+    )
+    submit = SubmitField("提交")
 
 
 class ResetPasswordForm(BaseForm):
-    password = PasswordField("Password", validators=[InputRequired()])
-    submit = SubmitField("Submit")
+    password = PasswordField(
+        "密码", validators=[InputRequired()], render_kw={"autofocus": True}
+    )
+    submit = SubmitField("提交")

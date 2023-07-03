@@ -6,11 +6,11 @@ from CTFd.forms.fields import SubmitField
 
 
 class AwardCreationForm(BaseForm):
-    name = StringField("Name")
-    value = IntegerField("Value")
-    category = StringField("Category")
-    description = TextAreaField("Description")
-    submit = SubmitField("Create")
+    name = StringField("名称")
+    value = IntegerField("分值")
+    category = StringField("类别")
+    description = TextAreaField("描述")
+    submit = SubmitField("创建")
     icon = RadioField(
         "Icon",
         choices=[

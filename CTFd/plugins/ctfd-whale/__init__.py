@@ -11,7 +11,7 @@ from CTFd.plugins import (
     register_admin_plugin_menu_bar,
 )
 from CTFd.plugins.challenges import CHALLENGE_CLASSES
-from CTFd.utils import get_config, set_config
+from CTFd.utils import get_config, set_config, import_in_progress
 from CTFd.utils.decorators import admins_only
 
 from .api import user_namespace, admin_namespace, AdminContainers
@@ -91,9 +91,10 @@ def load(app):
 
     def auto_clean_container():
         with app.app_context():
-            results = DBContainer.get_all_expired_container()
-            for r in results:
-                ControlUtil.try_remove_container(r.user_id)
+            if not import_in_progress():
+                results = DBContainer.get_all_expired_container()
+                for r in results:
+                    ControlUtil.try_remove_container(r.user_id)
 
     app.register_blueprint(page_blueprint)
 

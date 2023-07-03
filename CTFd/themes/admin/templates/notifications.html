@@ -3,14 +3,14 @@
 {% block content %}
 	<div class="jumbotron">
 		<div class="container">
-			<h1>Notifications</h1>
+            <h1><b>通知</b></h1>
 		</div>
 	</div>
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12">
 				{% with form = Forms.notifications.NotificationForm() %}
-				<form method="POST" id="notifications_form">
+				<form method="POST" id="notifications_form" autocomplete="off">
 					<div class="form-group">
 						<b>{{ form.title.label }}</b>
 						{{ form.title(class="form-control") }}

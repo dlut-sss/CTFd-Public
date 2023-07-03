@@ -10,7 +10,7 @@ from CTFd.utils.updates import update_check
 @admin.route("/admin/statistics", methods=["GET"])
 @admins_only
 def statistics():
-    update_check()
+    # update_check()
 
     Model = get_model()
 

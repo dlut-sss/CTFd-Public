@@ -1,18 +1,22 @@
 <div class="row">
-	<div class="col-md-12">
+	<div class="col-md-12 table-responsive">
 		<table class="table table-striped">
 			<thead>
 				<tr>
-					<td class="text-center"><b>IP Address</b></td>
-					<td class="text-center"><b>Last Seen</b></td>
-					<td class="text-center"><b>City</b></td>
-					<td class="text-center"><b>Country</b></td>
+					<td class="text-center"><b>IP 地址</b></td>
+					<td class="text-center"><b>上次登陆</b></td>
+					<td class="text-center"><b>城市</b></td>
+					<td class="text-center"><b>国家或地区</b></td>
 				</tr>
 			</thead>
 			<tbody>
 			{% for addr in addrs %}
 				<tr>
-					<td class="text-center">{{ addr.ip }}</td>
+					<td class="text-center">
+						<a href="{{ url_for('admin.users_listing', field='ip', q=addr.ip) }}">
+							{{ addr.ip }}
+						</a>
+					</td>
 					<td class="text-center solve-time">
 						<span data-time="{{ addr.date | isoformat }}"></span>
 					</td>
@@ -33,7 +37,7 @@
 			</tbody>
 		</table>
 		<small class="float-right">
-			<a class="text-muted" href='https://db-ip.com'>IP Geolocation by DB-IP</a>
+			<a class="text-muted" href='https://db-ip.com'>DB-IP提供的ip地理位置服务</a>
 		</small>
 	</div>
 </div>

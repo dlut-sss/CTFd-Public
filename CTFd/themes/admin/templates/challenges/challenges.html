@@ -8,9 +8,9 @@
 {% block content %}
 <div class="jumbotron">
 	<div class="container">
-		<h1>Challenges
+		<h1>题目
 			<a class="no-decoration" href="{{ url_for('admin.challenges_new') }}">
-				<span role="button" data-toggle="tooltip" title="Create Challenge">
+				<span role="button" data-toggle="tooltip" title="创建题目">
 					<i class="btn-fa fas fa-plus-circle"></i>
 				</span>
 			</a>
@@ -22,10 +22,10 @@
 		<div class="col-md-12">
 			{% if q and field %}
 			<h5 class="text-muted text-center">
-				Searching for challenges with <strong>{{ field }}</strong> matching <strong>{{ q }}</strong>
+                搜索 <strong>{{ field }}</strong> 匹配 <strong>{{ q }}</strong> 的题目
 			</h5>
 			<h6 class="text-muted text-center pb-3">
-				{{ total }} results
+				{{ total }} 结果
 			</h6>
 			{% endif %}
 
@@ -35,7 +35,7 @@
 					{{ form.field(class="form-control custom-select w-100") }}
 				</div>
 				<div class="form-group col-md-8">
-					{{ form.q(class="form-control w-100", placeholder="Search for matching challenge") }}
+					{{ form.q(class="form-control w-100", placeholder="搜索匹配的题目") }}
 				</div>
 				<div class="form-group col-md-2">
 					<button type="submit" class="btn btn-primary w-100">
@@ -53,10 +53,10 @@
 		<div class="col-md-12">
 			<div class="float-right pb-3">
 				<div class="btn-group" role="group">
-					<button type="button" class="btn btn-outline-secondary" data-toggle="tooltip" title="Edit Challenges" id="challenges-edit-button">
+					<button type="button" class="btn btn-outline-secondary" data-toggle="tooltip" title="编辑题目" id="challenges-edit-button">
 						<i class="btn-fa fas fa-pencil-alt"></i>
 					</button>
-					<button type="button" class="btn btn-outline-danger" data-toggle="tooltip" title="Delete Challenges" id="challenges-delete-button">
+					<button type="button" class="btn btn-outline-danger" data-toggle="tooltip" title="删除题目" id="challenges-delete-button">
 						<i class="btn-fa fas fa-trash-alt"></i>
 					</button>
 				</div>
@@ -65,23 +65,23 @@
 	</div>
 
 	<div class="row">
-		<div class="col-md-12">
+		<div class="col-md-12 table-responsive">
 			<div>
 				<table id="challenges" class="table table-striped border">
 					<thead>
 					<tr>
 						<td class="d-block border-right border-bottom text-center" data-checkbox>
 							<div class="form-check">
-								<input type="checkbox" class="form-check-input" data-checkbox-all>&nbsp;
+								<input type="checkbox" class="form-check-input" autocomplete="off" data-checkbox-all>&nbsp;
 							</div>
 						</td>
 						<th class="sort-col text-center"><b>ID</b></th>
-						<th class="sort-col"><b>Name</b></th>
-						<th class="d-none d-md-table-cell d-lg-table-cell sort-col"><b>Category</b></th>
-						<th class="d-none d-md-table-cell d-lg-table-cell sort-col"><b>Subcategory</b></th>
-						<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>Value</b></th>
-						<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>Type</b></th>
-						<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>State</b></th>
+						<th class="sort-col"><b>名称</b></th>
+						<th class="sort-col"><b>目录</b></th>
+                        <th class="d-none d-md-table-cell d-lg-table-cell sort-col"><b>子目录</b></th>
+						<th class="sort-col text-center"><b>分值</b></th>
+						<th class="sort-col text-center"><b>类型</b></th>
+						<th class="sort-col text-center"><b>状态</b></th>
 					</tr>
 					</thead>
 					<tbody>
@@ -89,22 +89,22 @@
 						<tr data-href="{{ url_for('admin.challenges_detail', challenge_id=challenge.id) }}">
 							<td class="d-block border-right text-center" data-checkbox>
 								<div class="form-check">
-									<input type="checkbox" class="form-check-input" value="{{ challenge.id }}" data-challenge-id="{{ challenge.id }}">&nbsp;
+									<input type="checkbox" class="form-check-input" value="{{ challenge.id }}" autocomplete="off" data-challenge-id="{{ challenge.id }}">&nbsp;
 								</div>
 							</td>
 							<td class="text-center">{{ challenge.id }}</td>
 							<td><a href="{{ url_for('admin.challenges_detail', challenge_id=challenge.id) }}">{{ challenge.name }}</a></td>
-							<td class="d-none d-md-table-cell d-lg-table-cell">{{ challenge.category }}</td>
-							<td class="d-none d-md-table-cell d-lg-table-cell">
-								{% if challenge.subcategory != "" %}
-									{{challenge.subcategory}}
-								{% else %}
-									None
-								{% endif %}
-							</td>
-							<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{ challenge.value }}</td>
-							<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{ challenge.type }}</td>
-							<td class="d-none d-md-table-cell d-lg-table-cell text-center">
+							<td>{{ challenge.category }}</td>
+                            <td>
+                                {% if challenge.subcategory != "" %}
+                                {{challenge.subcategory}}
+                                {% else %}
+                                None
+                                {% endif %}
+                            </td>
+							<td class="text-center">{{ challenge.value }}</td>
+							<td class="text-center">{{ challenge.type }}</td>
+							<td class="text-center">
 								{% set badge_state = 'badge-danger' if challenge.state == 'hidden' else 'badge-success' %}
 								<span class="badge {{ badge_state }}">{{ challenge.state }}</span>
 							</td>

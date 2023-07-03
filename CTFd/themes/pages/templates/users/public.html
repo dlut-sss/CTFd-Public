@@ -103,7 +103,7 @@
 
 			<div class="row">
 				<div class="col-md-12">
-					<h3>Awards</h3>
+					<h3>奖项</h3>
 				</div>
 				{% for award in awards %}
 					<div class="col-md-3 col-sm-6">
@@ -123,14 +123,15 @@
 
 			<div class="row">
 				<div class="col-md-12">
-					<h3>Solves</h3>
+					<h3>解出题目</h3>
 					<table class="table table-striped">
 						<thead>
 						<tr>
-							<td><b>Challenge</b></td>
-							<td class="d-none d-md-block d-lg-block"><b>Category</b></td>
-							<td><b>Value</b></td>
-							<td><b>Time</b></td>
+                            <td><b>题目</b></td>
+                            <td class="d-none d-md-block d-lg-block"><b>类别</b></td>
+                            <td class="d-none d-md-block d-lg-block"><b>子类别</b></td>
+                            <td><b>分值</b></td>
+                            <td><b>时间</b></td>
 						</tr>
 						</thead>
 						<tbody>
@@ -142,6 +143,7 @@
 									</a>
 								</td>
 								<td class="d-none d-md-block d-lg-block">{{ solve.challenge.category }}</td>
+                                <td class="d-none d-md-block d-lg-block">{{ solve.challenge.subcategory }}</td>
 								<td>{{ solve.challenge.value }}</td>
 								<td class="solve-time">
 									<span data-time="{{ solve.date | isoformat }}"></span>
@@ -155,7 +157,7 @@
 		{% else %}
 			<div class="row min-vh-25">
 				<h3 class="opacity-50 text-center w-100 justify-content-center align-self-center">
-					No solves yet
+					尚未解题
 				</h3>
 			</div>
 		{% endif %}

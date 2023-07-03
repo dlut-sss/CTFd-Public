@@ -5,46 +5,45 @@
 	{% block name %}
 	<div class="form-group">
 		<label>
-			Name:<br>
+			名称:<br>
 			<small class="form-text text-muted">
-				The name of your challenge
+				题目名称
 			</small>
 		</label>
-		<input type="text" class="form-control" name="name" placeholder="Enter challenge name">
+		<input type="text" class="form-control" name="name" placeholder="输入题目名称">
 	</div>
 	{% endblock %}
 
 	{% block category %}
 	<div class="form-group">
 		<label>
-			Category:<br>
+			类别:<br>
 			<small class="form-text text-muted">
-				The category of your challenge
+				题目的类别
 			</small>
 		</label>
-		<input type="text" class="form-control" name="category" placeholder="Enter challenge category">
+		<input type="text" class="form-control" name="category" placeholder="输入题目类别">
 	</div>
 	{% endblock %}
 
-	{% block subcategory %}
-	<div class="form-group">
-		<label>
-			Subcategory:<br>
-			<small class="form-text text-muted">
-				The subcategory of your challenge
-			</small>
-		</label>
-		<input type="text" class="form-control" name="subcategory" placeholder="Enter challenge subcategory">
-	</div>
-	{% endblock %}
-
+    {% block subcategory %}
+    <div class="form-group">
+        <label>
+            子类别:<br>
+            <small class="form-text text-muted">
+                题目的子类别
+            </small>
+        </label>
+        <input type="text" class="form-control" name="subcategory" placeholder="输入题目子类别">
+    </div>
+    {% endblock %}
 
 	{% block message %}
 	<div class="form-group">
 		<label>
-			Message:<br>
+			题目信息:<br>
 			<small class="form-text text-muted">
-				Use this to give a brief introduction to your challenge.
+                用它来简要介绍您的题目。
 			</small>
 		</label>
 		<textarea id="new-desc-editor" class="form-control markdown" name="description" rows="10"></textarea>
@@ -54,12 +53,12 @@
 	{% block value %}
 	<div class="form-group">
 		<label>
-			Value:<br>
+			分值:<br>
 			<small class="form-text text-muted">
-				This is how many points are rewarded for solving this challenge.
+				解决这个题目可以获得多少分
 			</small>
 		</label>
-		<input type="number" class="form-control" name="value" placeholder="Enter value" required>
+		<input type="number" class="form-control" name="value" placeholder="输入分值" required>
 	</div>
 	{% endblock %}
 
@@ -73,7 +72,7 @@
 
 	{% block submit %}
 	<div class="form-group">
-		<button class="btn btn-primary float-right create-challenge-submit" type="submit">Create</button>
+		<button class="btn btn-primary float-right create-challenge-submit" type="submit">创建</button>
 	</div>
 	{% endblock %}
 </form>

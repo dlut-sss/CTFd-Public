@@ -5,6 +5,8 @@ import "./patch";
 import MarkdownIt from "markdown-it";
 import $ from "jquery";
 import ezq from "./ezq";
+import { getScript, htmlEntities, createHtmlNode } from "./utils";
+import dayjs from "dayjs";
 
 const api = new API("/");
 const user = {};
@@ -14,7 +16,8 @@ const ui = {
 };
 const lib = {
   $,
-  markdown
+  markdown,
+  dayjs
 };
 
 let initialized = false;
@@ -46,12 +49,23 @@ function markdown(config) {
   return md;
 }
 
+const utils = {
+  ajax: {
+    getScript
+  },
+  html: {
+    createHtmlNode,
+    htmlEntities
+  }
+};
+
 const CTFd = {
   init,
   config,
   fetch,
   user,
   ui,
+  utils,
   api,
   lib,
   _internal,

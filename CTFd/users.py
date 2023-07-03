@@ -55,7 +55,7 @@ def private():
     user = get_current_user()
 
     if config.is_scoreboard_frozen():
-        infos.append("Scoreboard has been frozen")
+        infos.append("计分板已被冻结")
 
     return render_template(
         "users/private.html",
@@ -75,7 +75,7 @@ def public(user_id):
     user = Users.query.filter_by(id=user_id, banned=False, hidden=False).first_or_404()
 
     if config.is_scoreboard_frozen():
-        infos.append("Scoreboard has been frozen")
+        infos.append("计分板已被冻结")
 
     return render_template(
         "users/public.html", user=user, account=user.account, infos=infos, errors=errors

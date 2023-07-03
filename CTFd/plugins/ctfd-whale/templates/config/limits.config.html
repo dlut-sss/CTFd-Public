@@ -1,8 +1,8 @@
 <div class="tab-pane fade" id="limits" role="tabpanel">
     {% for config, val in {
-        "Max Container Count": ("docker_max_container_count", "The maximum number of countainers allowed on the server"),
-        "Max Renewal Times": ("docker_max_renew_count", "The maximum times a user is allowed to renew a container"),
-        "Docker Container Timeout": ("docker_timeout", "A container times out after [timeout] seconds."),
+        "最大容器数目": ("docker_max_container_count", "服务器允许的最大容器数"),
+        "最大延期次数": ("docker_max_renew_count", "允许用户续订容器的最大次数"),
+        "容器超时时长": ("docker_timeout", "容器在 [timeout] 秒后超时。"),
     }.items() %}
         {% set value = get_config('whale:' + val[0]) %}
         <div class="form-group">

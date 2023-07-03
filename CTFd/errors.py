@@ -8,7 +8,7 @@ def render_error(error):
         isinstance(error, InternalServerError)
         and error.description == InternalServerError.description
     ):
-        error.description = "An Internal Server Error has occurred"
+        error.description = "发生了内部服务器错误"
     try:
         return (
             render_template(

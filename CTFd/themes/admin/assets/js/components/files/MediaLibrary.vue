@@ -6,7 +6,7 @@
           <div class="container">
             <div class="row">
               <div class="col-md-12">
-                <h3 class="text-center">Media Library</h3>
+                <h3 class="text-center">媒体库</h3>
               </div>
             </div>
           </div>
@@ -47,7 +47,7 @@
                   </div>
                 </div>
                 <div class="col-md-6" id="media-library-details">
-                  <h4 class="text-center">Media Details</h4>
+                  <h4 class="text-center">媒体详情</h4>
                   <div id="media-item">
                     <div class="text-center" id="media-icon">
                       <div v-if="this.selectedFile">
@@ -117,9 +117,9 @@
                             id="media-insert"
                             data-toggle="tooltip"
                             data-placement="top"
-                            title="Insert link into editor"
+                            title="将链接插入编辑器"
                           >
-                            Insert
+                            插入
                           </button>
                         </div>
                         <div class="col-md-3">
@@ -129,7 +129,7 @@
                             id="media-download"
                             data-toggle="tooltip"
                             data-placement="top"
-                            title="Download file"
+                            title="下载文件"
                           >
                             <i class="fas fa-download"></i>
                           </button>
@@ -141,7 +141,7 @@
                             id="media-delete"
                             data-toggle="tooltip"
                             data-placement="top"
-                            title="Delete file"
+                            title="删除文件"
                           >
                             <i class="far fa-trash-alt"></i>
                           </button>
@@ -157,7 +157,7 @@
           <form id="media-library-upload" enctype="multipart/form-data">
             <div class="form-group">
               <label for="media-files">
-                Upload Files
+                上传文件
               </label>
               <input
                 type="file"
@@ -167,7 +167,7 @@
                 multiple
               />
               <sub class="help-block">
-                Attach multiple files using Control+Click or Cmd+Click.
+                使用 Control+单击或 Cmd+单击附加多个文件。
               </sub>
             </div>
             <input type="hidden" value="page" name="type" />

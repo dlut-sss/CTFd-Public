@@ -6,7 +6,7 @@
 {% block content %}
 <div class="jumbotron">
 	<div class="container">
-		<h1>Register</h1>
+		<h1><b>用户注册</b></h1>
 	</div>
 </div>
 <div class="container">
@@ -26,38 +26,38 @@
 			{% from "macros/forms.html" import render_extra_fields %}
 			<form method="post" accept-charset="utf-8" autocomplete="off" role="form">
 				<div class="form-group">
-					<b>{{ form.name.label }}</b>
+					<b>用户名</b>
 					{{ form.name(class="form-control", value=name) }}
 					<small class="form-text text-muted">
-						Your username on the site
+                        你的平台昵称
 					</small>
+                </div>
+                <div class="form-group">
+                    <b>真实姓名</b>
+                    {{ form.sname(class="form-control", value=sname) }}
+                    <small class="form-text text-muted">
+                        不会公开显示
+                    </small>
+                </div>
+                <div class="form-group">
+                    <b>学号</b>
+                    {{ form.sid(class="form-control", value=sid) }}
+                    <small class="form-text text-muted">
+                        不会公开显示
+                    </small>
 				</div>
 				<div class="form-group">
-					<b>{{ form.sname.label }}</b>
-					{{ form.sname(class="form-control", value=sname) }}
-					<small class="form-text text-muted">
-						Never shown to the public
-					</small>
-				</div>
-				<div class="form-group">
-					<b>{{ form.sid.label }}</b>
-					{{ form.sid(class="form-control", value=sid) }}
-					<small class="form-text text-muted">
-						Never shown to the public
-					</small>
-				</div>
-				<div class="form-group">
-					<b>{{ form.email.label }}</b>
+					<b>邮箱地址</b>
 					{{ form.email(class="form-control", value=email) }}
 					<small class="form-text text-muted">
-						Never shown to the public
+                        不会公开显示
 					</small>
 				</div>
 				<div class="form-group">
-					<b>{{ form.password.label }}</b>
+					<b>密码</b>
 					{{ form.password(class="form-control", value=password) }}
 					<small class="form-text text-muted">
-						Password used to log into your account
+                        用来登陆的密码
 					</small>
 				</div>
 				{{ form.nonce() }}
@@ -66,7 +66,7 @@
 
 				<div class="row pt-3">
 					<div class="col-md-12">
-						{{ form.submit(class="btn btn-md btn-primary btn-outlined float-right") }}
+						{{ form.submit(class="btn btn-md btn-primary btn-outlined float-right",value="提交") }}
 					</div>
 				</div>
 
@@ -74,9 +74,9 @@
 				<div class="row pt-3">
 					<div class="col-md-12 text-center">
 						<small class="text-muted text-center">
-							By registering, you agree to the
-							<a href="{{ Configs.privacy_link }}" rel="noopener" target="_blank">privacy policy</a>
-							and <a href="{{ Configs.tos_link }}" rel="noopener" target="_blank">terms of service</a>
+                            注册代表你已经同意
+							<a href="{{ Configs.privacy_link }}" rel="noopener" target="_blank">隐私政策</a>
+                            和 <a href="{{ Configs.tos_link }}" rel="noopener" target="_blank">服务条款</a>
 						</small>
 					</div>
 				</div>

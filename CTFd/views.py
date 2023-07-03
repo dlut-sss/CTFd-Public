@@ -1,9 +1,16 @@
-from curses import noecho
-import os
+import os  # noqa: I001
 
 from flask import Blueprint, abort
 from flask import current_app as app
-from flask import redirect, render_template, request, send_file, session, url_for
+from flask import (
+    make_response,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    session,
+    url_for,
+)
 from flask.helpers import safe_join
 from jinja2.exceptions import TemplateNotFound
 from sqlalchemy.exc import IntegrityError
@@ -45,6 +52,7 @@ from CTFd.utils.email import (
     DEFAULT_VERIFICATION_EMAIL_BODY,
     DEFAULT_VERIFICATION_EMAIL_SUBJECT,
 )
+from CTFd.utils.health import check_config, check_database
 from CTFd.utils.helpers import get_errors, get_infos, markup
 from CTFd.utils.modes import USERS_MODE
 from CTFd.utils.security.auth import login_user
@@ -79,9 +87,24 @@ def setup():
 
             # Robot
             bot = request.form.get("bot")
-            bottext = request.form.get("bottext")
-            createtext = request.form.get("createtext")
-            updatetext = request.form.get("updatetext")
+            bottext = request.form.get("bottext")   # 解题播报消息 e.g.恭喜%s做出题目%s，默认第一个参数为用户名，第二个参数为题目名称
+            createtext = request.form.get("createtext") # 题目可见播报
+            updatetext = request.form.get("updatetext") # 题目更新播报
+
+            # 上面三个text为用户自定格式化字符串，处理不正确将存在FSA漏洞
+            # 检查 bottext 中 % 和 %s 的数量是否符合要求
+            if bottext is not None:
+                if bottext.count('%') != 2 or bottext.count('%s') != 2:
+                    errors.append("bottext must contain exactly two '%' and two '%s' placeholders")
+            # 检查 createtext 中 % 和 %s 的数量是否符合要求
+            if createtext is not None:
+                if createtext.count('%') != 2 or createtext.count('%s') != 2:
+                    errors.append("createtext must contain exactly two '%' and two '%s' placeholders")
+            # 检查 updatetext 中 % 和 %s 的数量是否符合要求
+            if updatetext is not None:
+                if updatetext.count('%') != 2 or updatetext.count('%s') != 2:
+                    errors.append("updatetext must contain exactly two '%' and two '%s' placeholders")
+
             group_id = request.form.get("group_id") #qq群号
             bot_ip = request.form.get("bot_ip") #机器人服务地址,如 127.0.0.1:8000
             set_config("bot", bot)
@@ -113,7 +136,8 @@ def setup():
                     ":root {{--theme-color: {theme_color};}}\n"
                     ".navbar{{background-color: var(--theme-color) !important;}}\n"
                     ".jumbotron{{background-color: var(--theme-color) !important;}}\n"
-                    "</style>\n").format(theme_color=theme_color)
+                    "</style>\n"
+                ).format(theme_color=theme_color)
                 set_config("theme_header", css)
 
             # DateTime
@@ -129,10 +153,10 @@ def setup():
             password = request.form["password"]
 
             name_len = len(name) == 0
-            names = Users.query.add_columns("name",
-                                            "id").filter_by(name=name).first()
-            emails = (Users.query.add_columns(
-                "email", "id").filter_by(email=email).first())
+            names = Users.query.add_columns("name", "id").filter_by(name=name).first()
+            emails = (
+                Users.query.add_columns("email", "id").filter_by(email=email).first()
+            )
             pass_short = len(password) == 0
             pass_long = len(password) > 128
             valid_email = validators.validate_email(request.form["email"])
@@ -163,53 +187,47 @@ def setup():
                     state=serialize(generate_nonce()),
                 )
 
-            admin = Admins(name=name,
-                           email=email,
-                           password=password,
-                           type="admin",
-                           hidden=True)
+            admin = Admins(
+                name=name, email=email, password=password, type="admin", hidden=True
+            )
 
             # Create an empty index page
             page = Pages(title=None, route="index", content="", draft=False)
 
             # Upload banner
-            default_ctf_banner_location = url_for("views.themes",
-                                                  path="img/logo.png")
+            default_ctf_banner_location = url_for("views.themes", path="img/logo.png")
             ctf_banner = request.files.get("ctf_banner")
             if ctf_banner:
                 f = upload_file(file=ctf_banner, page_id=page.id)
-                default_ctf_banner_location = url_for("views.files",
-                                                      path=f.location)
+                default_ctf_banner_location = url_for("views.files", path=f.location)
 
             # Splice in our banner
             index = f"""<div class="row">
     <div class="col-md-6 offset-md-3">
         <img class="w-100 mx-auto d-block" style="max-width: 500px;padding: 50px;padding-top: 14vh;" src="{default_ctf_banner_location}" />
         <h3 class="text-center">
-            <p>A cool CTF platform from <a href="https://ctfd.io">ctfd.io</a></p>
-            <p>Follow us on social media:</p>
-            <a href="https://twitter.com/ctfdio"><i class="fab fa-twitter fa-2x" aria-hidden="true"></i></a>&nbsp;
-            <a href="https://facebook.com/ctfdio"><i class="fab fa-facebook fa-2x" aria-hidden="true"></i></a>&nbsp;
-            <a href="https://github.com/ctfd"><i class="fab fa-github fa-2x" aria-hidden="true"></i></a>
+            <p>来自 <a href="http://scr1w.dlut.edu.cn/">scr1w.dlut.edu.cn</a> 的一个很酷的 CTF 平台</p>
+            <p>在社交媒体上关注我们：</p>
+            <a href="https://space.bilibili.com/690549848"><i class="fab fa-youtube-play fa-2x" aria-hidden="true"></i></a>&nbsp;
+            <a href="https://github.com/dlut-sss"><i class="fab fa-github fa-2x" aria-hidden="true"></i></a>
         </h3>
         <br>
         <h4 class="text-center">
-            <a href="admin">Click here</a> to login and setup your CTF
+            <a href="admin">点击此处</a>登录并设置您的 CTF
         </h4>
     </div>
 </div>"""
             page.content = index
 
             # Visibility
-            set_config(ConfigTypes.CHALLENGE_VISIBILITY,
-                       ChallengeVisibilityTypes.PRIVATE)
-            set_config(ConfigTypes.REGISTRATION_VISIBILITY,
-                       RegistrationVisibilityTypes.PUBLIC)
-            set_config(ConfigTypes.SCORE_VISIBILITY,
-                       ScoreVisibilityTypes.PUBLIC)
-            set_config(ConfigTypes.ACCOUNT_VISIBILITY,
-                       AccountVisibilityTypes.PUBLIC)
-
+            set_config(
+                ConfigTypes.CHALLENGE_VISIBILITY, ChallengeVisibilityTypes.PRIVATE
+            )
+            set_config(
+                ConfigTypes.REGISTRATION_VISIBILITY, RegistrationVisibilityTypes.PUBLIC
+            )
+            set_config(ConfigTypes.SCORE_VISIBILITY, ScoreVisibilityTypes.PUBLIC)
+            set_config(ConfigTypes.ACCOUNT_VISIBILITY, AccountVisibilityTypes.PUBLIC)
 
             # Verify emails
             set_config("verify_emails", None)
@@ -223,10 +241,8 @@ def setup():
             set_config("mail_useauth", None)
 
             # Set up default emails
-            set_config("verification_email_subject",
-                       DEFAULT_VERIFICATION_EMAIL_SUBJECT)
-            set_config("verification_email_body",
-                       DEFAULT_VERIFICATION_EMAIL_BODY)
+            set_config("verification_email_subject", DEFAULT_VERIFICATION_EMAIL_SUBJECT)
+            set_config("verification_email_body", DEFAULT_VERIFICATION_EMAIL_BODY)
 
             set_config(
                 "successful_registration_email_subject",
@@ -237,28 +253,27 @@ def setup():
                 DEFAULT_SUCCESSFUL_REGISTRATION_EMAIL_BODY,
             )
 
-            set_config("user_creation_email_subject",
-                       DEFAULT_USER_CREATION_EMAIL_SUBJECT)
-            set_config("user_creation_email_body",
-                       DEFAULT_USER_CREATION_EMAIL_BODY)
+            set_config(
+                "user_creation_email_subject", DEFAULT_USER_CREATION_EMAIL_SUBJECT
+            )
+            set_config("user_creation_email_body", DEFAULT_USER_CREATION_EMAIL_BODY)
 
-            set_config("password_reset_subject",
-                       DEFAULT_PASSWORD_RESET_SUBJECT)
+            set_config("password_reset_subject", DEFAULT_PASSWORD_RESET_SUBJECT)
             set_config("password_reset_body", DEFAULT_PASSWORD_RESET_BODY)
 
             set_config(
                 "password_change_alert_subject",
-                "Password Change Confirmation for {ctf_name}",
+                "{ctf_name} 的密码更改确认",
             )
             set_config(
                 "password_change_alert_body",
-                ("Your password for {ctf_name} has been changed.\n\n"
-                 "If you didn't request a password change you can reset your password here: {url}"
-                 ),
+                (
+                    "您的 {ctf_name} 密码已更改。\n\n"
+                    "如果您没有请求更改密码，您可以在此处重置密码：{url}"
+                ),
             )
 
             set_config("setup", True)
-
 
             try:
                 db.session.add(admin)
@@ -280,13 +295,11 @@ def setup():
 
             return redirect(url_for("views.static_html"))
         try:
-            return render_template("setup.html",
-                                   state=serialize(generate_nonce()))
+            return render_template("setup.html", state=serialize(generate_nonce()))
         except TemplateNotFound:
             # Set theme to default and try again
             set_config("ctf_theme", DEFAULT_THEME)
-            return render_template("setup.html",
-                                   state=serialize(generate_nonce()))
+            return render_template("setup.html", state=serialize(generate_nonce()))
     return redirect(url_for("views.static_html"))
 
 
@@ -343,8 +356,9 @@ def settings():
         team_url = url_for("teams.private")
         infos.append(
             markup(
-                f'In order to participate you must either <a href="{team_url}">join or create a team</a>.'
-            ))
+                f'为了参与，您必须<a href="{team_url}">加入或创建团队</a>。'
+            )
+        )
 
     tokens = UserTokens.query.filter_by(user_id=user.id).all()
 
@@ -354,10 +368,11 @@ def settings():
         confirm_url = markup(url_for("auth.confirm"))
         infos.append(
             markup(
-                "Your email address isn't confirmed!<br>"
-                "Please check your email to confirm your email address.<br><br>"
-                f'To have the confirmation email resent please <a href="{confirm_url}">click here</a>.'
-            ))
+                "您的电子邮件地址尚未确认！<br>"
+                "请检查您的电子邮件以确认您的电子邮件地址。<br><br>"
+                f'如需重新发送确认电子邮件，请 <a href="{confirm_url}">点击此处</a>.'
+            )
+        )
 
     return render_template(
         "settings.html",
@@ -390,9 +405,7 @@ def static_html(route):
         if page.auth_required and authed() is False:
             return redirect(url_for("auth.login", next=request.full_path))
 
-        return render_template("page.html",
-                               content=page.html,
-                               title=page.title)
+        return render_template("page.html", content=page.html, title=page.title)
 
 
 @views.route("/tos")
@@ -414,8 +427,7 @@ def privacy():
     if privacy_url:
         return redirect(privacy_url)
     elif privacy_text:
-        return render_template("page.html",
-                               content=build_markdown(privacy_text))
+        return render_template("page.html", content=build_markdown(privacy_text))
     else:
         abort(404)
 
@@ -461,8 +473,10 @@ def files(path):
                 team = Teams.query.filter_by(id=team_id).first()
 
                 # Check user is admin if challenge_visibility is admins only
-                if (get_config(ConfigTypes.CHALLENGE_VISIBILITY) == "admins"
-                        and user.type != "admin"):
+                if (
+                    get_config(ConfigTypes.CHALLENGE_VISIBILITY) == "admins"
+                    and user.type != "admin"
+                ):
                     abort(403)
 
                 # Check that the user exists and isn't banned
@@ -503,10 +517,48 @@ def themes(theme, path):
     :return:
     """
     for cand_path in (
-            safe_join(app.root_path, "themes", cand_theme, "static", path)
-            # The `theme` value passed in may not be the configured one, e.g. for
-            # admin pages, so we check that first
-            for cand_theme in (theme, *config.ctf_theme_candidates())):
+        safe_join(app.root_path, "themes", cand_theme, "static", path)
+        # The `theme` value passed in may not be the configured one, e.g. for
+        # admin pages, so we check that first
+        for cand_theme in (theme, *config.ctf_theme_candidates())
+    ):
         if os.path.isfile(cand_path):
             return send_file(cand_path)
     abort(404)
+
+
+@views.route("/themes/<theme>/static/<path:path>")
+def themes_beta(theme, path):
+    """
+    This is a copy of the above themes route used to avoid
+    the current appending of .dev and .min for theme assets.
+
+    In CTFd 4.0 this url_for behavior and this themes_beta
+    route will be removed.
+    """
+    for cand_path in (
+        safe_join(app.root_path, "themes", cand_theme, "static", path)
+        # The `theme` value passed in may not be the configured one, e.g. for
+        # admin pages, so we check that first
+        for cand_theme in (theme, *config.ctf_theme_candidates())
+    ):
+        if os.path.isfile(cand_path):
+            return send_file(cand_path)
+    abort(404)
+
+
+@views.route("/healthcheck")
+def healthcheck():
+    if check_database() is False:
+        return "ERR", 500
+    if check_config() is False:
+        return "ERR", 500
+    return "OK", 200
+
+
+@views.route("/robots.txt")
+def robots():
+    text = get_config("robots_txt", "User-agent: *\nDisallow: /admin\n")
+    r = make_response(text, 200)
+    r.mimetype = "text/plain"
+    return r

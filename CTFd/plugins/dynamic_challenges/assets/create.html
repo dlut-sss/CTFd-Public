@@ -2,39 +2,38 @@
 
 {% block header %}
 <div class="alert alert-secondary" role="alert">
-	Dynamic value challenges decrease in value as they receive solves. The more solves a dynamic challenge has,
-	the lower its value is to everyone who has solved it.
+    动态分值题目在解出后其分值会降低。 动态题目解出的人数越多，对于解出该问题的每个人来说其分值就越低。
 </div>
 {% endblock %}
 
 
 {% block value %}
 <div class="form-group">
-	<label for="value">Initial Value<br>
+	<label for="value">起始分值<br>
 		<small class="form-text text-muted">
-			This is how many points the challenge is worth initially.
+            这是题目最初的分值。
 		</small>
 	</label>
-	<input type="number" class="form-control" name="initial" placeholder="Enter value" required>
+	<input type="number" class="form-control" name="initial" placeholder="输入分值" required>
 
 </div>
 
 <div class="form-group">
-	<label for="value">Decay Limit<br>
+	<label for="value">衰减极限<br>
 		<small class="form-text text-muted">
-			The amount of solves before the challenge reaches its minimum value
+            题目分值达到最小值之前解出的数量
 		</small>
 	</label>
-	<input type="number" class="form-control" name="decay" placeholder="Enter decay limit" required>
+	<input type="number" class="form-control" name="decay" min="1" placeholder="输入衰减极限" required>
 </div>
 
 <div class="form-group">
-	<label for="value">Minimum Value<br>
+	<label for="value">最小分值<br>
 		<small class="form-text text-muted">
-			This is the lowest that the challenge can be worth
+            这是题目的最低分值
 		</small>
 	</label>
-	<input type="number" class="form-control" name="minimum" placeholder="Enter minimum value" required>
+	<input type="number" class="form-control" name="minimum" placeholder="输入最小分值" required>
 </div>
 {% endblock %}
 

@@ -13,29 +13,29 @@ from CTFd.forms import BaseForm
 
 class PageEditForm(BaseForm):
     title = StringField(
-        "Title", description="This is the title shown on the navigation bar"
+        "标题", description="这是导航栏上显示的标题"
     )
     route = StringField(
-        "Route",
-        description="This is the URL route that your page will be at (e.g. /page). You can also enter links to link to that page.",
+        "路由",
+        description="这是您的页面所在的 URL 路由（例如 /page）。 您还可以输入链接到该页面的链接。",
     )
-    draft = BooleanField("Draft")
-    hidden = BooleanField("Hidden")
-    auth_required = BooleanField("Authentication Required")
-    content = TextAreaField("Content")
+    draft = BooleanField("草稿")
+    hidden = BooleanField("是否隐藏")
+    auth_required = BooleanField("仅认证后")
+    content = TextAreaField("内容")
     format = SelectField(
         "Format",
         choices=[("markdown", "Markdown"), ("html", "HTML")],
         default="markdown",
         validators=[InputRequired()],
-        description="The markup format used to render the page",
+        description="用于呈现页面的标记格式",
     )
 
 
 class PageFilesUploadForm(BaseForm):
     file = MultipleFileField(
-        "Upload Files",
-        description="Attach multiple files using Control+Click or Cmd+Click.",
+        "上传文件",
+        description="使用 Control+单击或 Cmd+单击附加多个文件。",
         validators=[InputRequired()],
     )
     type = HiddenField("Page Type", default="page", validators=[InputRequired()])

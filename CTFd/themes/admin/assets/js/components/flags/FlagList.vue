@@ -55,7 +55,7 @@
         class="btn btn-success d-inline-block float-right"
         @click="addFlag()"
       >
-        Create Flag
+        创建Flag
       </button>
     </div>
   </div>

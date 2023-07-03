@@ -146,6 +146,15 @@ function renderSubmissionResponse(response) {
   result_notification.removeClass();
   result_message.text(result.message);
 
+  const next_btn = $(
+    `<div class='col-md-12 pb-3'><button class='btn btn-info w-100'>下一题</button></div>`
+  ).click(function() {
+    $("#challenge-window").modal("toggle");
+    setTimeout(function() {
+      loadChal(CTFd._internal.challenge.data.next_id);
+    }, 500);
+  });
+
   if (result.status === "authentication_required") {
     window.location =
       CTFd.config.urlRoot +
@@ -193,6 +202,10 @@ function renderSubmissionResponse(response) {
     answer_input.val("");
     answer_input.removeClass("wrong");
     answer_input.addClass("correct");
+
+    if (CTFd._internal.challenge.data.next_id) {
+      $(".submit-row").html(next_btn);
+    }
   } else if (result.status === "already_solved") {
     // Challenge already solved
     result_notification.addClass(
@@ -201,6 +214,10 @@ function renderSubmissionResponse(response) {
     result_notification.slideDown();
 
     answer_input.addClass("correct");
+
+    if (CTFd._internal.challenge.data.next_id) {
+      $(".submit-row").html(next_btn);
+    }
   } else if (result.status === "paused") {
     // CTF is paused
     result_notification.addClass(
@@ -392,8 +409,8 @@ const displayHint = data => {
 
 const displayUnlock = id => {
   ezQuery({
-    title: "Unlock Hint?",
-    body: "Are you sure you want to open this hint?",
+    title: "解锁提示？",
+    body: "你确定要解锁这个提示？",
     success: () => {
       const params = {
         target: id,
@@ -420,6 +437,11 @@ const displayUnlock = id => {
 
 const loadHint = id => {
   CTFd.api.get_hint({ hintId: id }).then(response => {
+    if (!response.success) {
+      let msg = Object.values(response.errors).join("\n");
+      alert(msg);
+      return;
+    }
     if (response.data.content) {
       displayHint(response.data);
       return;

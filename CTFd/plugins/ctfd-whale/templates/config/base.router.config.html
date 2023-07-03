@@ -3,9 +3,9 @@
     {% set cur_type = get_config("whale:router_type", "frp") %}
     <div class="form-group">
         <label for="router-type">
-            Router type
+            路由类型
             <small class="form-text text-muted">
-                Select which router backend to use
+               选择后端使用哪种路由
             </small>
         </label>
         <select id="router-type" class="form-control custom-select" onchange="window.updateConfigs">

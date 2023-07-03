@@ -65,14 +65,14 @@ def invite():
 
     user = get_current_user_attrs()
     if user.team_id:
-        errors.append("You are already in a team. You cannot join another.")
+        errors.append("您已经在一个团队中了。 你不能加入另一个。")
 
     try:
         team = Teams.load_invite_code(code)
     except TeamTokenExpiredException:
-        abort(403, description="This invite URL has expired")
+        abort(403, description="该邀请网址已过期")
     except TeamTokenInvalidException:
-        abort(403, description="This invite URL is invalid")
+        abort(403, description="该邀请网址无效")
 
     team_size_limit = get_config("team_size", default=0)
 
@@ -99,7 +99,7 @@ def invite():
 
         if team_size_limit and len(team.members) >= team_size_limit:
             errors.append(
-                "{name} has already reached the team size limit of {limit}".format(
+                "{name} 已达到团队规模限制 {limit}".format(
                     name=team.name, limit=team_size_limit
                 )
             )
@@ -130,14 +130,14 @@ def join():
 
     user = get_current_user_attrs()
     if user.team_id:
-        errors.append("You are already in a team. You cannot join another.")
+        errors.append("您已经在一个团队中了。 你不能加入另一个。")
 
     if request.method == "GET":
         team_size_limit = get_config("team_size", default=0)
         if team_size_limit:
             plural = "" if team_size_limit == 1 else "s"
             infos.append(
-                "Teams are limited to {limit} member{plural}".format(
+                "团队仅限 {limit} 名成员{plural}".format(
                     limit=team_size_limit, plural=plural
                 )
             )
@@ -159,7 +159,7 @@ def join():
             team_size_limit = get_config("team_size", default=0)
             if team_size_limit and len(team.members) >= team_size_limit:
                 errors.append(
-                    "{name} has already reached the team size limit of {limit}".format(
+                    "{name} 已达到团队规模限制 {limit}".format(
                         name=team.name, limit=team_size_limit
                     )
                 )
@@ -180,7 +180,7 @@ def join():
 
             return redirect(url_for("challenges.listing"))
         else:
-            errors.append("That information is incorrect")
+            errors.append("该信息不正确")
             return render_template("teams/join_team.html", infos=infos, errors=errors)
 
 
@@ -194,7 +194,7 @@ def new():
     if bool(get_config("team_creation", default=True)) is False:
         abort(
             403,
-            description="Team creation is currently disabled. Please join an existing team.",
+            description="目前禁用团队创建。 请加入现有团队。",
         )
 
     num_teams_limit = int(get_config("num_teams", default=0))
@@ -202,19 +202,19 @@ def new():
     if num_teams_limit and num_teams >= num_teams_limit:
         abort(
             403,
-            description=f"Reached the maximum number of teams ({num_teams_limit}). Please join an existing team.",
+            description=f"已达到最大团队数量 ({num_teams_limit})。 请加入现有团队。",
         )
 
     user = get_current_user_attrs()
     if user.team_id:
-        errors.append("You are already in a team. You cannot join another.")
+        errors.append("您已经在一个团队中了。 你不能加入另一个。")
 
     if request.method == "GET":
         team_size_limit = get_config("team_size", default=0)
         if team_size_limit:
             plural = "" if team_size_limit == 1 else "s"
             infos.append(
-                "Teams are limited to {limit} member{plural}".format(
+                "团队仅限 {limit} 名成员{plural}".format(
                     limit=team_size_limit, plural=plural
                 )
             )
@@ -231,9 +231,9 @@ def new():
 
         existing_team = Teams.query.filter_by(name=teamname).first()
         if existing_team:
-            errors.append("That team name is already taken")
+            errors.append("该队名已被占用")
         if not teamname:
-            errors.append("That team name is invalid")
+            errors.append("该队名无效")
 
         # Process additional user fields
         fields = {}
@@ -244,7 +244,7 @@ def new():
         for field_id, field in fields.items():
             value = request.form.get(f"fields[{field_id}]", "").strip()
             if field.required is True and (value is None or value == ""):
-                errors.append("Please provide all required fields")
+                errors.append("请提供所有必填字段")
                 break
 
             # Handle special casing of existing profile fields
@@ -271,14 +271,21 @@ def new():
             valid_affiliation = True
 
         if valid_website is False:
-            errors.append("Websites must be a proper URL starting with http or https")
+            errors.append("网站必须是以 http 或 https 开头的正确 URL")
         if valid_affiliation is False:
-            errors.append("Please provide a shorter affiliation")
+            errors.append("请提供较短的签名")
 
         if errors:
             return render_template("teams/new_team.html", errors=errors), 403
 
-        team = Teams(name=teamname, password=passphrase, captain_id=user.id)
+        # Hide the created team if the creator is an admin
+        hidden = False
+        if user.type == "admin":
+            hidden = True
+
+        team = Teams(
+            name=teamname, password=passphrase, captain_id=user.id, hidden=hidden
+        )
 
         if website:
             team.website = website
@@ -323,7 +330,7 @@ def private():
     score = team.score
 
     if config.is_scoreboard_frozen():
-        infos.append("Scoreboard has been frozen")
+        infos.append("计分板已被冻结")
 
     return render_template(
         "teams/private.html",
@@ -357,7 +364,7 @@ def public(team_id):
         return render_template("teams/public.html", team=team, errors=errors)
 
     if config.is_scoreboard_frozen():
-        infos.append("Scoreboard has been frozen")
+        infos.append("计分板已被冻结")
 
     return render_template(
         "teams/public.html",

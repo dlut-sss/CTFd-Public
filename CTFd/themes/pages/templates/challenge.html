@@ -6,13 +6,13 @@
 			</button>
 			<ul class="nav nav-tabs">
 				<li class="nav-item">
-					<a class="nav-link active" href="#challenge">Challenge</a>
+					<a class="nav-link active" href="#challenge">题目</a>
 				</li>
 				{% block solves %}
 					<li class="nav-item">
 						<a class="nav-link challenge-solves" href="#solves">
 							{% if solves != None %}
-								{{ solves }} {% if solves > 1 %}Solves{% else %}Solves{% endif %}
+								{{ solves }} 人解出
 							{% endif %}
 						</a>
 					</li>
@@ -44,16 +44,16 @@
 									<a class="btn btn-info btn-hint btn-block load-hint" href="javascript:;" data-hint-id="{{ hint.id }}">
 										{% if hint.content %}
 											<small>
-												View Hint
+												查看提示
 											</small>
 										{% else %}
 											{% if hint.cost %}
 												<small>
-													Unlock Hint for {{ hint.cost }} points
+													用 {{ hint.cost }} 点数解锁提示
 												</small>
 											{% else %}
 												<small>
-													View Hint
+													查看提示
 												</small>
 											{% endif %}
 										{% endif %}
@@ -64,7 +64,7 @@
 
 						<div class="row challenge-files text-center pb-3">
 							{% for file in files %}
-								<div class='col-md-4 col-sm-4 col-xs-12 file-button-wrapper d-block'>
+								<div class='col-md-12 col-sm-12 col-xs-12 file-button-wrapper d-block'>
 									<a class='btn btn-info btn-file mb-1 d-inline-block px-2 w-100 text-truncate'
 									   href='{{ file }}'>
 										<i class="fas fa-download"></i>
@@ -87,7 +87,7 @@
 						<div class="row text-center">
 							<div class="col-md-12">
 								<p>
-									{{ attempts }}/{{ max_attempts }} attempt{{ max_attempts|pluralize }}
+									{{ attempts }}/{{ max_attempts }} 尝试次数{{ max_attempts|pluralize }}
 								</p>
 							</div>
 						</div>
@@ -103,7 +103,7 @@
 							<div class="col-md-3 form-group key-submit">
 								{% block submit %}
 								<button id="challenge-submit" class="challenge-submit" type="submit">
-									Submit
+									提交
 								</button>
 								{% endblock %}
 							</div>
@@ -125,9 +125,9 @@
 								<table class="table table-striped text-center">
 									<thead>
 									<tr>
-										<td><b>Name</b>
+										<td><b>昵称</b>
 										</td>
-										<td><b>Date</b>
+										<td><b>时间</b>
 										</td>
 									</tr>
 									</thead>

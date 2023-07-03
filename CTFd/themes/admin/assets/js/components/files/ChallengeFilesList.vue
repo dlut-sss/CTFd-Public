@@ -38,7 +38,7 @@
             type="file"
           />
           <sub class="text-muted">
-            Attach multiple files using Control+Click or Cmd+Click.
+            使用 Control+单击或 Cmd+单击附加多个文件。
           </sub>
         </div>
         <div class="form-group">

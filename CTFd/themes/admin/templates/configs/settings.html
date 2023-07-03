@@ -2,105 +2,105 @@
 	<form method="POST" autocomplete="off" class="w-100">
 		<div class="form-group">
 			<label>
-				Challenge Visibility<br>
+				题目可见性<br>
 				<small class="form-text text-muted">
-					Control whether users must be logged in to see challenges
+                    控制用户是否必须登录才能查看题目
 				</small>
 			</label>
 			<select class="form-control custom-select" name="challenge_visibility">
 				<option value="public" {% if challenge_visibility == 'public' %}selected{% endif %}>
-					Public
+					公开
 				</option>
 				<option value="private" {% if challenge_visibility == 'private' %}selected{% endif %}>
-					Private
+					仅登陆
 				</option>
 				<option value="admins" {% if challenge_visibility == 'admins' %}selected{% endif %}>
-					Admins Only
+					仅管理员
 				</option>
 			</select>
 		</div>
 
 		<div class="form-group">
 			<label>
-				Score Visibility<br>
+                账户可见性<br>
 				<small class="form-text text-muted">
-					Control whether solves/score are shown to the public, to logged in users, hidden to all non-admins, or only shown to admins
-				</small>
-			</label>
-			<select class="form-control custom-select" name="score_visibility">
-				<option value="public" {% if score_visibility == 'public' %}selected{% endif %}>
-					Public
-				</option>
-				<option value="private" {% if score_visibility == 'private' %}selected{% endif %}>
-					Private
-				</option>
-				<option value="hidden" {% if score_visibility == 'hidden' %}selected{% endif %}>
-					Hidden
-				</option>
-				<option value="admins" {% if score_visibility == 'admins' %}selected{% endif %}>
-					Admins Only
-				</option>
-			</select>
-			<small class="form-text text-muted">
-				This setting should generally be the same as Account Visibility to avoid conflicts.
-			</small>
-		</div>
-
-		<div class="form-group">
-			<label>
-				Account Visibility<br>
-				<small class="form-text text-muted">
-					Control whether accounts (users &amp; teams) are shown to everyone, only to authenticated users, or only to admins
+                    控制帐户（用户和团队）是向所有人显示、仅向经过身份验证的用户显示还是仅向管理员显示
 				</small>
 			</label>
 			<select class="form-control custom-select" name="account_visibility">
 				<option value="public" {% if account_visibility == 'public' %}selected{% endif %}>
-					Public
+                    公开
 				</option>
 				<option value="private" {% if account_visibility == 'private' %}selected{% endif %}>
-					Private
+                    仅登陆
 				</option>
 				<option value="admins" {% if account_visibility == 'admins' %}selected{% endif %}>
-					Admins Only
+                    仅管理员
+				</option>
+			</select>
+		</div>
+
+		<div class="form-group">
+			<label>
+				得分可见性<br>
+				<small class="form-text text-muted">
+                    控制是否向公众、登录用户显示解决方案/分数、向所有非管理员隐藏或仅向管理员显示
+				</small>
+			</label>
+			<select class="form-control custom-select" name="score_visibility">
+				<option value="public" {% if score_visibility == 'public' %}selected{% endif %}>
+					公开
+				</option>
+				<option value="private" {% if score_visibility == 'private' %}selected{% endif %}>
+					仅登陆
+				</option>
+				<option value="hidden" {% if score_visibility == 'hidden' %}selected{% endif %}>
+					隐藏
+				</option>
+				<option value="admins" {% if score_visibility == 'admins' %}selected{% endif %}>
+					仅管理员
 				</option>
 			</select>
 			<small class="form-text text-muted">
-				This setting should generally be the same as Score Visibility to avoid conflicts.
+                分数可见性是帐户可见性的子集。这意味着，如果帐户对用户可见，则分数可见性将控制他们是否可以看到该用户的分数。如果帐户不可见，则分数可见性无效。
 			</small>
 		</div>
 
 		<div class="form-group">
 			<label>
-				Registration Visibility<br>
+                注册可见性<br>
 				<small class="form-text text-muted">
-					Control whether registration is enabled for everyone or disabled
+                    控制是否对所有人启用注册或禁用注册
 				</small>
 			</label>
 			<select class="form-control custom-select" name="registration_visibility">
 				<option value="public" {% if registration_visibility == 'public' %}selected{% endif %}>
-					Public
+					公开
 				</option>
 				<option value="private" {% if registration_visibility == 'private' %}selected{% endif %}>
-					Private
+					隐藏
 				</option>
 				<option value="mlc" {% if registration_visibility == 'mlc' %}selected{% endif %}>
-					MajorLeagueCyber Only
+					仅限MajorLeagueCyber
 				</option>
 			</select>
 		</div>
 
 		<div class="form-group">
-			<div class="form-check">
+			<label>
+				暂停<br>
+				<small class="form-text text-muted">
+                    阻止用户在解除暂停之前提交答案。 题目仍然可见。
+				</small>
+			</label>
+			<div class="form-check pl-0">
 				<label>
 					<input id="paused" name="paused" type="checkbox" {% if paused %}checked{% endif %}>
-					Pause CTF<br>
-					<small>
-						Prevent users from submitting answers until unpaused. Challenges can still be viewed.
-					</small>
+					暂停CTF<br>
 				</label>
 			</div>
 		</div>
 
-		<button type="submit" class="btn btn-md btn-primary float-right">Update</button>
+		<button type="submit" class="btn btn-md btn-primary float-right">更新</button>
 	</form>
 </div>

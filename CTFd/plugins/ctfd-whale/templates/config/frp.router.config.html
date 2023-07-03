@@ -1,10 +1,10 @@
 {% for config, val in {
-    "API URL": ("frp_api_url", "Frp API to connect to"),
-    "Http Domain Suffix": ("frp_http_domain_suffix", "Will be appended to the hash of a container"),
-    "Http Port": ("frp_http_port", "For http redirect"),
-    "Direct IP Address":("frp_direct_ip_address","For direct redirect"),
-    "Direct Minimum Port": ("frp_direct_port_minimum", "For direct redirect (pwn challenges)"),
-    "Direct Maximum Port": ("frp_direct_port_maximum", "For direct redirect (pwn challenges)"),
+    "API网址": ("frp_api_url", "Frp API 连接的地址"),
+    "HTTP 域后缀": ("frp_http_domain_suffix", "将被附加到容器的哈希值中"),
+    "HTTP端口": ("frp_http_port", "用于http重定向"),
+    "直连IP地址":("frp_direct_ip_address","用于直连重定向"),
+    "直连最小端口": ("frp_direct_port_minimum", "用于直连重定向（pwn 挑战）"),
+    "直连最大端口": ("frp_direct_port_maximum", "用于直连重定向（pwn 挑战）"),
 }.items() %}
     {% set value = get_config('whale:' + val[0]) %}
     <div class="form-group">
@@ -21,9 +21,9 @@
 {% set frpc_template = get_config("whale:frp_config_template") %}
 <div class="form-group">
     <label for="frp-config-template">
-        Frpc config template
+        Frpc 配置模板
         <small class="form-text text-muted">
-            Frp config template, only need common section!
+            Frp配置模板，只需要Common部分！
         </small>
     </label>
     <textarea class="form-control input-filled-valid" id="frp-config-template" rows="7"
@@ -32,9 +32,9 @@
 {% if frpc_template %}
     <div class="form-group">
         <label for="frps-config-template">
-            Frps config template [generated]
+            Frps 配置模板 [自动生成]
             <small class="form-text text-muted">
-                This configuration is generated with your settings above.
+                此配置是根据您的上述设置生成的。
             </small>
         </label>
         <textarea class="form-control input-filled-valid grey-text" id="frps-config-template" rows="6" disabled>

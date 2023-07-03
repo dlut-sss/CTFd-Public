@@ -8,7 +8,7 @@
 
             {% if show_optionals %}
                 {% if field.flags.required is false %}
-                    <small class="float-right text-muted">Optional</small>
+                    <small class="float-right text-muted">选填</small>
                 {% endif %}
             {% endif %}
 
@@ -28,7 +28,7 @@
 
                 {% if show_optionals %}
                     {% if field.flags.required is false %}
-                        <sup class="text-muted">Optional</sup>
+                        <sup class="text-muted">选填</sup>
                     {% endif %}
                 {% endif %}
             </div>

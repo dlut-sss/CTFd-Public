@@ -54,9 +54,9 @@ const successTpl =
 const buttonTpl =
   '<button type="button" class="btn btn-primary" data-dismiss="modal">{0}</button>';
 const noTpl =
-  '<button type="button" class="btn btn-danger" data-dismiss="modal">No</button>';
+  '<button type="button" class="btn btn-danger" data-dismiss="modal">否</button>';
 const yesTpl =
-  '<button type="button" class="btn btn-primary" data-dismiss="modal">Yes</button>';
+  '<button type="button" class="btn btn-primary" data-dismiss="modal">是</button>';
 
 export function ezAlert(args) {
   const modal = modalTpl.format(args.title);

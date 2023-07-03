@@ -2,24 +2,24 @@
 
 {% block header %}
     <div class="alert alert-secondary" role="alert">
-        Dynamic docker challenge allows players to deploy their per-challenge standalone instances.
+        动态容器题目允许玩家部署每个题目的独立实例。
     </div>
 {% endblock %}
 
 
 {% block value %}
     <div class="form-group">
-        <label for="value">Docker Image<br>
+        <label for="value">Docker镜像<br>
             <small class="form-text text-muted">
-                The docker image used to deploy
+                用来部署的docker镜像名称
             </small>
         </label>
-        <input type="text" class="form-control" name="docker_image" placeholder="Enter docker image name" required>
+        <input type="text" class="form-control" name="docker_image" placeholder="输入镜像名称" required>
     </div>
     <div class="form-group">
-        <label for="value">Frp Redirect Type<br>
+        <label for="value">Frp重定向类型<br>
             <small class="form-text text-muted">
-                Decide the redirect type how frp redirect traffic
+                决定frp如何重定向流量的重定向类型
             </small>
         </label>
         <select class="form-control" name="redirect_type">
@@ -28,69 +28,69 @@
         </select>
     </div>
     <div class="form-group">
-        <label for="value">Frp Redirect Port<br>
+        <label for="value">Frp重定向端口<br>
             <small class="form-text text-muted">
-                Decide which port in the instance that frp should redirect traffic for
+                决定 frp 应将流量重定向到实例中的哪个端口
             </small>
         </label>
-        <input type="number" class="form-control" name="redirect_port" placeholder="Enter the port you want to open"
+        <input type="number" class="form-control" name="redirect_port" placeholder="输入你想开启的端口"
                required>
     </div>
     <div class="form-group">
-        <label for="value">Docker Container Memory Limit<br>
+        <label for="value">Docker容器内存限制<br>
             <small class="form-text text-muted">
-                The memory usage limit
+                内存使用限制
             </small>
         </label>
-        <input type="text" class="form-control" name="memory_limit" placeholder="Enter the memory limit" value="128m"
+        <input type="text" class="form-control" name="memory_limit" placeholder="输入内存使用限制" value="128m"
                required>
     </div>
     <div class="form-group">
-        <label for="value">Docker Container CPU Limit<br>
+        <label for="value">Docker容器处理器限制<br>
             <small class="form-text text-muted">
-                The CPU usage limit
+                处理器占用率限制
             </small>
         </label>
-        <input type="number" class="form-control" name="cpu_limit" placeholder="Enter the cpu limit" value="0.5"
+        <input type="number" class="form-control" name="cpu_limit" placeholder="输入处理器限制" value="0.5"
                required>
     </div>
     <div class="form-group">
-        <label for="value">Initial Value<br>
+        <label for="value">初始分值<br>
             <small class="form-text text-muted">
-                This is how many points the challenge is worth initially.
+                这是题目最初的分值。
             </small>
         </label>
-        <input type="number" class="form-control" name="value" placeholder="Enter value" required>
+        <input type="number" class="form-control" name="value" placeholder="输入分值" required>
     </div>
 
     <div class="form-group">
-        <label for="value">Decay Limit<br>
+        <label for="value">衰减极限<br>
             <small class="form-text text-muted">
-                The amount of solves before the challenge reaches its minimum value
+                题目分值达到最小值之前解出的数量
             </small>
         </label>
-        <input type="number" class="form-control" name="decay" placeholder="Enter decay limit" required>
+        <input type="number" class="form-control" name="decay" placeholder="输入衰减极限" required>
     </div>
 
     <div class="form-group">
-        <label for="value">Minimum Value<br>
+        <label for="value">最小分值<br>
             <small class="form-text text-muted">
-                This is the lowest that the challenge can be worth
+                这是题目的最低分值
             </small>
         </label>
-        <input type="number" class="form-control" name="minimum" placeholder="Enter minimum value" required>
+        <input type="number" class="form-control" name="minimum" placeholder="输入最小分值" required>
     </div>
 
     <div class="form-group">
-        <label for="value">Score Type<br>
+        <label for="value">分值类型<br>
             <small class="form-text text-muted">
-                Decide it use dynamic score or not
+                是否使用动态分数
             </small>
         </label>
 
         <select class="form-control" name="dynamic_score">
-            <option value="0" selected>Static Score</option>
-            <option value="1">Dynamic Score</option>
+            <option value="0" selected>静态分数</option>
+            <option value="1">动态分数</option>
         </select>
     </div>
 {% endblock %}

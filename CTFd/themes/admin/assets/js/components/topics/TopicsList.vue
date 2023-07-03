@@ -11,7 +11,7 @@
       <label>
         Topic
         <br />
-        <small class="text-muted">Type topic and press Enter</small>
+        <small class="text-muted">输入主题并按回车</small>
       </label>
       <input
         id="tags-add-input"

@@ -13,12 +13,11 @@ from CTFd.utils.validators import validate_country_code
 
 
 class UserSchema(ma.ModelSchema):
-
     class Meta:
         model = Users
         include_fk = True
         dump_only = ("id", "oauth_id", "created", "team_id")
-        load_only = ("password", )
+        load_only = ("password",)
 
     name = field_for(
         Users,
@@ -26,9 +25,7 @@ class UserSchema(ma.ModelSchema):
         required=True,
         allow_none=False,
         validate=[
-            validate.Length(min=1,
-                            max=128,
-                            error="User names must not be empty")
+            validate.Length(min=1, max=128, error="User names must not be empty")
         ],
     )
     email = field_for(
@@ -36,8 +33,7 @@ class UserSchema(ma.ModelSchema):
         "email",
         allow_none=False,
         validate=[
-            validate.Email(
-                "Emails must be a properly formatted email address"),
+            validate.Email("Emails must be a properly formatted email address"),
             validate.Length(min=1, max=128, error="Emails must not be empty"),
         ],
     )
@@ -69,18 +65,18 @@ class UserSchema(ma.ModelSchema):
         validate=[
             # This is a dirty hack to let website accept empty strings so you can remove your website
             lambda website: validate.URL(
-                error=
-                "Websites must be a proper URL starting with http or https",
+                error="Websites must be a proper URL starting with http or https",
                 schemes={"http", "https"},
-            )(website) if website else True
+            )(website)
+            if website
+            else True
         ],
     )
     country = field_for(Users, "country", validate=[validate_country_code])
     password = field_for(Users, "password", required=True, allow_none=False)
-    fields = Nested(UserFieldEntriesSchema,
-                    partial=True,
-                    many=True,
-                    attribute="field_entries")
+    fields = Nested(
+        UserFieldEntriesSchema, partial=True, many=True, attribute="field_entries"
+    )
 
     @pre_load
     def validate_name(self, data):
@@ -95,30 +91,33 @@ class UserSchema(ma.ModelSchema):
             user_id = data.get("id")
             if user_id:
                 if existing_user and existing_user.id != user_id:
-                    raise ValidationError("User name has already been taken",
-                                          field_names=["name"])
+                    raise ValidationError(
+                        "User name has already been taken", field_names=["name"]
+                    )
             else:
                 if existing_user:
                     if current_user:
                         if current_user.id != existing_user.id:
                             raise ValidationError(
-                                "User name has already been taken",
-                                field_names=["name"])
+                                "User name has already been taken", field_names=["name"]
+                            )
                     else:
                         raise ValidationError(
-                            "User name has already been taken",
-                            field_names=["name"])
+                            "User name has already been taken", field_names=["name"]
+                        )
         else:
             if name == current_user.name:
                 return data
             else:
                 name_changes = get_config("name_changes", default=True)
                 if bool(name_changes) is False:
-                    raise ValidationError("Name changes are disabled",
-                                          field_names=["name"])
+                    raise ValidationError(
+                        "Name changes are disabled", field_names=["name"]
+                    )
                 if existing_user:
-                    raise ValidationError("User name has already been taken",
-                                          field_names=["name"])
+                    raise ValidationError(
+                        "User name has already been taken", field_names=["name"]
+                    )
 
     @pre_load
     def validate_email(self, data):
@@ -134,8 +133,8 @@ class UserSchema(ma.ModelSchema):
             if user_id:
                 if existing_user and existing_user.id != user_id:
                     raise ValidationError(
-                        "Email address has already been used",
-                        field_names=["email"])
+                        "Email address has already been used", field_names=["email"]
+                    )
             else:
                 if existing_user:
                     if current_user:
@@ -146,8 +145,8 @@ class UserSchema(ma.ModelSchema):
                             )
                     else:
                         raise ValidationError(
-                            "Email address has already been used",
-                            field_names=["email"])
+                            "Email address has already been used", field_names=["email"]
+                        )
         else:
             if email == current_user.email:
                 return data
@@ -156,24 +155,24 @@ class UserSchema(ma.ModelSchema):
 
                 if bool(confirm) is False:
                     raise ValidationError(
-                        "Please confirm your current password",
-                        field_names=["confirm"])
+                        "Please confirm your current password", field_names=["confirm"]
+                    )
 
-                test = verify_password(plaintext=confirm,
-                                       ciphertext=current_user.password)
+                test = verify_password(
+                    plaintext=confirm, ciphertext=current_user.password
+                )
                 if test is False:
                     raise ValidationError(
-                        "Your previous password is incorrect",
-                        field_names=["confirm"])
+                        "Your previous password is incorrect", field_names=["confirm"]
+                    )
 
                 if existing_user:
                     raise ValidationError(
-                        "Email address has already been used",
-                        field_names=["email"])
+                        "Email address has already been used", field_names=["email"]
+                    )
                 if check_email_is_whitelisted(email) is False:
                     raise ValidationError(
-                        "Only email addresses under {domains} may register".
-                        format(domains=get_config("domain_whitelist")),
+                        "Email address is not from an allowed domain",
                         field_names=["email"],
                     )
                 if get_config("verify_emails"):
@@ -189,18 +188,20 @@ class UserSchema(ma.ModelSchema):
             pass
         else:
             if password and (bool(confirm) is False):
-                raise ValidationError("Please confirm your current password",
-                                      field_names=["confirm"])
+                raise ValidationError(
+                    "Please confirm your current password", field_names=["confirm"]
+                )
 
             if password and confirm:
-                test = verify_password(plaintext=confirm,
-                                       ciphertext=target_user.password)
+                test = verify_password(
+                    plaintext=confirm, ciphertext=target_user.password
+                )
                 if test is True:
                     return data
                 else:
                     raise ValidationError(
-                        "Your previous password is incorrect",
-                        field_names=["confirm"])
+                        "Your previous password is incorrect", field_names=["confirm"]
+                    )
             else:
                 data.pop("password", None)
                 data.pop("confirm", None)
@@ -233,20 +234,23 @@ class UserSchema(ma.ModelSchema):
                     field_id = f.get("field_id")
 
                     # # Check that we have an existing field for this. May be unnecessary b/c the foriegn key should enforce
-                    field = UserFields.query.filter_by(
-                        id=field_id).first_or_404()
+                    field = UserFields.query.filter_by(id=field_id).first_or_404()
 
                     # Get the existing field entry if one exists
                     entry = UserFieldEntries.query.filter_by(
-                        field_id=field.id, user_id=target_user.id).first()
+                        field_id=field.id, user_id=target_user.id
+                    ).first()
                     if entry:
                         f["id"] = entry.id
                         provided_ids.append(entry.id)
 
                 # Extremely dirty hack to prevent deleting previously provided data.
                 # This needs a better soln.
-                entries = (UserFieldEntries.query.options(
-                    load_only("id")).filter_by(user_id=target_user.id).all())
+                entries = (
+                    UserFieldEntries.query.options(load_only("id"))
+                    .filter_by(user_id=target_user.id)
+                    .all()
+                )
                 for entry in entries:
                     if entry.id not in provided_ids:
                         fields.append({"id": entry.id})
@@ -263,11 +267,16 @@ class UserSchema(ma.ModelSchema):
 
                 # Get the existing field entry if one exists
                 entry = UserFieldEntries.query.filter_by(
-                    field_id=field.id, user_id=current_user.id).first()
+                    field_id=field.id, user_id=current_user.id
+                ).first()
 
-                if field.required is True and value.strip() == "":
-                    raise ValidationError(f"Field '{field.name}' is required",
-                                          field_names=["fields"])
+                if field.required is True:
+                    if isinstance(value, str):
+                        if value.strip() == "":
+                            raise ValidationError(
+                                f"Field '{field.name}' is required",
+                                field_names=["fields"],
+                            )
 
                 if field.editable is False and entry is not None:
                     raise ValidationError(
@@ -281,8 +290,11 @@ class UserSchema(ma.ModelSchema):
 
             # Extremely dirty hack to prevent deleting previously provided data.
             # This needs a better soln.
-            entries = (UserFieldEntries.query.options(
-                load_only("id")).filter_by(user_id=current_user.id).all())
+            entries = (
+                UserFieldEntries.query.options(load_only("id"))
+                .filter_by(user_id=current_user.id)
+                .all()
+            )
             for entry in entries:
                 if entry.id not in provided_ids:
                     fields.append({"id": entry.id})
@@ -314,8 +326,7 @@ class UserSchema(ma.ModelSchema):
         fields = data.get("fields")
         if fields:
             data["fields"] = [
-                field for field in fields
-                if field["field_id"] not in removed_field_ids
+                field for field in fields if field["field_id"] not in removed_field_ids
             ]
 
     views = {

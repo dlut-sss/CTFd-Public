@@ -2,36 +2,36 @@
 
 {% block value %}
 <div class="form-group">
-	<label for="value">Current Value<br>
+	<label for="value">当前分值<br>
 		<small class="form-text text-muted">
-			This is how many points the challenge is worth right now.
+            这就是题目目前的分值。
 		</small>
 	</label>
 	<input type="number" class="form-control chal-value" name="value" value="{{ challenge.value }}" disabled>
 </div>
 
 <div class="form-group">
-	<label for="value">Initial Value<br>
+	<label for="value">起始分值<br>
 		<small class="form-text text-muted">
-			This is how many points the challenge was worth initially.
+            这是题目最初的分值。
 		</small>
 	</label>
 	<input type="number" class="form-control chal-initial" name="initial" value="{{ challenge.initial }}" required>
 </div>
 
 <div class="form-group">
-	<label for="value">Decay Limit<br>
+	<label for="value">衰减极限<br>
 		<small class="form-text text-muted">
-			The amount of solves before the challenge reaches its minimum value
+            题目分值达到最小值之前解出的数量
 		</small>
 	</label>
-	<input type="number" class="form-control chal-decay" name="decay" value="{{ challenge.decay }}" required>
+	<input type="number" class="form-control chal-decay" min="1" name="decay" value="{{ challenge.decay }}" required>
 </div>
 
 <div class="form-group">
-	<label for="value">Minimum Value<br>
+	<label for="value">最小分值<br>
 		<small class="form-text text-muted">
-			This is the lowest that the challenge can be worth
+            这是题目的最低分值
 		</small>
 	</label>
 	<input type="number" class="form-control chal-minimum" name="minimum" value="{{ challenge.minimum }}" required>

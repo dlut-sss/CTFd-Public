@@ -14,8 +14,7 @@ EMAIL_REGEX = r"(^[^@\s]+@[^@\s]+\.[^@\s]+$)"
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
     test_url = urlparse(urljoin(request.host_url, target))
-    return test_url.scheme in ("http",
-                               "https") and ref_url.netloc == test_url.netloc
+    return test_url.scheme in ("http", "https") and ref_url.netloc == test_url.netloc
 
 
 def validate_url(url):
@@ -28,7 +27,7 @@ def validate_email(email):
 
 def validate_sid(sid):
     if (len(str(sid)) == 11 or len(str(sid)) == 9) and bool(
-            re.match("\d+", sid)):
+            re.match(r"\d+", sid)):
         return True
     else:
         return False

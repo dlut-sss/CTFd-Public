@@ -18,6 +18,10 @@
 			'csrfNonce': "{{ Session.nonce }}",
 			'userMode': "{{ Configs.user_mode }}",
 			'userId': {{ Session.id }},
+            'userName': {{ User.name | tojson }},
+            'userEmail': {{ User.email | tojson }},
+            'teamId': {{ Team.id | tojson }},
+            'teamName': {{ Team.name | tojson }},
 			'start': {{ Configs.start | tojson }},
 			'end': {{ Configs.end | tojson }},
 			'theme_settings': {{ Configs.theme_settings | tojson }}
@@ -35,7 +39,7 @@
 
 	<footer class="footer">
 		<div class="container text-center">
-			<a href="http://210.30.97.133:8000" class="text-secondary">
+			<a href="http://210.30.97.133:8001" class="text-secondary">
 				<small class="text-muted">Powered by SSSCTF</small>
 			</a>
 		</div>

@@ -14,13 +14,13 @@
                     </div>
                 </th>
                 <th class="sort-col text-center"><b>ID</b></td>
-                <th class="text-center"><b>User</b></td>
-                <th class="sort-col text-center"><b>Challenge</b></td>
-                <th class="text-center"><b>Access Method</b></td>
+                <th class="text-center"><b>昵称</b></td>
+                <th class="sort-col text-center"><b>题目</b></td>
+                <th class="text-center"><b>访问方式</b></td>
                 <th class="text-center"><b>Flag</b></td>
-                <th class="sort-col text-center"><b>Startup Time</b></td>
-                <th class="sort-col text-center"><b>Renewal Times</b></td>
-                <th class="text-center"><b>Delete</b></td>
+                <th class="sort-col text-center"><b>开启时间</b></td>
+                <th class="sort-col text-center"><b>延期次数</b></td>
+                <th class="text-center"><b>删除实例</b></td>
             </tr>
             </thead>
             <tbody>
@@ -64,14 +64,14 @@
                         {{ container.renew_count }}&nbsp;
                         <a class="renew-container" container-id="{{ container.id }}" data-toggle="tooltip"
                            user-id="{{ container.user.id }}" data-placement="top"
-                           title="Renew Container #{{ container.id }}">
+                           title="延期容器 #{{ container.id }}">
                             <i class="fas fa-sync"></i>
                         </a>
                     </td>
                     <td class="text-center">
                         <a class="delete-container" container-id="{{ container.id }}" data-toggle="tooltip"
                            user-id="{{ container.user.id }}" data-placement="top"
-                           title="Destroy Container #{{ container.id }}">
+                           title="销毁容器 #{{ container.id }}">
                             <i class="fas fa-times"></i>
                         </a>
                     </td>

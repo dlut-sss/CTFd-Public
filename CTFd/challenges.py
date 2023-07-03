@@ -33,9 +33,11 @@ def listing():
     infos = get_infos()
     errors = get_errors()
 
+    if Configs.challenge_visibility == ChallengeVisibilityTypes.ADMINS:
+        infos.append("题目可见性设置为仅限管理员")
+
     if ctf_started() is False:
         errors.append(f"{Configs.ctf_name} 还没开始喵")
-        # errors.append('<p class="ctfd-event-countdown">&nbsp;</p>')
 
     if ctf_paused() is True:
         infos.append(f"{Configs.ctf_name} 已经暂停")

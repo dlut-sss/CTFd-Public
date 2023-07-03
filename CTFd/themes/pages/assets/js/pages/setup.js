@@ -99,6 +99,42 @@ $(() => {
     $("#config-color-picker").val("");
   });
 
+  $("#ctf_logo").on("change", function() {
+    if (this.files[0].size > 128000) {
+      if (
+          !confirm(
+              "该图像文件大于 128KB，可能会导致加载时间增加。 您确定要使用此徽标吗？"
+          )
+      ) {
+        this.value = "";
+      }
+    }
+  });
+
+  $("#ctf_banner").on("change", function() {
+    if (this.files[0].size > 512000) {
+      if (
+          !confirm(
+              "该图像文件大于 512KB，可能会导致加载时间增加。 您确定要使用此图标吗？"
+          )
+      ) {
+        this.value = "";
+      }
+    }
+  });
+
+  $("#ctf_small_icon").on("change", function() {
+    if (this.files[0].size > 32000) {
+      if (
+          !confirm(
+              "该图像文件大于 32KB，可能会导致加载时间增加。 您确定要使用此图标吗？"
+          )
+      ) {
+        this.value = "";
+      }
+    }
+  });
+
   window.addEventListener("storage", function(event) {
     if (event.key == "integrations" && event.newValue) {
       let integration = JSON.parse(event.newValue);

@@ -32,7 +32,7 @@ const graph_configs = {
       const option = {
         title: {
           left: "center",
-          text: "Solve Counts"
+          text: "解题总量"
         },
         tooltip: {
           trigger: "item"
@@ -48,12 +48,12 @@ const graph_configs = {
           }
         },
         xAxis: {
-          name: "Solve Count",
+          name: "解出数目",
           nameLocation: "middle",
           type: "value"
         },
         yAxis: {
-          name: "Challenge Name",
+          name: "题目名称",
           nameLocation: "middle",
           nameGap: 60,
           type: "category",
@@ -105,7 +105,7 @@ const graph_configs = {
       let option = {
         title: {
           left: "center",
-          text: "Submission Percentages"
+          text: "提交比例"
         },
         tooltip: {
           trigger: "item"
@@ -125,7 +125,7 @@ const graph_configs = {
         },
         series: [
           {
-            name: "Submission Percentages",
+            name: "提交比例",
             type: "pie",
             radius: ["30%", "50%"],
             avoidLabelOverlap: false,
@@ -169,12 +169,12 @@ const graph_configs = {
             data: [
               {
                 value: fails,
-                name: "Fails",
+                name: "错误提交",
                 itemStyle: { color: "rgb(207, 38, 0)" }
               },
               {
                 value: solves,
-                name: "Solves",
+                name: "正确提交",
                 itemStyle: { color: "rgb(0, 209, 64)" }
               }
             ]
@@ -209,7 +209,7 @@ const graph_configs = {
       let option = {
         title: {
           left: "center",
-          text: "Category Breakdown"
+          text: "类别细分"
         },
         tooltip: {
           trigger: "item"
@@ -230,7 +230,7 @@ const graph_configs = {
         },
         series: [
           {
-            name: "Category Breakdown",
+            name: "类别细分",
             type: "pie",
             radius: ["30%", "50%"],
             label: {
@@ -287,12 +287,12 @@ const graph_configs = {
 
   "#solve-percentages-graph": {
     layout: annotations => ({
-      title: "Solve Percentages per Challenge",
+      title: "解决每个题目的百分比",
       xaxis: {
-        title: "Challenge Name"
+        title: "题目名称"
       },
       yaxis: {
-        title: "Percentage of {0} (%)".format(
+        title: " {0}的百分比 (%)".format(
           CTFd.config.userMode.charAt(0).toUpperCase() +
             CTFd.config.userMode.slice(1)
         ),
@@ -327,7 +327,7 @@ const graph_configs = {
       const option = {
         title: {
           left: "center",
-          text: "Solve Percentages per Challenge"
+          text: "解决每个题目的百分比"
         },
         tooltip: {
           trigger: "item",
@@ -348,7 +348,7 @@ const graph_configs = {
           }
         },
         xAxis: {
-          name: "Challenge Name",
+          name: "题目名称",
           nameGap: 40,
           nameLocation: "middle",
           type: "category",
@@ -359,7 +359,7 @@ const graph_configs = {
           }
         },
         yAxis: {
-          name: "Percentage of {0} (%)".format(
+          name: "{0}的百分比 (%)".format(
             CTFd.config.userMode.charAt(0).toUpperCase() +
               CTFd.config.userMode.slice(1)
           ),
@@ -413,14 +413,14 @@ const graph_configs = {
 
   "#score-distribution-graph": {
     layout: annotations => ({
-      title: "Score Distribution",
+      title: "得分分布",
       xaxis: {
-        title: "Score Bracket",
+        title: "分数档次",
         showticklabels: true,
         type: "category"
       },
       yaxis: {
-        title: "Number of {0}".format(
+        title: "{0}的数量".format(
           CTFd.config.userMode.charAt(0).toUpperCase() +
             CTFd.config.userMode.slice(1)
         )
@@ -454,7 +454,7 @@ const graph_configs = {
       const option = {
         title: {
           left: "center",
-          text: "Score Distribution"
+          text: "得分分布"
         },
         tooltip: {
           trigger: "item"
@@ -470,14 +470,14 @@ const graph_configs = {
           }
         },
         xAxis: {
-          name: "Score Bracket",
+          name: "分数档次",
           nameGap: 40,
           nameLocation: "middle",
           type: "category",
           data: brackets
         },
         yAxis: {
-          name: "Number of {0}".format(
+          name: "{0}的数目".format(
             CTFd.config.userMode.charAt(0).toUpperCase() +
               CTFd.config.userMode.slice(1)
           ),

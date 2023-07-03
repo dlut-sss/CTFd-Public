@@ -9,7 +9,7 @@ from CTFd.api.v1.schemas import (
     APIDetailedSuccessResponse,
     PaginatedAPIListSuccessResponse,
 )
-from CTFd.cache import clear_standings, clear_user_session
+from CTFd.cache import clear_challenges, clear_standings, clear_user_session
 from CTFd.constants import RawEnum
 from CTFd.models import (
     Awards,
@@ -37,6 +37,7 @@ from CTFd.utils.user import get_current_user, get_current_user_type, is_admin
 from CTFd.utils.helpers import error_for, get_errors, markup
 
 users_namespace = Namespace("users", description="Endpoint to retrieve Users")
+
 
 UserModel = sqlalchemy_to_pydantic(Users)
 TransientUserModel = sqlalchemy_to_pydantic(Users, exclude=["id"])
@@ -67,8 +68,8 @@ class UserList(Resource):
         responses={
             200: ("Success", "UserListSuccessResponse"),
             400: (
-                    "An error occured processing the provided or stored data",
-                    "APISimpleErrorResponse",
+                "An error occured processing the provided or stored data",
+                "APISimpleErrorResponse",
             ),
         },
     )
@@ -79,17 +80,17 @@ class UserList(Resource):
             "bracket": (str, None),
             "q": (str, None),
             "field": (
-                    RawEnum(
-                        "UserFields",
-                        {
-                            "name": "name",
-                            "website": "website",
-                            "country": "country",
-                            "bracket": "bracket",
-                            "affiliation": "affiliation",
-                        },
-                    ),
-                    None,
+                RawEnum(
+                    "UserFields",
+                    {
+                        "name": "name",
+                        "website": "website",
+                        "country": "country",
+                        "bracket": "bracket",
+                        "affiliation": "affiliation",
+                    },
+                ),
+                None,
             ),
         },
         location="query",
@@ -138,8 +139,8 @@ class UserList(Resource):
         responses={
             200: ("Success", "UserDetailedSuccessResponse"),
             400: (
-                    "An error occured processing the provided or stored data",
-                    "APISimpleErrorResponse",
+                "An error occured processing the provided or stored data",
+                "APISimpleErrorResponse",
             ),
         },
         params={
@@ -165,6 +166,7 @@ class UserList(Resource):
             user_created_notification(addr=email, name=name, password=password)
 
         clear_standings()
+        clear_challenges()
 
         response = schema.dump(response.data)
 
@@ -180,8 +182,8 @@ class UserPublic(Resource):
         responses={
             200: ("Success", "UserDetailedSuccessResponse"),
             400: (
-                    "An error occured processing the provided or stored data",
-                    "APISimpleErrorResponse",
+                "An error occured processing the provided or stored data",
+                "APISimpleErrorResponse",
             ),
         },
     )
@@ -208,8 +210,8 @@ class UserPublic(Resource):
         responses={
             200: ("Success", "UserDetailedSuccessResponse"),
             400: (
-                    "An error occured processing the provided or stored data",
-                    "APISimpleErrorResponse",
+                "An error occured processing the provided or stored data",
+                "APISimpleErrorResponse",
             ),
         },
     )
@@ -220,7 +222,7 @@ class UserPublic(Resource):
 
         # Admins should not be able to ban themselves
         if data["id"] == session["id"] and (
-                data.get("banned") is True or data.get("banned") == "true"
+            data.get("banned") is True or data.get("banned") == "true"
         ):
             return (
                 {"success": False, "errors": {"id": "You cannot ban yourself"}},
@@ -242,6 +244,7 @@ class UserPublic(Resource):
 
         clear_user_session(user_id=user_id)
         clear_standings()
+        clear_challenges()
 
         return {"success": True, "data": response.data}
 
@@ -270,6 +273,7 @@ class UserPublic(Resource):
 
         clear_user_session(user_id=user_id)
         clear_standings()
+        clear_challenges()
 
         return {"success": True}
 
@@ -282,8 +286,8 @@ class UserPrivate(Resource):
         responses={
             200: ("Success", "UserDetailedSuccessResponse"),
             400: (
-                    "An error occured processing the provided or stored data",
-                    "APISimpleErrorResponse",
+                "An error occured processing the provided or stored data",
+                "APISimpleErrorResponse",
             ),
         },
     )
@@ -300,8 +304,8 @@ class UserPrivate(Resource):
         responses={
             200: ("Success", "UserDetailedSuccessResponse"),
             400: (
-                    "An error occured processing the provided or stored data",
-                    "APISimpleErrorResponse",
+                "An error occured processing the provided or stored data",
+                "APISimpleErrorResponse",
             ),
         },
     )
@@ -328,6 +332,7 @@ class UserPrivate(Resource):
         db.session.close()
 
         clear_standings()
+        clear_challenges()
 
         return {"success": True, "data": response.data}
 
@@ -345,7 +350,8 @@ class UserPrivateSolves(Resource):
         if response.errors:
             return {"success": False, "errors": response.errors}, 400
 
-        return {"success": True, "data": response.data}
+        count = len(response.data)
+        return {"success": True, "data": response.data, "meta": {"count": count}}
 
 
 @users_namespace.route("/me/fails")
@@ -356,16 +362,20 @@ class UserPrivateFails(Resource):
         fails = user.get_fails(admin=True)
 
         view = "user" if not is_admin() else "admin"
-        response = SubmissionSchema(view=view, many=True).dump(fails)
-        if response.errors:
-            return {"success": False, "errors": response.errors}, 400
 
+        # We want to return the count purely for stats & graphs
+        # but this data isn't really needed by the end user.
+        # Only actually show fail data for admins.
         if is_admin():
+            response = SubmissionSchema(view=view, many=True).dump(fails)
+            if response.errors:
+                return {"success": False, "errors": response.errors}, 400
+
             data = response.data
         else:
             data = []
-        count = len(response.data)
 
+        count = len(fails)
         return {"success": True, "data": data, "meta": {"count": count}}
 
 
@@ -383,7 +393,8 @@ class UserPrivateAwards(Resource):
         if response.errors:
             return {"success": False, "errors": response.errors}, 400
 
-        return {"success": True, "data": response.data}
+        count = len(response.data)
+        return {"success": True, "data": response.data, "meta": {"count": count}}
 
 
 @users_namespace.route("/<user_id>/solves")
@@ -405,7 +416,8 @@ class UserPublicSolves(Resource):
         if response.errors:
             return {"success": False, "errors": response.errors}, 400
 
-        return {"success": True, "data": response.data}
+        count = len(response.data)
+        return {"success": True, "data": response.data, "meta": {"count": count}}
 
 
 @users_namespace.route("/<user_id>/fails")
@@ -421,16 +433,20 @@ class UserPublicFails(Resource):
         fails = user.get_fails(admin=is_admin())
 
         view = "user" if not is_admin() else "admin"
-        response = SubmissionSchema(view=view, many=True).dump(fails)
-        if response.errors:
-            return {"success": False, "errors": response.errors}, 400
 
+        # We want to return the count purely for stats & graphs
+        # but this data isn't really needed by the end user.
+        # Only actually show fail data for admins.
         if is_admin():
+            response = SubmissionSchema(view=view, many=True).dump(fails)
+            if response.errors:
+                return {"success": False, "errors": response.errors}, 400
+
             data = response.data
         else:
             data = []
-        count = len(response.data)
 
+        count = len(fails)
         return {"success": True, "data": data, "meta": {"count": count}}
 
 
@@ -452,7 +468,8 @@ class UserPublicAwards(Resource):
         if response.errors:
             return {"success": False, "errors": response.errors}, 400
 
-        return {"success": True, "data": response.data}
+        count = len(response.data)
+        return {"success": True, "data": response.data, "meta": {"count": count}}
 
 
 @users_namespace.route("/<int:user_id>/email")
@@ -483,4 +500,10 @@ class UserEmails(Resource):
 
         result, response = sendmail(addr=user.email, text=text)
 
-        return {"success": result}
+        if result is True:
+            return {"success": True}
+        else:
+            return (
+                {"success": False, "errors": {"": [response]}},
+                400,
+            )

@@ -13,8 +13,8 @@ const error_template =
 
 const success_template =
   '<div class="alert alert-success alert-dismissable submit-row" role="alert">\n' +
-  "  <strong>Success!</strong>\n" +
-  "   Your profile has been updated\n" +
+  "  <strong>成功!</strong>\n" +
+  "   个人资料已更新\n" +
   '  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>\n' +
   "</div>";
 
@@ -84,9 +84,9 @@ function tokenGenerate(event) {
           copyToClipboard(event, "#user-token-result");
         });
         ezAlert({
-          title: "API Key Generated",
+          title: "API Key生成完成",
           body: body,
-          button: "Got it!",
+          button: "好!",
           large: true
         });
       }
@@ -99,8 +99,8 @@ function deleteToken(event) {
   const id = $elem.data("token-id");
 
   ezQuery({
-    title: "Delete Token",
-    body: "Are you sure you want to delete this token?",
+    title: "删除Token",
+    body: "你确定要删除这个token吗?",
     success: function() {
       CTFd.fetch("/api/v1/tokens/" + id, {
         method: "DELETE"

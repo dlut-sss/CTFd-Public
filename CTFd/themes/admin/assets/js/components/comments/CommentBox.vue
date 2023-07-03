@@ -7,7 +7,7 @@
             class="form-control mb-2"
             rows="2"
             id="comment-input"
-            placeholder="Add comment"
+            placeholder="添加评论"
             v-model.lazy="comment"
           ></textarea>
           <button
@@ -15,7 +15,7 @@
             type="submit"
             @click="submitComment()"
           >
-            Comment
+            评论
           </button>
         </div>
       </div>

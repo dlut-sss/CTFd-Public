@@ -10,8 +10,8 @@ function deleteSelectedChallenges(_event) {
   let target = challengeIDs.length === 1 ? "challenge" : "challenges";
 
   ezQuery({
-    title: "Delete Challenges",
-    body: `Are you sure you want to delete ${challengeIDs.length} ${target}?`,
+    title: "删除题目",
+    body: `你确定要删除 ${challengeIDs.length} 个 ${target}?`,
     success: function() {
       const reqs = [];
       for (var chalID of challengeIDs) {
@@ -34,28 +34,28 @@ function bulkEditChallenges(_event) {
   });
 
   ezAlert({
-    title: "Edit Challenges",
+    title: "编辑题目",
     body: $(`
     <form id="challenges-bulk-edit">
       <div class="form-group">
-        <label>Category</label>
+        <label>类别</label>
         <input type="text" name="category" data-initial="" value="">
       </div>
       <div class="form-group">
-        <label>Value</label>
+        <label>分值</label>
         <input type="number" name="value" data-initial="" value="">
       </div>
       <div class="form-group">
         <label>State</label>
         <select name="state" data-initial="">
           <option value="">--</option>
-          <option value="visible">Visible</option>
-          <option value="hidden">Hidden</option>
+          <option value="visible">可见</option>
+          <option value="hidden">隐藏</option>
         </select>
       </div>
     </form>
     `),
-    button: "Submit",
+    button: "提交",
     success: function() {
       let data = $("#challenges-bulk-edit").serializeJSON(true);
       const reqs = [];

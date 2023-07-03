@@ -35,19 +35,19 @@
                     </h6>
                     <p class="card-text">{{ container.user_access }}</p>
                     <p class="card-text">{{ container.flag }}</p>
-                    Time Started: {{ container.start_time }}
+                    开始时间: {{ container.start_time }}
                     <a class="delete-container float-right" container-id="{{ container.id }}"
                        data-toggle="tooltip" data-placement="top"
                        user-id="{{ container.user.id }}"
                        style="margin-right: 0.5rem;"
-                       title="Destroy Container #{{ container.id }}">
+                       title="删除容器 #{{ container.id }}">
                         <i class="fas fa-stop-circle"></i>
                     </a>
                     <a class="renew-container float-right" container-id="{{ container.id }}"
                        data-toggle="tooltip" data-placement="top"
                        user-id="{{ container.user.id }}"
                        style="margin-right: 0.5rem;"
-                       title="Renew Container #{{ container.id }}">
+                       title="延期容器 #{{ container.id }}">
                         <i class="fas fa-clock"></i>
                     </a>
                 </div>

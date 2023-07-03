@@ -2,42 +2,42 @@
 	<form method="POST" autocomplete="off" class="w-100">
 		<div class="form-group">
 			<label for="ctf_name">
-				Competition Name
-				<small class="form-text text-muted">Competition name displayed instead of a logo</small>
+                比赛名称
+				<small class="form-text text-muted">显示比赛名称而不是徽标</small>
 			</label>
-			<input class="form-control" id='ctf_name' name='ctf_name' type='text' placeholder="CTF Name"
+			<input class="form-control" id='ctf_name' name='ctf_name' type='text' placeholder="CTF名称"
 				   {% if ctf_name is defined and ctf_name != None %}value="{{ ctf_name }}"{% endif %}>
 		</div>
 
 		<div class="form-group">
 			<label>
-				CTF Description<br>
+				CTF 介绍<br>
 				<small class="form-text text-muted">
-					Description for the CTF
+					CTF的介绍
 				</small>
 			</label>
 			<textarea class="form-control" type="text" id="ctf_description" name="ctf_description" rows="5">{{ ctf_description }}</textarea>
-		</div>
+        </div>
         <div class="form-group">
             <label for="bot-ip">
-                Bot Address<br>
+                机器人地址<br>
                 <small class="form-text text-muted">
-                    the address of QQ-bot
+                    QQ机器人的地址
                 </small>
                 <small class="form-text text-muted">
                     eg. 127.0.0.1:1234
                 </small>
             </label>
             <input class="form-control" id='bot-ip' name='bot_ip' type='text'
-					{% if bot_ip is defined and bot_ip != None %}value="{{ bot_ip }}"{% endif %}>
+                   {% if bot_ip is defined and bot_ip != None %}value="{{ bot_ip }}"{% endif %}>
         </div>
 
         <div class="form-group">
             <label for="group-id">
-                QQ Group Number<br>
+                QQ 群号<br>
             </label>
             <input class="form-control" id='group-id' name='group_id' type='text'
-					{% if group_id is defined and group_id != None %}value="{{ group_id }}"{% endif %}>
+                   {% if group_id is defined and group_id != None %}value="{{ group_id }}"{% endif %}>
         </div>
 
 
@@ -49,7 +49,7 @@
                 </small>
             </label>
             <input class="form-control" id='bot-text' name='bottext' type='text'
-				   {% if bottext is defined and bottext != None %}value="{{ bottext }}"{% endif %}>
+                   {% if bottext is defined and bottext != None %}value="{{ bottext }}"{% endif %}>
         </div>
 
         <div class="form-group">
@@ -60,7 +60,7 @@
                 </small>
             </label>
             <input class="form-control" id='create-text' name='createtext' type='text'
-				   {% if createtext is defined and createtext != None %}value="{{ createtext }}"{% endif %}>
+                   {% if createtext is defined and createtext != None %}value="{{ createtext }}"{% endif %}>
         </div>
 
         <div class="form-group">
@@ -71,25 +71,25 @@
                 </small>
             </label>
             <input class="form-control" id='update-text' name='updatetext' type='text'
-				   {% if updatetext is defined and updatetext != None %}value="{{ updatetext }}"{% endif %}>
+                   {% if updatetext is defined and updatetext != None %}value="{{ updatetext }}"{% endif %}>
         </div>
 
         <div class="form-group">
             <label for="botof">
-                Turn on the Bot
+                开启bot
             </label>
             <div>
                 <select class="form-control custom-select" id="botof" name="bot">
                     <option value=0 {% if bot == 0 %}selected{% endif %}>
-                        OFF
+                        关
                     </option>
                     <option value=1 {% if bot == 1 %}selected{% endif %}>
-                        ON
+                        开
                     </option>
                 </select>
             </div>
-        </div>
+		</div>
 
-		<button type="submit" class="btn btn-md btn-primary float-right">Update</button>
+		<button type="submit" class="btn btn-md btn-primary float-right">更新</button>
 	</form>
 </div>

@@ -7,7 +7,7 @@
 {% block content %}
 <div class="jumbotron">
 	<div class="container">
-		<h1>Configuration</h1>
+		<h1><b>平台配置</b></h1>
 	</div>
 </div>
 <div class="container">
@@ -15,43 +15,46 @@
 		<div class="col-md-3">
 			<ul class="nav nav-pills flex-column">
 				<li class="nav-item">
-					<a class="nav-link rounded-0 active" href="#appearance" role="tab" data-toggle="tab">Appearance & Robot</a>
+					<a class="nav-link rounded-0 active" href="#appearance" role="tab" data-toggle="tab">外观&机器人</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#theme" role="tab" data-toggle="tab">Theme</a>
+					<a class="nav-link rounded-0" href="#theme" role="tab" data-toggle="tab">平台主题</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#accounts" role="tab" data-toggle="tab">Accounts</a>
+					<a class="nav-link rounded-0" href="#accounts" role="tab" data-toggle="tab">账户控制</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#fields" role="tab" data-toggle="tab">Custom Fields</a>
+					<a class="nav-link rounded-0" href="#pages" role="tab" data-toggle="tab">爬虫协议</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link rounded-0" href="#fields" role="tab" data-toggle="tab">自定义字段</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link rounded-0" href="#mlc" role="tab" data-toggle="tab">MajorLeagueCyber</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#settings" role="tab" data-toggle="tab">Settings</a>
+					<a class="nav-link rounded-0" href="#settings" role="tab" data-toggle="tab">平台设置</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#security" role="tab" data-toggle="tab">Security</a>
+					<a class="nav-link rounded-0" href="#security" role="tab" data-toggle="tab">平台保护</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#email" role="tab" data-toggle="tab">Email</a>
+					<a class="nav-link rounded-0" href="#email" role="tab" data-toggle="tab">邮件系统</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#ctftime" role="tab" data-toggle="tab">Time</a>
+					<a class="nav-link rounded-0" href="#ctftime" role="tab" data-toggle="tab">起止时间</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#legal" role="tab" data-toggle="tab">Legal</a>
+					<a class="nav-link rounded-0" href="#legal" role="tab" data-toggle="tab">隐私合规</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#backup" role="tab" data-toggle="tab">Backup</a>
+					<a class="nav-link rounded-0" href="#backup" role="tab" data-toggle="tab">数据备份</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#usermode" role="tab" data-toggle="tab">User Mode</a>
+					<a class="nav-link rounded-0" href="#usermode" role="tab" data-toggle="tab">用户模式</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link rounded-0" href="{{ url_for('admin.reset') }}" role="tab">Reset</a>
+					<a class="nav-link rounded-0" href="{{ url_for('admin.reset') }}" role="tab">重置平台</a>
 				</li>
 			</ul>
 		</div>
@@ -72,6 +75,8 @@
 				{% include "admin/configs/theme.html" %}
 
 				{% include "admin/configs/accounts.html" %}
+
+				{% include "admin/configs/pages.html" %}
 
 				{% include "admin/configs/fields.html" %}
 

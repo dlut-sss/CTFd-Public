@@ -6,5 +6,5 @@ from CTFd.forms.fields import SubmitField
 
 
 class SendEmailForm(BaseForm):
-    text = TextAreaField("Message", validators=[InputRequired()])
-    submit = SubmitField("Send")
+    text = TextAreaField("消息", validators=[InputRequired()])
+    submit = SubmitField("发送")

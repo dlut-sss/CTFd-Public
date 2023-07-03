@@ -6,7 +6,7 @@
           <div class="container">
             <div class="row">
               <div class="col-md-12">
-                <h3>Create Flag</h3>
+                <h3>创建Flag</h3>
               </div>
             </div>
           </div>
@@ -46,7 +46,7 @@
               type="submit"
               v-if="createForm"
             >
-              Create Flag
+              创建Flag
             </button>
           </form>
         </div>

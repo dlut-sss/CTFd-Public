@@ -31,7 +31,7 @@
 					<div class="col-md-12">
 						{% set title = page.title if page is defined %}
 						<b>{{ form.title.label }}</b>
-						{{ form.title(class="form-control radius", id="route", placeholder="Title", value=title) }}
+						{{ form.title(class="form-control radius", id="route", placeholder="标题", value=title) }}
 						<small class="text-muted">
 							{{ form.title.description }}
 						</small>
@@ -42,7 +42,7 @@
 					<div class="col-md-12">
 						{% set route = page.route if page is defined %}
 						<b>{{ form.route.label }}</b>
-						{{ form.route(class="form-control radius", placeholder="Route", value=route) }}
+						{{ form.route(class="form-control radius", placeholder="路由", value=route) }}
 						<small class="text-muted">
 							{{ form.route.description }}
 						</small>
@@ -51,8 +51,8 @@
 
 				<div class="form-group">
 					<div class="col-md-12">
-						<b>{{ form.format.label }}</b>
-						{{ form.format(class="form-control custom-select", placeholder="Route", value=format) }}
+						<b>格式</b>
+						{{ form.format(class="form-control custom-select", placeholder="格式", value=format) }}
 						<small class="text-muted">
 							{{ form.format.description }}
 						</small>
@@ -62,16 +62,16 @@
 				<div class="form-group">
 					<div class="col-md-12">
 
-						<h3>Content</h3>
-						<small class="text-muted">This is the HTML content of your page</small>
+						<h3>内容</h3>
+						<small class="text-muted">这是您页面的 HTML 内容</small>
 
 						<ul class="nav nav-tabs" role="tablist" id="content-edit">
 							<li class="nav-item" role="presentation" class="active">
 								<a class="nav-link active" href="#content-write" aria-controls="home" role="tab"
-								   data-toggle="tab">Write</a>
+								   data-toggle="tab">编辑</a>
 							</li>
 							<li class="nav-item" role="presentation">
-								<a class="nav-link preview-page" href="#">Preview</a>
+								<a class="nav-link preview-page" href="#">预览</a>
 							</li>
 						</ul>
 
@@ -84,7 +84,7 @@
 										<div class="btn-group">
 											<button type="button" class="btn btn-primary" id="media-button">
 												<i class="fas fa-camera-retro"></i>
-												Media Library
+												媒体库
 											</button>
 										</div>
 									</div>
@@ -113,7 +113,7 @@
 								<br>
 
 								<small class="form-text text-muted text-right">
-									<a href="https://docs.ctfd.io/docs/pages/variables/" target="_blank">CTFd Page variables</a>
+									<a href="https://docs.ctfd.io/docs/pages/variables/" target="_blank">CTFd 页面变量</a>
 									<i class="far fa-question-circle pr-2"></i>
 								</small>
 
@@ -124,7 +124,7 @@
 								<div class="form-group float-right pt-3">
 									{{ form.nonce() }}
 									<button class="btn btn-primary" id="save-page">
-										Save
+										保存
 									</button>
 								</div>
 							</div>
@@ -142,7 +142,7 @@
 	<div class="row min-vh-25 pt-5">
 		<div class="col-md-10 offset-md-1">
 			<h3 class="text-center py-3 d-block">
-				Comments
+				评论
 			</h3>
 			<div id="comment-box">
 			</div>

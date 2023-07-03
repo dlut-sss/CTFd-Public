@@ -6,8 +6,8 @@
 {% block content %}
 <div class="jumbotron">
 	<div class="container">
-		<h1>Users
-			<span class="create-team" role="button" data-toggle="tooltip" title="Create User">
+        <h1><b>用户</b>
+			<span class="create-team" role="button" data-toggle="tooltip" title="新建用户">
 				<a href="{{ url_for('admin.users_new') }}" style="color: inherit;">
 					<i class="btn-fa fas fa-plus-circle"></i>
 				</a>
@@ -22,10 +22,10 @@
 		<div class="col-md-12">
 			{% if q and field %}
 			<h5 class="text-muted text-center">
-				Searching for users with <strong>{{ field }}</strong> matching <strong>{{ q }}</strong>
+				搜索 <strong>{{ field }}</strong> 匹配 <strong>{{ q }} 的用户</strong>
 			</h5>
 			<h6 class="text-muted text-center pb-3">
-				Page {{ users.page }} of {{ users.total }} results
+                {{ users.total }} 结果的第 {{ users.page }} 页
 			</h6>
 			{% endif %}
 
@@ -35,7 +35,7 @@
 					{{ form.field(class="form-control custom-select w-100") }}
 				</div>
 				<div class="form-group col-md-8">
-					{{ form.q(class="form-control w-100", placeholder="Search for matching users") }}
+					{{ form.q(class="form-control w-100", placeholder="搜索匹配的用户") }}
 				</div>
 				<div class="form-group col-md-2">
 					<button type="submit" class="btn btn-primary w-100">
@@ -53,10 +53,10 @@
 		<div class="col-md-12">
 			<div class="float-right pb-3">
 				<div class="btn-group" role="group">
-					<button type="button" class="btn btn-outline-secondary" data-toggle="tooltip" title="Edit Users" id="users-edit-button">
+					<button type="button" class="btn btn-outline-secondary" data-toggle="tooltip" title="编辑用户" id="users-edit-button">
 						<i class="btn-fa fas fa-pencil-alt"></i>
 					</button>
-					<button type="button" class="btn btn-outline-danger" data-toggle="tooltip" title="Delete Users" id="users-delete-button">
+					<button type="button" class="btn btn-outline-danger" data-toggle="tooltip" title="删除用户" id="users-delete-button">
 						<i class="btn-fa fas fa-trash-alt"></i>
 					</button>
 				</div>
@@ -64,25 +64,25 @@
 		</div>
 	</div>
 	<div class="row">
-		<div class="col-md-12">
+		<div class="col-md-12 table-responsive">
 			<table id="teamsboard" class="table table-striped border">
 				<thead>
 					<tr>
 						<th class="border-right" data-checkbox>
 							<div class="form-check text-center">
-								<input type="checkbox" class="form-check-input" data-checkbox-all>&nbsp;
+								<input type="checkbox" class="form-check-input" autocomplete="off" data-checkbox-all>&nbsp;
 							</div>
 						</th>
 						<th class="sort-col text-center"><b>ID</b></th>
-						<th class="sort-col text-center"><b>User</b></th>
-						<th class="d-md-table-cell d-lg-table-cell sort-col text-center"><b>Email</b></th>
-						<th class="sort-col text-center"><b>Name</b></th>
-						<th class="sort-col text-center"><b>Number</b></th>
-						<th class="sort-col text-center"><b>Country</b></th>
-						<th class="sort-col text-center px-0"><b>Admin</b></th>
-						<th class="sort-col text-center px-0"><b>Verified</b></th>
-						<th class="sort-col text-center px-0"><b>Hidden</b></th>
-						<th class="sort-col text-center px-0"><b>Banned</b></th>
+						<th class="sort-col text-center"><b>昵称</b></th>
+						<th class="sort-col text-center"><b>邮箱</b></th>
+                        <th class="sort-col text-center"><b>姓名</b></th>
+                        <th class="sort-col text-center"><b>学号</b></th>
+						<th class="sort-col text-center"><b>国家和地区</b></th>
+						<th class="sort-col text-center px-0"><b>管理员</b></th>
+						<th class="sort-col text-center px-0"><b>认证状态</b></th>
+						<th class="sort-col text-center px-0"><b>隐藏</b></th>
+						<th class="sort-col text-center px-0"><b>封禁</b></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -90,7 +90,7 @@
 					<tr name="{{ user.id }}" data-href="{{ url_for('admin.users_detail', user_id=user.id) }}">
 						<td class="border-right" data-checkbox>
 							<div class="form-check text-center">
-								<input type="checkbox" class="form-check-input" value="{{ user.id }}" data-user-id="{{ user.id }}">&nbsp;
+								<input type="checkbox" class="form-check-input" autocomplete="off" value="{{ user.id }}" data-user-id="{{ user.id }}">&nbsp;
 							</div>
 						</td>
 						<td class="team-id text-center" value="{{ user.id }}">{{ user.id }}</td>
@@ -118,14 +118,14 @@
 								<a href="mailto:{{ user.email }}" target="_blank">{{ user.email | truncate(32) }}</a>
 							{% endif %}
 						</td>
-						<td class="team-id text-center" value="{{ user.sname }}">
-							<a href="{{ url_for('admin.users_detail', user_id=user.id) }}">
-								{{ user.sname}}
-							</a>
-						</td>
-						<td class="team-id text-center" value="{{ user.sid }}">
-							{{ user.sid }}
-						</td>
+                        <td class="team-id text-center" value="{{ user.sname }}">
+                            <a href="{{ url_for('admin.users_detail', user_id=user.id) }}">
+                                {{ user.sname}}
+                            </a>
+                        </td>
+                        <td class="team-id text-center" value="{{ user.sid }}">
+                            {{ user.sid }}
+                        </td>
 						<td class="team-country text-center" value="{{ user.country if user.country is not none }}">
 							<span>
 								{% if user.country %}
@@ -134,25 +134,24 @@
 								{% endif %}
 							</span>
 						</td>
-						
 						<td class="team-admin d-md-table-cell d-lg-table-cell text-center" value="{{ user.type }}">
 							{% if user.type == 'admin' %}
-								<span class="badge badge-primary">admin</span>
+								<span class="badge badge-primary">管理员</span>
 							{% endif %}
 						</td>
 						<td class="team-verified d-md-table-cell d-lg-table-cell text-center" value="{{ user.verified }}">
 							{% if user.verified %}
-								<span class="badge badge-success">verified</span>
+								<span class="badge badge-success">已认证</span>
 							{% endif %}
 						</td>
 						<td class="team-hidden d-md-table-cell d-lg-table-cell text-center" value="{{ user.hidden }}">
 							{% if user.hidden %}
-								<span class="badge badge-danger">hidden</span>
+								<span class="badge badge-danger">隐藏</span>
 							{% endif %}
 						</td>
 						<td class="team-banned d-md-table-cell d-lg-table-cell text-center" value="{{ user.banned }}">
 							{% if user.banned %}
-								<span class="badge badge-danger">banned</span>
+								<span class="badge badge-danger">已封禁</span>
 							{% endif %}
 						</td>
 					</tr>
@@ -160,7 +159,7 @@
 				</tbody>
 			</table>
 			{% if users.pages > 1 %}
-			<div class="text-center">Page
+			<div class="text-center">页
 				<br>
 				{% if users.page != 1 %}
 				<a href="{{ prev_page }}">&lt;&lt;&lt;</a>

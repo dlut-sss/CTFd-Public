@@ -1,5 +1,7 @@
 import json
 import random
+import re
+import time
 import uuid
 from collections import OrderedDict
 
@@ -64,11 +66,17 @@ class DockerUtils:
             get_config("whale:docker_swarm_nodes", "").split(",")
         )
 
-        client.services.create(
+        try:
+            image = client.images.get(container.challenge.docker_image)
+        except Exception as e:
+            print(e)
+            client.api.pull(container.challenge.docker_image)
+
+        service = client.services.create(
             image=container.challenge.docker_image,
             name=f'{container.user_id}-{container.uuid}',
             env={'FLAG': container.flag}, dns_config=docker.types.DNSConfig(nameservers=dns),
-            networks=[get_config("whale:docker_auto_connect_network", "ctfd_frp-containers")],
+            networks=[get_config("whale:docker_auto_connect_network", "ctfd_frp_containers")],
             resources=docker.types.Resources(
                 mem_limit=DockerUtils.convert_readable_text(
                     container.challenge.memory_limit),
@@ -80,6 +88,15 @@ class DockerUtils:
             constraints=['node.labels.name==' + node],
             endpoint_spec=docker.types.EndpointSpec(mode='dnsrr', ports={})
         )
+
+        while True:
+            tasks = service.tasks()
+            for task in tasks:
+                current_state = task['Status']['State']
+                if 'running'.lower() in current_state.lower():
+                    print("容器启动成功！")
+                    return
+            time.sleep(0.5)  # 等待0.5秒后重新检查
 
     @staticmethod
     def _create_grouped_container(client, container):

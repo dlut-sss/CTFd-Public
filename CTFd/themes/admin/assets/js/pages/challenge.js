@@ -15,13 +15,14 @@ import TopicsList from "../components/topics/TopicsList.vue";
 import TagsList from "../components/tags/TagsList.vue";
 import ChallengeFilesList from "../components/files/ChallengeFilesList.vue";
 import HintsList from "../components/hints/HintsList.vue";
+import NextChallenge from "../components/next/NextChallenge.vue";
 import hljs from "highlight.js";
 
 const displayHint = data => {
   ezAlert({
-    title: "Hint",
+    title: "提示",
     body: data.html,
-    button: "Got it!"
+    button: "明白了!"
   });
 };
 
@@ -78,7 +79,7 @@ function renderSubmissionResponse(response, cb) {
           .split(" ")[0]
       ) +
         1 +
-        " Solves"
+        " 人解出"
     );
 
     answer_input.val("");
@@ -158,7 +159,7 @@ function loadChalTemplate(challenge) {
               }
 
               ezAlert({
-                title: "Error",
+                title: "错误",
                 body: body,
                 button: "OK"
               });
@@ -332,8 +333,8 @@ $(() => {
 
   $(".delete-challenge").click(function(_e) {
     ezQuery({
-      title: "Delete Challenge",
-      body: "Are you sure you want to delete {0}".format(
+      title: "删除题目",
+      body: "你确定要删除{0}".format(
         "<strong>" + htmlEntities(window.CHALLENGE_NAME) + "</strong>"
       ),
       success: function() {
@@ -399,8 +400,8 @@ $(() => {
                     break;
                 }
                 ezToast({
-                  title: "Success",
-                  body: "Your challenge has been updated!"
+                  title: "成功",
+                  body: "题目更新成功!"
                 });
               } else {
                 let body = "";
@@ -410,7 +411,7 @@ $(() => {
                 }
 
                 ezAlert({
-                  title: "Error",
+                  title: "错误",
                   body: body,
                   button: "OK"
                 });
@@ -420,9 +421,9 @@ $(() => {
         // Check if the challenge doesn't have any flags before marking visible
         if (response.data.length === 0 && params.state === "visible") {
           ezQuery({
-            title: "Missing Flags",
+            title: "没有设置FLAG",
             body:
-              "This challenge does not have any flags meaning it may be unsolveable. Are you sure you'd like to update this challenge?",
+              "此挑战没有任何FLAG，这意味着它可能无法解决。 您确定要更新此挑战吗？(动态容器的动态FLAG留空即可，可无视此提示)",
             success: update_challenge
           });
         } else {
@@ -489,6 +490,16 @@ $(() => {
     let vueContainer = document.createElement("div");
     document.querySelector("#challenge-hints").appendChild(vueContainer);
     new hintsList({
+      propsData: { challenge_id: window.CHALLENGE_ID }
+    }).$mount(vueContainer);
+  }
+
+  // Load Next component
+  if (document.querySelector("#next-add-form")) {
+    const nextChallenge = Vue.extend(NextChallenge);
+    let vueContainer = document.createElement("div");
+    document.querySelector("#next-add-form").appendChild(vueContainer);
+    new nextChallenge({
       propsData: { challenge_id: window.CHALLENGE_ID }
     }).$mount(vueContainer);
   }

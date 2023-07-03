@@ -17,7 +17,7 @@ function copyToClipboard(event, str) {
     document.body.removeChild(el);
 
     $(event.target).tooltip({
-        title: "Copied!",
+        title: "复制完成!",
         trigger: "manual"
     });
     $(event.target).tooltip("show");
@@ -62,8 +62,8 @@ $('#containers-renew-button').click(function (e) {
         return $(this).data("user-id");
     });
     CTFd.ui.ezq.ezQuery({
-        title: "Renew Containers",
-        body: `Are you sure you want to renew the selected ${users.length} container(s)?`,
+        title: "延期容器",
+        body: `你确定要给选中的 ${users.length} 个容器延期吗?`,
         success: async function () {
             await Promise.all(users.toArray().map((user) => renew_container(user)));
             location.reload();
@@ -76,8 +76,8 @@ $('#containers-delete-button').click(function (e) {
         return $(this).data("user-id");
     });
     CTFd.ui.ezq.ezQuery({
-        title: "Delete Containers",
-        body: `Are you sure you want to delete the selected ${users.length} container(s)?`,
+        title: "删除容器",
+        body: `你确定要删除选中的 ${users.length} 个容器吗?`,
         success: async function () {
             await Promise.all(users.toArray().map((user) => delete_container(user)));
             location.reload();
@@ -91,8 +91,8 @@ $(".delete-container").click(function (e) {
     let user_id = $(this).attr("user-id");
 
     CTFd.ui.ezq.ezQuery({
-        title: "Destroy Container",
-        body: "<span>Are you sure you want to delete <strong>Container #{0}</strong>?</span>".format(
+        title: "关闭容器",
+        body: "<span>你确定要关闭 <strong>容器 #{0}</strong>吗?</span>".format(
             htmlentities(container_id)
         ),
         success: async function () {
@@ -108,8 +108,8 @@ $(".renew-container").click(function (e) {
     let user_id = $(this).attr("user-id");
 
     CTFd.ui.ezq.ezQuery({
-        title: "Renew Container",
-        body: "<span>Are you sure you want to renew <strong>Container #{0}</strong>?</span>".format(
+        title: "延期容器",
+        body: "<span>你确定要给 <strong>容器 #{0}</strong>延期吗?</span>".format(
             htmlentities(container_id)
         ),
         success: async function () {
