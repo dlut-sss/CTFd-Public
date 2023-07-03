@@ -57,7 +57,7 @@
    [common]
    bind_port = 7897
    bind_addr = 0.0.0.0
-   token = dd1d17eb-922b-521b-1507-8ee969a5916f
+   token = thisistoken
    # vhost_http_port = 80 # 如果要配置http动态域名则需要这个。80端口开启需要systemd使用root权限启用frp，在这里不需要
    ```
 
