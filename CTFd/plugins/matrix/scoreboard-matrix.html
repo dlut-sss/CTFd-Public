@@ -1,0 +1,160 @@
+{% extends "base.html" %} {% block stylesheets %}
+<style>
+    th.chalname {
+        height: 80px;
+        width: 40px;
+        min-width: 40px;
+        max-width: 40px;
+        vertical-align: bottom;
+        padding: 0;
+        font-size: 12px;
+        line-height: 0.8;
+    }
+
+    .chalname>div {
+        position: relative;
+        top: 0px;
+        left: 30px;
+        height: 100%;
+        overflow: hidden;
+        /* TODO border */
+        -webkit-transform: skew(-45deg, 0deg);
+        transform: skew(-45deg, 0deg);
+    }
+
+    .chalname span {
+        display: inline-block;
+        position: absolute;
+        bottom: 30px;
+        left: -30px;
+        text-align: left;
+        width: 85px;
+        -webkit-transform: skew(45deg, 0deg) rotate(315deg);
+        transform: skew(45deg, 0deg) rotate(315deg);
+    }
+
+    .table img {
+        display: block;
+        width: 2.15rem;
+        height: auto;
+    }
+
+    .chalmark {
+        font-size: 20px;
+    }
+
+    .matrix {
+        overflow-x: scroll;
+        cursor: grab;
+        cursor: -o-grab;
+        cursor: -moz-grab;
+        cursor: -webkit-grab;
+    }
+</style>
+{% endblock %} {% block content %}
+<div class="jumbotron home">
+    <div class="container">
+        <h1>{{Configs.ctf_name}}计分板</h1>
+    </div>
+</div>
+<div class="container main-container">
+    {% if errors %}
+    <div class="container main-container">
+        <div id='errors' class="row">
+            {% for error in errors %}
+            <h1>{{ error }}</h1>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %} {% if score_frozen %}
+    <div class="container main-container">
+        <div class="row">
+            <h1>计分板已经冻结。</h1>
+        </div>
+    </div>
+    {% endif %}
+    <div class="matrix dragscroll">
+        <table id="scoreboard" class="table table-striped">
+            <thead>
+                <tr>
+                    <th width="5%" rowspan="3"><b>排名</b>
+                    </th>
+                    <th width="10%" rowspan="3"><b>昵称</b>
+                    </th>
+                    <th width="5%" rowspan="3"><b>得分</b>
+                    </th>
+                    <!-- TODO: 可适应布局调整  -->
+                    <th data-halign="center" data-align="center" colspan="{{get_cry()}}" style="text-align: center">
+                        <b>CRYPTO</b>
+                    </th>
+                    <th data-halign="center" data-align="center" colspan="{{get_misc()}}" style="text-align: center">
+                        <b>MISC</b>
+                    </th>
+                    <th data-halign="center" data-align="center" colspan="{{get_pwn()}}" style="text-align: center">
+                        <b>PWN</b>
+                    </th>
+                    <th data-halign="center" data-align="center" colspan="{{get_re()}}" style="text-align: center">
+                        <b>REVERSE</b>
+                    </th>
+                    <th data-halign="center" data-align="center" colspan="{{get_web()}}" style="text-align: center">
+                        <b>WEB</b>
+                    </th>
+                </tr>
+                <tr>
+                    {% for chal in challenges %}
+                    <div>
+                        <th class="chalname" title="{{ chal.category }}">
+                            <div><span>{{ chal.name }}</span></div>
+                        </th>
+                    </div>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for chal in challenges %}
+                    <div>
+                        <th width="10%" class="score" title="{{ chal.category }}">
+                            <div><span>{{ chal.value }}</span></div>
+                        </th>
+                    </div>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for team in standings %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td><a href="{{ request.script_root }}/{{ mode }}/{{ team.teamid }}">{{ team.name }}</a></td>
+                    <td>{{ team.score }}</td>
+                    {% for chal in challenges %}
+                    <td class="chalmark">
+                        {% if chal.id in team.solves %} {% if 1 in team.blood[chal.id]%}
+                        <img src="/plugins/matrix/static/medal1.png" width="100%" height="100%"> {% elif 2 in
+                        team.blood[chal.id]
+                        %}
+                        <img src="/plugins/matrix/static/medal2.png" width="100%" height="100%"> {% elif 3 in
+                        team.blood[chal.id]
+                        %}
+                        <img src="/plugins/matrix/static/medal3.png" width="100%" height="100%"> {% else %}
+                        <img src="/plugins/matrix/static/flag.png" width="100%" height="100%"> {% endif %} {% else %} {% endif
+                        %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} {% block scripts %}
+<script>
+    var challenges = {
+        {
+        challenges | tojson
+    }
+    };
+</script>
+<script src="{{ request.script_root }}/themes/{{ theme }}/assets/js/utils.js"></script>
+<script src="{{ request.script_root }}/plugins/matrix/static/dragscroll.js"></script>
+<script src="{{ request.script_root }}/plugins/matrix/static/scoreboard-matrix.js"></script>
+{% endblock %}

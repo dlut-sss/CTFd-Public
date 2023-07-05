@@ -9,7 +9,7 @@
 
     <div class="form-group">
       <label>
-        Topic
+        主题
         <br />
         <small class="text-muted">输入主题并按回车</small>
       </label>

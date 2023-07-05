@@ -6,7 +6,7 @@
           <div class="container">
             <div class="row">
               <div class="col-md-12">
-                <h3 class="text-center">Edit Flag</h3>
+                <h3 class="text-center">编辑Flag</h3>
               </div>
             </div>
           </div>

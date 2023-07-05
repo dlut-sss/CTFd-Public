@@ -23,7 +23,7 @@
         <div class="modal-body">
           <div class="create-keys-select-div">
             <label for="create-keys-select" class="control-label">
-              Choose Flag Type
+              选择Flag类型
             </label>
             <select
               class="form-control custom-select"

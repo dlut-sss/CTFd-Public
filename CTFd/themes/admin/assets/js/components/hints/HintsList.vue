@@ -23,14 +23,14 @@
       <thead>
         <tr>
           <td class="text-center"><b>ID</b></td>
-          <td class="text-center"><b>Hint</b></td>
-          <td class="text-center"><b>Cost</b></td>
-          <td class="text-center"><b>Settings</b></td>
+          <td class="text-center"><b>提示内容</b></td>
+          <td class="text-center"><b>花费</b></td>
+          <td class="text-center"><b>设置</b></td>
         </tr>
       </thead>
       <tbody>
         <tr v-for="hint in hints" :key="hint.id">
-          <td class="text-center">{{ hint.type }}</td>
+          <td class="text-center">{{ hint.id }}</td>
           <td class="text-break">
             <pre>{{ hint.content }}</pre>
           </td>
@@ -52,7 +52,7 @@
     </table>
     <div class="col-md-12">
       <button class="btn btn-success float-right" @click="addHint">
-        Create Hint
+        创建提示
       </button>
     </div>
   </div>
@@ -125,8 +125,8 @@ export default {
     },
     deleteHint: function(hintId) {
       ezQuery({
-        title: "Delete Hint",
-        body: "Are you sure you want to delete this hint?",
+        title: "删除提示",
+        body: "您确定要删除此提示吗？",
         success: () => {
           CTFd.fetch(`/api/v1/hints/${hintId}`, {
             method: "DELETE"

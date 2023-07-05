@@ -23,8 +23,7 @@
 				<thead>
 					<tr>
 						<td scope="col" style="text-align: center;width: 80px;"><b>名次</b></td>
-<!--						<td scope="col"><b>{{ get_mode_as_word(capitalize=True) }}</b></td>-->
-						<td scope="col"><b>用户</b></td>
+						<td scope="col"><b>{{ get_mode_as_word(capitalize=True) }}</b></td>
 						<td scope="col"><b>得分</b></td>
 					</tr>
 				</thead>
@@ -39,11 +38,11 @@
 								{% if standing.oauth_id %}
 									{% if Configs.user_mode == 'teams' %}
 									<a href="https://majorleaguecyber.org/t/{{ standing.name }}">
-										<span class="badge badge-primary">Official</span>
+										<span class="badge badge-primary">官方认证</span>
 									</a>
 									{% elif Configs.user_mode == 'users' %}
 									<a href="https://majorleaguecyber.org/u/{{ standing.name }}">
-										<span class="badge badge-primary">Official</span>
+										<span class="badge badge-primary">官方认证</span>
 									</a>
 									{% endif %}
 								{% endif %}

@@ -79,7 +79,7 @@ function renderSubmissionResponse(response, cb) {
           .split(" ")[0]
       ) +
         1 +
-        " 人解出"
+        "人解出"
     );
 
     answer_input.val("");

@@ -22,7 +22,7 @@ const loadChal = id => {
     ezAlert({
       title: "Challenge Hidden!",
       body: "You haven't unlocked this challenge yet!",
-      button: "Got it!"
+      button: "明白了！"
     });
     return;
   }
@@ -403,7 +403,7 @@ const displayHint = data => {
   ezAlert({
     title: "Hint",
     body: data.html,
-    button: "Got it!"
+    button: "明白了！"
   });
 };
 
@@ -428,7 +428,7 @@ const displayUnlock = id => {
         ezAlert({
           title: "Error",
           body: response.errors.score,
-          button: "Got it!"
+          button: "明白了！"
         });
       });
     }

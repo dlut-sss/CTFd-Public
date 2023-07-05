@@ -89,16 +89,16 @@
 		<h1 id="team-id" class="text-center p-0 m-0">{{ user.name }}</h1>
 		<div class="mb-2">
 			{% if user.type == 'admin' %}
-				<span class="badge badge-primary">admin</span>
+				<span class="badge badge-primary">管理员</span>
 			{% endif %}
 			{% if user.verified %}
-				<span class="badge badge-success">verified</span>
+				<span class="badge badge-success">已认证</span>
 			{% endif %}
 			{% if user.hidden %}
-				<span class="badge badge-danger">hidden</span>
+				<span class="badge badge-danger">已隐藏</span>
 			{% endif %}
 			{% if user.banned %}
-				<span class="badge badge-danger">banned</span>
+				<span class="badge badge-danger">已封禁</span>
 			{% endif %}
 		</div>
 

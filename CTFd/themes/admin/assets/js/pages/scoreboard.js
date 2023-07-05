@@ -76,20 +76,20 @@ function bulkToggleAccounts(_event) {
   };
 
   ezAlert({
-    title: "Toggle Visibility",
+    title: "切换可见性",
     body: $(`
     <form id="scoreboard-bulk-edit">
       <div class="form-group">
-        <label>Visibility</label>
+        <label>可见性</label>
         <select name="visibility" data-initial="">
           <option value="">--</option>
-          <option value="visible">Visible</option>
-          <option value="hidden">Hidden</option>
+          <option value="visible">可见</option>
+          <option value="hidden">隐藏</option>
         </select>
       </div>
     </form>
     `),
-    button: "Submit",
+    button: "提交",
     success: function() {
       let data = $("#scoreboard-bulk-edit").serializeJSON(true);
       let state = data.visibility;

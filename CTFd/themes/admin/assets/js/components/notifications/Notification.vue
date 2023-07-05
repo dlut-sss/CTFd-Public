@@ -40,7 +40,7 @@ export default {
       return dayjs(this.date).format("MMMM Do, h:mm:ss A");
     },
     deleteNotification: function() {
-      if (confirm("Are you sure you want to delete this notification?")) {
+      if (confirm("您确定要删除此通知吗？")) {
         CTFd.api
           .delete_notification({ notificationId: this.id })
           .then(response => {

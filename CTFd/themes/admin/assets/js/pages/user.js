@@ -122,7 +122,7 @@ function deleteUser(event) {
   event.preventDefault();
   ezQuery({
     title: "Delete User",
-    body: "Are you sure you want to delete {0}".format(
+    body: "你确定要删除{0}".format(
       "<strong>" + htmlEntities(window.USER_NAME) + "</strong>"
     ),
     success: function() {
@@ -251,7 +251,7 @@ function deleteSelectedSubmissions(event, target) {
 
   ezQuery({
     title: `Delete ${title}`,
-    body: `Are you sure you want to delete ${
+    body: `你确定要删除${
       submissionIDs.length
     } ${target_string}?`,
     success: function() {
@@ -274,7 +274,7 @@ function deleteSelectedAwards(_event) {
 
   ezQuery({
     title: `Delete Awards`,
-    body: `Are you sure you want to delete ${awardIDs.length} ${target}?`,
+    body: `你确定要删除${awardIDs.length} ${target}?`,
     success: function() {
       const reqs = [];
       for (var awardID of awardIDs) {

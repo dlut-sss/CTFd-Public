@@ -17,7 +17,7 @@
           type="button"
           @click="addField()"
         >
-          Add New Field
+          添加新字段
         </button>
       </div>
     </div>

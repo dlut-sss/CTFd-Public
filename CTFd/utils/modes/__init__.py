@@ -30,12 +30,12 @@ def get_model():
 
 def get_mode_as_word(plural=False, capitalize=False):
     if get_config("user_mode") == USERS_MODE:
-        word = "user"
+        word = "用户"
     else:
-        word = "team"
+        word = "队伍"
 
-    if plural:
-        word += "s"
-    if capitalize:
-        word = word.title()
+    # if plural:
+    #     word += "s"
+    # if capitalize:
+    #     word = word.title()
     return word

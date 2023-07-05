@@ -101,8 +101,6 @@ def import_ctf():
         end_time = cache.get("import_end_time")
         import_status = cache.get("import_status")
         import_error = cache.get("import_error")
-        if import_in_progress():
-            return "导入进行中"
 
         return render_template(
             "admin/import.html",

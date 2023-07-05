@@ -4,7 +4,7 @@
 
 基于CTFd 3.5.3 版本二次开发,整合CTFd-Whale插件的部署版。
 
-此仓库为公开开源仓库，一些配置信息已经抹去，请自行修改！
+修复了原版CTFd的一些问题，整合了比赛主题，比赛计分板插件并进行了全面汉化
 
 （注意，由于pages主题没找到能够阅读的源代码（全都是min.js），于是直接对.min.js进行了修改，dev最后的eval部分并未修改，不要对pages主题进行webpack编译！（或者有空可能重构吧））
 
@@ -57,7 +57,7 @@
    [common]
    bind_port = 7897
    bind_addr = 0.0.0.0
-   token = thisistoken
+   token = token
    # vhost_http_port = 80 # 如果要配置http动态域名则需要这个。80端口开启需要systemd使用root权限启用frp，在这里不需要
    ```
 
@@ -88,7 +88,7 @@
 
    ```ini
    [common]
-   token = thisistoken
+   token = token
    server_addr = 172.17.0.1    # 这里填写服务器ip addr之后docker0的ip地址
    server_port = 7897          # 这里需与前面frps.ini的bind_port匹配
    admin_addr = 172.1.0.4      # 这里填写frpc服务在frp网络中的ip

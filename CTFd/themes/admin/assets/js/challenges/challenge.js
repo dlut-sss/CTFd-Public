@@ -165,7 +165,7 @@ $(() => {
   $(".delete-challenge").click(function(_event) {
     ezQuery({
       title: "Delete Challenge",
-      body: "Are you sure you want to delete {0}".format(
+      body: "你确定要删除{0}".format(
         "<strong>" + htmlEntities(window.CHALLENGE_NAME) + "</strong>"
       ),
       success: function() {

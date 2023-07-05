@@ -204,11 +204,11 @@ def setup():
             # Splice in our banner
             index = f"""<div class="row">
     <div class="col-md-6 offset-md-3">
-        <img class="w-100 mx-auto d-block" style="max-width: 500px;padding: 50px;padding-top: 14vh;" src="{default_ctf_banner_location}" />
+        <img class="w-100 mx-auto d-block" style="max-width: 500px;padding: 50px;padding-top: 14vh;" src="/themes/core/static/img/logo.png?d=a33b5bf6" />
         <h3 class="text-center">
-            <p>来自 <a href="http://scr1w.dlut.edu.cn/">scr1w.dlut.edu.cn</a> 的一个很酷的 CTF 平台</p>
+            <p>来自 <a href="http://scr1w.dlut.edu.cn/">Scr1w</a> 的一个很酷的 CTF 平台</p>
             <p>在社交媒体上关注我们：</p>
-            <a href="https://space.bilibili.com/690549848"><i class="fab fa-youtube-play fa-2x" aria-hidden="true"></i></a>&nbsp;
+            <a href="https://space.bilibili.com/690549848"><i class="fab fa-youtube fa-2x" aria-hidden="true"></i></a>&nbsp;
             <a href="https://github.com/dlut-sss"><i class="fab fa-github fa-2x" aria-hidden="true"></i></a>
         </h3>
         <br>

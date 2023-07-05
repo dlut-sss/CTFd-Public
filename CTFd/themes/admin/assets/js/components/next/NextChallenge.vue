@@ -24,7 +24,7 @@
           class="btn btn-success float-right"
           :disabled="!updateAvailable"
         >
-          Save
+          保存
         </button>
       </div>
     </form>

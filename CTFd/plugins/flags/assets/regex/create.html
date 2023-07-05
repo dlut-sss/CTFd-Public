@@ -1,35 +1,35 @@
 <label>
-	Regex Flag<br>
-	<small>Enter regex flag data</small>
+	正则Flag<br>
+	<small>输入正则flag数据</small>
 </label>
 <div class="form-group">
 	<input type="text" class="form-control" name="content" value="{{ content }}">
 </div>
 <div class="form-group">
 	<select class="form-control custom-select col-md-6" name="data">
-		<option value="">Case Sensitive</option>
-		<option value="case_insensitive">Case Insensitive</option>
+		<option value="">检查大小写</option>
+		<option value="case_insensitive">不检查大小写</option>
 	</select>
 </div>
 <div class="form-group">
-	<label>Examples</label>
+	<label>示例</label>
 	<table class="table small">
 		<thead>
 			<tr>
-				<th scope="col">Description</th>
+				<th scope="col">描述</th>
 				<th scope="col">Flag</th>
 			</tr>
 		</thead>
 		<tr>
-			<td>Match any content inside of flag{}:</td>
+			<td>匹配 flag{} 内的任何内容：</td>
 			<td><code>flag{.*}</code></td>
 		</tr>
 		<tr>
-			<td>Match numeric flags:</td>
+			<td>匹配数字flag：</td>
 			<td><code>flag{(\d+)}</code></td>
 		</tr>
 		<tr>
-			<td>Accept flags with or without the flag format prefix:</td>
+			<td>接受带有或不带有flag格式前缀的flag：</td>
 			<td><code>(flag{)?this_is_a_flag(})?</code></td>
 		</tr>
 	</table>

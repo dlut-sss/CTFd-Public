@@ -1,0 +1,20 @@
+<div class="tab-pane fade show active" id="switch" role="tabpanel">
+    {% set value = get_config('matrix:switch') %}
+    <div class="form-group">
+        <label for="router-type">
+            计分板插件开关
+            <small class="form-text text-muted">
+               是否开启比赛计分板插件
+            </small>
+        </label>
+        <select id="switch" name="matrix:switch" class="form-control custom-select">
+            <option value="true" {{ "selected" if value == true }}>开启</option>
+            <option value="false" {{ "selected" if value == false }}>关闭</option>
+        </select>
+    </div>
+    <div class="submit-row float-right">
+        <button type="submit" tabindex="0" class="btn btn-md btn-primary btn-outlined">
+            确定
+        </button>
+    </div>
+</div>

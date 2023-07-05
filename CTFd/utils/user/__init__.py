@@ -9,7 +9,7 @@ from CTFd.cache import cache
 from CTFd.constants.teams import TeamAttrs
 from CTFd.constants.users import UserAttrs
 from CTFd.models import Fails, Teams, Tracking, Users, db
-from CTFd.utils import get_config
+from CTFd.utils import get_config, import_in_progress
 from CTFd.utils.security.auth import logout_user
 from CTFd.utils.security.signing import hmac
 
@@ -124,6 +124,9 @@ def authed():
 
 
 def is_admin():
+    if import_in_progress():
+        # 防止导入时候用户类型NoneType报错
+        return True
     if authed():
         user = get_current_user_attrs()
         return user.type == "admin"

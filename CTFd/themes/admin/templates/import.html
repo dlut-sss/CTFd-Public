@@ -3,7 +3,7 @@
 {% block content %}
 <div class="jumbotron">
 	<div class="container">
-        <h1><b>导入状态</b></h1>
+        <h1><b>数据导入状态</b></h1>
 	</div>
 </div>
 <div class="container">
@@ -29,8 +29,9 @@
 				<b>当前状态:</b> {{ import_status }}
 			</p>
 			<div class="alert alert-secondary" role="alert">
-                页面将在完成后重定向。 刷新页面以获取最新状态。<br>
-                页面每 5 秒自动刷新一次。
+                页面将在导入完成后重定向。<br>
+                定期刷新页面以获取最新状态。<br>
+                页面将每5秒自动刷新一次。
 			</div>
 			{% endif %}
 		</div>

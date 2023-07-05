@@ -19,9 +19,9 @@
     <table id="flagsboard" class="table table-striped">
       <thead>
         <tr>
-          <td class="text-center"><b>Type</b></td>
+          <td class="text-center"><b>类别</b></td>
           <td class="text-center"><b>Flag</b></td>
-          <td class="text-center"><b>Settings</b></td>
+          <td class="text-center"><b>设置</b></td>
         </tr>
       </thead>
       <tbody>
@@ -126,7 +126,7 @@ export default {
       $(modal).modal();
     },
     deleteFlag: function(flag_id) {
-      if (confirm("Are you sure you'd like to delete this flag?")) {
+      if (confirm("你确定要删除这个flag?")) {
         CTFd.fetch(`/api/v1/flags/${flag_id}`, {
           method: "DELETE"
         })

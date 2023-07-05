@@ -73,7 +73,7 @@ def export_ctf(path=None):
             with open(full_name, "wb") as target:
                 shutil.copyfileobj(backup, target)
 
-            print(f"Exported {full_name}")
+            print(f"导出 {full_name} 完成")
 
 
 @manager.command
@@ -85,12 +85,12 @@ def import_ctf(path, delete_import_on_finish=False):
             from CTFd.utils.dates import unix_time
 
             traceback_msg = traceback.format_exc()  # 获取完整的堆栈跟踪信息
-            error_msg = f"Import Failure: {e}\n{traceback_msg}"
+            error_msg = f"导入失败: {e}\n{traceback_msg}"
             set_import_error(error_msg)
             set_import_end_time(value=unix_time(datetime.datetime.utcnow()))
 
     if delete_import_on_finish:
-        print(f"Deleting {path}")
+        print(f"正在删除 {path}")
         Path(path).unlink()
 
 

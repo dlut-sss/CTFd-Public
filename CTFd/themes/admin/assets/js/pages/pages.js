@@ -7,11 +7,11 @@ function deleteSelectedUsers(_event) {
   let pageIDs = $("input[data-page-id]:checked").map(function() {
     return $(this).data("page-id");
   });
-  let target = pageIDs.length === 1 ? "page" : "pages";
+  let target = "页面";
 
   ezQuery({
-    title: "Delete Pages",
-    body: `Are you sure you want to delete ${pageIDs.length} ${target}?`,
+    title: "删除页面",
+    body: `你确定要删除 ${pageIDs.length} ${target}吗?`,
     success: function() {
       const reqs = [];
       for (var pageID of pageIDs) {

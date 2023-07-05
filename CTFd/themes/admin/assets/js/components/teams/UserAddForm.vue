@@ -5,7 +5,7 @@
       <input
         type="text"
         class="form-control"
-        placeholder="Search for users"
+        placeholder="搜索用户"
         v-model="searchedName"
         @keyup.down="moveCursor('down')"
         @keyup.up="moveCursor('up')"
@@ -194,8 +194,8 @@ export default {
       if (usersInTeams.length) {
         let users = htmlEntities(usersInTeams.join(", "));
         ezQuery({
-          title: "Confirm Team Removal",
-          body: `The following users are currently in teams:<br><br> ${users} <br><br>Are you sure you want to remove them from their current teams and add them to this one? <br><br>All of their challenge solves, attempts, awards, and unlocked hints will also be deleted!`,
+          title: "确认移除团队",
+          body: `以下用户当前在团队中：<br><br> ${users} <br><br>您确定要将他们从当前团队中删除并将其添加到此团队中吗？ <br><br>他们所有的题目解决、尝试、奖励和解锁提示也将被删除！`,
           success: () => {
             this.handleRemoveUsersFromTeams().then(_resps => {
               this.handleAddUsersRequest().then(_resps => {

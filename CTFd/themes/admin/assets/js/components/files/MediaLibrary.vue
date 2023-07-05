@@ -180,7 +180,7 @@
               type="submit"
               class="btn btn-primary media-upload-button"
             >
-              Upload
+              上传
             </button>
           </div>
         </div>
@@ -237,7 +237,7 @@ export default {
     deleteSelectedFile: function() {
       var file_id = this.selectedFile.id;
 
-      if (confirm("Are you sure you want to delete this file?")) {
+      if (confirm("你确定要删除这个文件吗？")) {
         CTFd.fetch("/api/v1/files/" + file_id, {
           method: "DELETE"
         }).then(response => {

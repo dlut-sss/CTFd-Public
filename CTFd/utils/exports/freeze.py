@@ -9,4 +9,4 @@ def freeze_export(result, fileobj):
         serializer = JSONSerializer(query, fileobj)
         serializer.serialize()
     except (OperationalError, ProgrammingError) as e:
-        raise OperationalError("Invalid query: %s" % e)
+        raise OperationalError("无效的查询: %s" % e)

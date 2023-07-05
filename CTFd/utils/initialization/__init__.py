@@ -196,7 +196,7 @@ def init_request_processors(app):
             if request.endpoint == "admin.import_ctf":
                 return
             else:
-                return "Import currently in progress", 403
+                return "正在导入", 403
         if is_setup() is False:
             if request.endpoint in (
                 "views.setup",

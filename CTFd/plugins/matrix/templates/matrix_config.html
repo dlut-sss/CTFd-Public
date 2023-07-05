@@ -1,0 +1,28 @@
+{% extends "matrix_base.html" %}
+
+{% block menu %}
+    <li class="nav-item">
+        <a class="nav-link active" data-toggle="pill" href="#switch">插件开关</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-toggle="pill" href="#score">新生加分</a>
+    </li>
+{% endblock %}
+
+{% block panel %}
+    {% include "components/errors.html" %}
+    <div role="tabpanel" class="tab-pane config-section active" id="settings">
+        <form method="POST" accept-charset="utf-8" action="/admin/plugins/matrix"
+              class="form-horizontal">
+            <div class="tab-content">
+                {% include "config/switch.html" %}
+                {% include "config/score.html" %}
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+
+{% block scripts %}
+<script defer src="/plugins/matrix/static/config.js"></script>
+{% endblock %}

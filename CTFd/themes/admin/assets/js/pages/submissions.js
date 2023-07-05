@@ -23,8 +23,8 @@ function deleteCorrectSubmission(_event) {
     .parent();
 
   ezQuery({
-    title: "Delete Submission",
-    body: "Are you sure you want to delete correct submission from {0} for challenge {1}".format(
+    title: "删除提交",
+    body: "您确定要删除 {0} 对于题目 {1} 的正确提交吗".format(
       "<strong>" + htmlEntities(team_name) + "</strong>",
       "<strong>" + htmlEntities(chal_name) + "</strong>"
     ),
@@ -44,11 +44,11 @@ function deleteSelectedSubmissions(_event) {
   let submissionIDs = $("input[data-submission-id]:checked").map(function() {
     return $(this).data("submission-id");
   });
-  let target = submissionIDs.length === 1 ? "submission" : "submissions";
+  let target = submissionIDs.length === 1 ? "个提交" : "个提交";
 
   ezQuery({
-    title: "Delete Submissions",
-    body: `Are you sure you want to delete ${submissionIDs.length} ${target}?`,
+    title: "删除提交",
+    body: `你确定要删除${submissionIDs.length} ${target}?`,
     success: function() {
       const reqs = [];
       for (var subId of submissionIDs) {

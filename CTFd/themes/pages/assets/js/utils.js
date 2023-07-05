@@ -253,7 +253,7 @@ export function copyToClipboard(event, selector) {
 
   // Show tooltip to user
   $(event.target).tooltip({
-    title: "Copied!",
+    title: "复制完成！",
     trigger: "manual"
   });
   $(event.target).tooltip("show");

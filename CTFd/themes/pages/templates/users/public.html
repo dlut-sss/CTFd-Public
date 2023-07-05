@@ -128,8 +128,8 @@
 						<thead>
 						<tr>
                             <td><b>题目</b></td>
-                            <td class="d-none d-md-block d-lg-block"><b>类别</b></td>
-                            <td class="d-none d-md-block d-lg-block"><b>子类别</b></td>
+                            <td><b>类别</b></td>
+                            <td><b>子类别</b></td>
                             <td><b>分值</b></td>
                             <td><b>时间</b></td>
 						</tr>
@@ -142,8 +142,8 @@
 										{{ solve.challenge.name }}
 									</a>
 								</td>
-								<td class="d-none d-md-block d-lg-block">{{ solve.challenge.category }}</td>
-                                <td class="d-none d-md-block d-lg-block">{{ solve.challenge.subcategory }}</td>
+								<td>{{ solve.challenge.category }}</td>
+                                <td>{{ solve.challenge.subcategory }}</td>
 								<td>{{ solve.challenge.value }}</td>
 								<td class="solve-time">
 									<span data-time="{{ solve.date | isoformat }}"></span>

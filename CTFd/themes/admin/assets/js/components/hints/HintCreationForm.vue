@@ -6,7 +6,7 @@
           <div class="container">
             <div class="row">
               <div class="col-md-12">
-                <h3>Hint</h3>
+                <h3>创建提示</h3>
               </div>
             </div>
           </div>
@@ -26,8 +26,8 @@
                 <div class="col-md-12">
                   <div class="form-group">
                     <label>
-                      Hint<br />
-                      <small>Markdown &amp; HTML are supported</small>
+                      提示<br />
+                      <small>支持Markdown &amp; HTML 语法</small>
                     </label>
                     <textarea
                       type="text"
@@ -40,8 +40,8 @@
 
                   <div class="form-group">
                     <label>
-                      Cost<br />
-                      <small>How many points it costs to see your hint.</small>
+                      花费<br />
+                      <small>需要多少积分才能看到你的提示。</small>
                     </label>
                     <input
                       type="number"
@@ -53,11 +53,8 @@
 
                   <div class="form-group">
                     <label>
-                      Requirements<br />
-                      <small
-                        >Hints that must be unlocked before unlocking this
-                        hint</small
-                      >
+                      需求<br />
+                      <small>解锁前必须先解锁的提示</small>
                     </label>
                     <div
                       class="form-check"
@@ -71,7 +68,7 @@
                           :value="hint.id"
                           v-model="selectedHints"
                         />
-                        {{ hint.cost }} - {{ hint.id }}
+                         提示ID：{{ hint.id }} - 花费：{{ hint.cost }}
                       </label>
                     </div>
                   </div>
@@ -84,7 +81,7 @@
             <div class="container">
               <div class="row">
                 <div class="col-md-12">
-                  <button class="btn btn-primary float-right">Submit</button>
+                  <button class="btn btn-primary float-right">提交</button>
                 </div>
               </div>
             </div>

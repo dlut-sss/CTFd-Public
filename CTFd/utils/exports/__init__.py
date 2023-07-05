@@ -118,14 +118,14 @@ def import_ctf(backup, erase=True):
 
     if app.config["SQLALCHEMY_DATABASE_URI"].startswith("sqlite"):
         set_import_error(
-            "Exception: Importing not currently supported for SQLite databases. See Github issue #1988."
+            "Exception: SQLite 数据库当前不支持导入。 请参阅 Github 问题 #1988。"
         )
         raise Exception(
-            "Importing not currently supported for SQLite databases. See Github issue #1988."
+            "SQLite 数据库当前不支持导入。 请参阅 Github 问题 #1988。"
         )
 
     if not zipfile.is_zipfile(backup):
-        set_import_error("zipfile.BadZipfile: zipfile is invalid")
+        set_import_error("zipfile.BadZipfile: zip 文件无效")
         raise zipfile.BadZipfile
 
     backup = zipfile.ZipFile(backup)
@@ -135,30 +135,30 @@ def import_ctf(backup, erase=True):
     for f in members:
         if f.startswith("/") or ".." in f:
             # Abort on malicious zip files
-            set_import_error("zipfile.BadZipfile: zipfile is malicious")
+            set_import_error("zipfile.BadZipfile: zip 文件是恶意的")
             raise zipfile.BadZipfile
         info = backup.getinfo(f)
         if max_content_length:
             if info.file_size > max_content_length:
-                set_import_error("zipfile.LargeZipFile: zipfile is too large")
+                set_import_error("zipfile.LargeZipFile: zip 文件太大")
                 raise zipfile.LargeZipFile
 
     # Get list of directories in zipfile
     member_dirs = [os.path.split(m)[0] for m in members if "/" in m]
     if "db" not in member_dirs:
-        set_import_error("Exception: db folder is missing")
+        set_import_error("Exception: db 文件夹丢失")
         raise Exception(
-            'CTFd couldn\'t find the "db" folder in this backup. '
-            "The backup may be malformed or corrupted and the import process cannot continue."
+            'CTFd 在此备份中找不到“db”文件夹。'
+            "备份可能格式错误或已损坏，并且导入过程无法继续。"
         )
 
     try:
         alembic_version = json.loads(backup.open("db/alembic_version.json").read())
         alembic_version = alembic_version["results"][0]["version_num"]
     except Exception:
-        set_import_error("Exception: Could not determine appropriate database version")
+        set_import_error("Exception: 无法确定合适的数据库版本")
         raise Exception(
-            "Could not determine appropriate database version. This backup cannot be automatically imported."
+            "无法确定适当的数据库版本。 该备份无法自动导入。"
         )
 
     # Check if the alembic version is from CTFd 1.x
@@ -178,10 +178,10 @@ def import_ctf(backup, erase=True):
         "e62fd69bd417",
     ):
         set_import_error(
-            "Exception: The version of CTFd that this backup is from is too old to be automatically imported."
+            "Exception: 此备份所在的 CTFd 版本太旧，无法自动导入。"
         )
         raise Exception(
-            "The version of CTFd that this backup is from is too old to be automatically imported."
+            "此备份所在的 CTFd 版本太旧，无法自动导入。"
         )
 
     start_time = unix_time(datetime.datetime.utcnow())
@@ -189,7 +189,7 @@ def import_ctf(backup, erase=True):
     set_import_start_time(value=start_time, skip_print=True)
     set_import_end_time(value=None, skip_print=True)
 
-    set_import_status("started")
+    set_import_status("开始导入")
 
     sqlite = get_app_config("SQLALCHEMY_DATABASE_URI").startswith("sqlite")
     postgres = get_app_config("SQLALCHEMY_DATABASE_URI").startswith("postgres")
@@ -199,14 +199,14 @@ def import_ctf(backup, erase=True):
     # Only import if we can actually make it to the target migration
     if sqlite is False and alembic_version not in get_available_revisions():
         set_import_error(
-            "Exception: The target migration in this backup is not available in this version of CTFd."
+            "Exception: 此备份中的目标迁移在此版本的 CTFd 中不可用。"
         )
         raise Exception(
-            "The target migration in this backup is not available in this version of CTFd."
+            "此备份中的目标迁移在此版本的 CTFd 中不可用。"
         )
 
     if erase:
-        set_import_status("erasing")
+        set_import_status("正在清除数据")
         # Clear out existing connections to release any locks
         db.session.close()
         db.engine.dispose()
@@ -233,18 +233,18 @@ def import_ctf(backup, erase=True):
         create_database()
         # We explicitly do not want to upgrade or stamp here.
         # The import will have this information.
-        set_import_status("erased")
+        set_import_status("数据擦除完成")
 
     side_db = dataset.connect(get_app_config("SQLALCHEMY_DATABASE_URI"))
 
     try:
-        set_import_status("disabling foreign key checks")
+        set_import_status("正在尝试禁用外键检查")
         if postgres:
             side_db.query("SET session_replication_role=replica;")
         else:
             side_db.query("SET FOREIGN_KEY_CHECKS=0;")
     except Exception:
-        print("Failed to disable foreign key checks. Continuing.")
+        print("无法禁用外键检查。 继续导入。")
 
     first = [
         "db/teams.json",
@@ -283,7 +283,7 @@ def import_ctf(backup, erase=True):
     # insertion between official database tables and plugin tables
     def insertion(table_filenames):
         for member in table_filenames:
-            set_import_status(f"inserting {member}")
+            set_import_status(f"导入 {member}")
             if member.startswith("db/"):
                 table_name = member[3:-5]
 
@@ -299,7 +299,7 @@ def import_ctf(backup, erase=True):
                     saved = json.loads(data)
                     count = len(saved["results"])
                     for i, entry in enumerate(saved["results"]):
-                        set_import_status(f"inserting {member} {i}/{count}")
+                        set_import_status(f"导入 {member} {i}/{count}")
                         # This is a hack to get SQLite to properly accept datetime values from dataset
                         # See Issue #246
                         if sqlite:
@@ -396,24 +396,24 @@ def import_ctf(backup, erase=True):
                             side_db.engine.execute(query)
                         else:
                             set_import_error(
-                                f"Exception: Table name {table_name} contains quotes"
+                                f"Exception: 表名 {table_name} 包含引号"
                             )
                             raise Exception(
-                                "Table name {table_name} contains quotes".format(
+                                "表名 {table_name} 包含引号".format(
                                     table_name=table_name
                                 )
                             )
 
     # Insert data from official tables
-    set_import_status("inserting tables")
+    set_import_status("导入数据表")
     insertion(first)
 
     # Create tables created by plugins
     # Run plugin migrations
-    set_import_status("inserting plugins")
+    set_import_status("导入插件")
     plugins = get_plugin_names()
     for plugin in plugins:
-        set_import_status(f"inserting plugin {plugin}")
+        set_import_status(f"导入插件 {plugin}")
         revision = plugin_current(plugin_name=plugin)
         plugin_upgrade(plugin_name=plugin, revision=revision, lower=None)
 
@@ -426,7 +426,7 @@ def import_ctf(backup, erase=True):
         plugin_upgrade(plugin_name=plugin)
 
     # Extracting files
-    set_import_status("uploading files")
+    set_import_status("正在导入上传的题目附件和媒体")
     files = [f for f in backup.namelist() if f.startswith("uploads/")]
     uploader = get_uploader()
     for f in files:
@@ -442,7 +442,7 @@ def import_ctf(backup, erase=True):
         uploader.store(fileobj=source, filename=filename)
 
     # Alembic sqlite support is lacking so we should just create_all anyway
-    set_import_status("running head migrations")
+    set_import_status("执行头部迁移")
     if sqlite:
         app.db.create_all()
         stamp_latest_revision()
@@ -453,16 +453,16 @@ def import_ctf(backup, erase=True):
         app.db.create_all()
 
     try:
-        set_import_status("reenabling foreign key checks")
+        set_import_status("重新启用外键检查")
         if postgres:
             side_db.query("SET session_replication_role=DEFAULT;")
         else:
             side_db.query("SET FOREIGN_KEY_CHECKS=1;")
     except Exception:
-        print("Failed to enable foreign key checks. Continuing.")
+        print("无法启用外键检查。 继续导入。")
 
     # Invalidate all cached data
-    set_import_status("clearing caches")
+    set_import_status("清除缓存")
     cache.clear()
 
     # Set default theme in case the current instance or the import does not provide it

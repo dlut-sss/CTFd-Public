@@ -51,7 +51,7 @@ function deleteNotification(event) {
   const $elem = $(this);
   const id = $elem.data("notif-id");
 
-  if (confirm("Are you sure you want to delete this notification?")) {
+  if (confirm("您确定要删除此通知吗？")) {
     CTFd.api.delete_notification({ notificationId: id }).then(response => {
       if (response.success) {
         $elem.parent().remove();
