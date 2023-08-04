@@ -244,7 +244,7 @@
 									{{ solve.challenge.name }}
 								</a>
 							</td>
-							<td class="flag" id="{{ solve.id }}"><pre>{{ solve.provided }}</pre></td>
+							<td class="flag" id="{{ solve.id }}"><pre style="word-wrap: break-word;word-break: break-word;">{{ solve.provided }}</pre></td>
 							<td class="text-center">{{ solve.challenge.category }}</td>
 							<td class="text-center">{{ solve.challenge.value }}</td>
 							<td class="text-center solve-time">
@@ -303,7 +303,7 @@
 									</a>
 								</td>
 								<td class="flag" id="{{ fail.id }}">
-									<pre>{{ fail.provided }}</pre>
+									<pre style="word-wrap: break-word;word-break: break-word;">{{ fail.provided }}</pre>
 								</td>
 								<td class="text-center solve-time">
 									<span data-time="{{ fail.date | isoformat }}"></span>

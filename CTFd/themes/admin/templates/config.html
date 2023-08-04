@@ -15,7 +15,13 @@
 		<div class="col-md-3">
 			<ul class="nav nav-pills flex-column">
 				<li class="nav-item">
-					<a class="nav-link rounded-0 active" href="#appearance" role="tab" data-toggle="tab">外观&机器人</a>
+					<a class="nav-link rounded-0 active" href="#appearance" role="tab" data-toggle="tab">平台外观</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link rounded-0" href="#bot" role="tab" data-toggle="tab">消息播报</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link rounded-0" href="#sso" role="tab" data-toggle="tab">统一认证</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link rounded-0" href="#theme" role="tab" data-toggle="tab">平台主题</a>
@@ -71,6 +77,10 @@
 
 			<div class="tab-content">
 				{% include "admin/configs/appearance.html" %}
+
+				{% include "admin/configs/bot.html" %}
+
+				{% include "admin/configs/sso.html" %}
 
 				{% include "admin/configs/theme.html" %}
 

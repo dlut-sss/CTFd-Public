@@ -39,8 +39,13 @@
                 用来部署的docker镜像名称
             </small>
         </label>
-        <input type="text" class="form-control" name="docker_image" placeholder="输入镜像名称"
-               required value="{{ challenge.docker_image }}">
+        <div style="display: flex;gap: 10px;">
+            <input type="text" class="form-control" name="docker_image" placeholder="输入镜像名称" id="docker_name_input"
+                   required value="{{ challenge.docker_image }}" style="flex: 1;">
+            <button class="btn btn-success btn-outlined" type="button" onclick="UpdateDockerImage()" style="flex: none;">
+                更新镜像
+            </button>
+        </div>
     </div>
     <div class="form-group">
         <label for="value">Frp重定向类型<br>

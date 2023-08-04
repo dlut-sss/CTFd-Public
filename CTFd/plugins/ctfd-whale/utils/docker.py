@@ -89,13 +89,23 @@ class DockerUtils:
             endpoint_spec=docker.types.EndpointSpec(mode='dnsrr', ports={})
         )
 
+        count = 0
         while True:
-            tasks = service.tasks()
-            for task in tasks:
-                current_state = task['Status']['State']
-                if 'running'.lower() in current_state.lower():
-                    print("容器启动成功！")
-                    return
+            count += 1
+            try:
+                tasks = service.tasks()
+                for task in tasks:
+                    current_state = task['Status']['State']
+                    if 'running'.lower() in current_state.lower():
+                        print("容器启动成功！")
+                        return
+            except Exception as e:
+                print(e)
+                pass
+
+            if count > 960:
+                service.remove()
+                raise Exception("容器创建超时")
             time.sleep(0.5)  # 等待0.5秒后重新检查
 
     @staticmethod
@@ -143,6 +153,11 @@ class DockerUtils:
                 container_name = f'{container.user_id}-{container.uuid}'
                 node = DockerUtils.choose_node(image, get_config("whale:docker_swarm_nodes", "").split(","))
                 has_processed_main = True
+            try:
+                getimage = client.images.get(image)
+            except Exception as e:
+                print(e)
+                client.api.pull(image)
             client.services.create(
                 image=image, name=container_name, networks=[
                     docker.types.NetworkAttachmentConfig(network_name, aliases=[name])

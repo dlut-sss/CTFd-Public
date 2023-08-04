@@ -17,8 +17,8 @@
 	<div class="tab-content">
 		<div role="tabpanel" class="tab-pane active" id="export-ctf">
 			<div class="form-group">
-                <p>导出是您的 CTF 当前状态的存档。 它们可以重新导入到其他 CTFd 实例中或由脚本和第三方使用来计算统计信息。</p>
-                <p>要下载导出文件，请单击下面的按钮。</p>
+                <p>导出是用来制作平台当前状态的数据存档的。 它们可以重新导入到其他 CTFd 实例中或由脚本和第三方使用来计算统计信息。</p>
+                <p>要下载导出的备份文件，请单击下面的按钮。</p>
 			</div>
 			<div class="form-group">
 				<a href="{{ url_for('admin.export_ctf') }}" id="export-button" class="btn btn-warning">导出</a>
@@ -26,7 +26,7 @@
 		</div>
 		<div role="tabpanel" class="tab-pane" id="import-ctf">
 			<div class="form-group">
-                <p>您可以通过在下面上传保存的 CTFd 导出来导入它们。 这将彻底清除您现有的 CTFd 实例，您的所有数据都将被导入的数据替换。您应该只导入您信任的数据！</p>
+                <p>您可以通过在下面上传导出的数据备份来导入它们。 这将彻底清除您现有的 CTFd 实例，您的所有数据都将被导入的数据替换。您应该只导入您信任的数据！</p>
 
 				<div class="alert alert-warning" role="alert">
 					<small class="text-muted text-right">

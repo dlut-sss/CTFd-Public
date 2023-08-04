@@ -3,7 +3,7 @@
 		<div class="form-group">
 			<label for="ctf_name">
                 比赛名称
-				<small class="form-text text-muted">显示比赛名称而不是徽标</small>
+				<small class="form-text text-muted">显示在平台左上角的比赛名称</small>
 			</label>
 			<input class="form-control" id='ctf_name' name='ctf_name' type='text' placeholder="CTF名称"
 				   {% if ctf_name is defined and ctf_name != None %}value="{{ ctf_name }}"{% endif %}>
@@ -13,83 +13,11 @@
 			<label>
 				CTF 介绍<br>
 				<small class="form-text text-muted">
-					CTF的介绍
+					CTF比赛的介绍
 				</small>
 			</label>
 			<textarea class="form-control" type="text" id="ctf_description" name="ctf_description" rows="5">{{ ctf_description }}</textarea>
         </div>
-        <div class="form-group">
-            <label for="bot-ip">
-                机器人地址<br>
-                <small class="form-text text-muted">
-                    QQ机器人的地址
-                </small>
-                <small class="form-text text-muted">
-                    eg. 127.0.0.1:1234
-                </small>
-            </label>
-            <input class="form-control" id='bot-ip' name='bot_ip' type='text'
-                   {% if bot_ip is defined and bot_ip != None %}value="{{ bot_ip }}"{% endif %}>
-        </div>
-
-        <div class="form-group">
-            <label for="group-id">
-                QQ 群号<br>
-            </label>
-            <input class="form-control" id='group-id' name='group_id' type='text'
-                   {% if group_id is defined and group_id != None %}value="{{ group_id }}"{% endif %}>
-        </div>
-
-
-        <div class="form-group">
-            <label for="bot-text">
-                解题播报消息格式<br>
-                <small class="form-text text-muted">
-                    ep. 恭喜%s做出题目%s，默认第一个参数为用户名，第二个参数为题目名称
-                </small>
-            </label>
-            <input class="form-control" id='bot-text' name='bottext' type='text'
-                   {% if bottext is defined and bottext != None %}value="{{ bottext }}"{% endif %}>
-        </div>
-
-        <div class="form-group">
-            <label for="create-text">
-                题目可见播报<br>
-                <small class="form-text text-muted">
-                    ep. %s类题目%s已登入平台，默认第一个参数为类，第二个参数为题目名称
-                </small>
-            </label>
-            <input class="form-control" id='create-text' name='createtext' type='text'
-                   {% if createtext is defined and createtext != None %}value="{{ createtext }}"{% endif %}>
-        </div>
-
-        <div class="form-group">
-            <label for="update-text">
-                题目更新播报<br>
-                <small class="form-text text-muted">
-                    ep. %s类题目%s内容已更新，默认第一个参数为类，第二个参数为题目名称
-                </small>
-            </label>
-            <input class="form-control" id='update-text' name='updatetext' type='text'
-                   {% if updatetext is defined and updatetext != None %}value="{{ updatetext }}"{% endif %}>
-        </div>
-
-        <div class="form-group">
-            <label for="botof">
-                开启bot
-            </label>
-            <div>
-                <select class="form-control custom-select" id="botof" name="bot">
-                    <option value=0 {% if bot == 0 %}selected{% endif %}>
-                        关
-                    </option>
-                    <option value=1 {% if bot == 1 %}selected{% endif %}>
-                        开
-                    </option>
-                </select>
-            </div>
-		</div>
-
 		<button type="submit" class="btn btn-md btn-primary float-right">更新</button>
 	</form>
 </div>

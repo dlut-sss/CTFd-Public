@@ -1,0 +1,150 @@
+{% extends "whale_base.html" %}
+
+{% block menu %}
+    <li class="nav-item">
+        <a class="nav-link" href="/plugins/ctfd-whale/admin/settings">🔗 设置</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/plugins/ctfd-whale/admin/containers">🔗 实例</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" href="#">上传</a>
+    </li>
+{% endblock %}
+
+{% block panel %}
+    <div>
+        <div class="form-group" id="drop">
+            <p>您可以在下面上传镜像的tar文件，服务器端会尝试导入镜像。您应该只上传您信任的镜像！</p>
+            <div class="form-group">
+                <div style="display: flex;gap: 10px;">
+                    <div style="flex: 1;">
+                        <label for="value">镜像name<br>
+                            <small class="form-text text-muted">
+                                eg. fr000g/untrain1
+                            </small>
+                        </label>
+                        <input type="text" class="form-control" name="docker_image_name" id="docker_image_name"
+                               placeholder="输入镜像name" id="docker_name_input" required="" value="">
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="value">镜像tag<br>
+                            <small class="form-text text-muted">
+                                eg. latest
+                            </small>
+                        </label>
+                        <input type="text" class="form-control" name="docker_image_tag" id="docker_image_tag"
+                               placeholder="输入镜像tag" id="docker_tag_input" required="" value="latest">
+                    </div>
+                </div>
+            </div>
+            <div class="drop-area" ondragover="event.preventDefault()" ondrop="handleDrop(event)"
+                 style="border: 2px dashed #ccc;padding: 20px;text-align: center;height: 200px;display: flex;align-items: center;justify-content: center;">
+                <div class="centered-content"
+                     style="display: flex;flex-direction: column;align-items: center;justify-content: center;height: 100%;">
+                    <h2>将镜像文件拖拽至此处上传(请一次仅拖拽一个文件)</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function handleDrop(event) {
+            event.preventDefault();
+            if (docker_image_name.value=="")
+            {
+                var e = new Object;
+                e.title = "警告";
+                e.body = "未设置镜像name";
+                e.button="知道了";
+                CTFd.ui.ezq.ezAlert(e)
+                return;
+            }
+            if (docker_image_tag.value=="")
+            {
+                var e = new Object;
+                e.title = "警告";
+                e.body = "未设置镜像tag";
+                e.button="知道了";
+                CTFd.ui.ezq.ezAlert(e)
+                return;
+            }
+            var files = event.dataTransfer.files;
+            var progressBarContainer = document.getElementById("drop");
+            var file = files[0];
+            var progressBar = createProgressBar(progressBarContainer);
+            var fileNameElement = document.createElement('div');
+            fileNameElement.classList.add('file-name');
+            fileNameElement.textContent = file.name;
+            fileNameElement.style = "margin-bottom: 5px;"
+            progressBarContainer.appendChild(fileNameElement);
+            uploadFile(file, progressBar, fileNameElement);
+        }
+
+        function createProgressBar(progressBarContainer) {
+            var progressBar = document.createElement('div');
+            progressBar.classList.add('progress-bar');
+            progressBar.style = "width: 100%;background-color: #f5f5f5;border-radius: 4px;overflow: hidden;margin-bottom: 10px;margin-top: 5px;"
+
+            var progress = document.createElement('div');
+            progress.classList.add('progress');
+            progress.style = "width: 0;height: 20px;background-color: #4caf50;transition: width 0.3s ease-in-out;"
+
+            progressBar.appendChild(progress);
+            progressBarContainer.appendChild(progressBar);
+
+            return progressBar;
+        }
+
+        function updateProgress(progressBar, percent) {
+            progressBar.getElementsByClassName('progress')[0].style.width = percent + '%';
+        }
+
+        function uploadFile(file, progressBar, fileNameElement) {
+            var formData = new FormData();
+            formData.append('image', file);
+            formData.append("nonce", init.csrfNonce);
+
+            $.ajax({
+                url: '/plugins/ctfd-whale/admin/upload?name='+encodeURIComponent(docker_image_name.value)+'&tag='+encodeURIComponent(docker_image_tag.value),
+                type: 'POST',
+                headers: {
+                    "Accept": "application/json; charset=utf-8"
+                },
+                data: formData,
+                processData: false,
+                contentType: false,
+                xhr: function () {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener('progress', function (event) {
+                        if (event.lengthComputable) {
+                            var percent = Math.round((event.loaded / event.total) * 100);
+                            progressBar.getElementsByClassName('progress')[0].style.width = percent + '%';
+                        }
+                    }, false);
+                    return xhr;
+                },
+                success: function (response) {
+                    fileNameElement.remove();
+                    progressBar.remove();
+                    docker_image_name.value="";
+                    var e = new Object;
+                    e.title = "上传成功！";
+                    e.body = "镜像上传完成！";
+                    CTFd.ui.ezq.ezToast(e)
+                },
+                error: function (xhr, status, error) {
+                    fileNameElement.remove();
+                    progressBar.remove();
+                    var e = new Object;
+                    e.title = "上传失败！";
+                    e.body = JSON.parse(xhr.responseText).message;
+                    e.button="知道了";
+                    CTFd.ui.ezq.ezAlert(e)
+                }
+            });
+        }
+    </script>
+{% endblock %}

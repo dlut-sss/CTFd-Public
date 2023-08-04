@@ -2,13 +2,13 @@
 
 ## 这是个啥
 
-基于CTFd 3.5.3 版本二次开发,整合CTFd-Whale插件的部署版。
+基于CTFd 3.5.3 版本二次开发,整合CTFd-Whale插件,比赛计分板插件并进行修复和重构的部署版。
 
-修复了原版CTFd的一些问题，整合了比赛主题，比赛计分板插件并进行了全面汉化
+修复了一些原生CTFd的UI和代码问题（如提示创建和附件名称）
 
 （注意，由于pages主题没找到能够阅读的源代码（全都是min.js），于是直接对.min.js进行了修改，dev最后的eval部分并未修改，不要对pages主题进行webpack编译！（或者有空可能重构吧））
 
-## [开发日志](https://github.com/dlut-sss/CTFd-Public/blob/main/CHANGELOG.md)
+## [开发日志](https://github.com/dlut-sss/CTFd_Public/blob/main/CHANGELOG.md)
 
 ## 配置方法
 
@@ -106,17 +106,17 @@
    ```
 
 ## 配置CTFD
-
-进入 CTFd 平台之后，在 admin 页面选择 `Whale`
-
-[![IMG_0765(20220305-002754)](https://up-wind.github.io/assets/2022-03-02-CTFd_new/IMG_0765(20220305-002754).JPG)](https://up-wind.github.io/assets/2022-03-02-CTFd_new/IMG_0765(20220305-002754).JPG)
-
-[![IMG_0766(20220305-002755)](https://up-wind.github.io/assets/2022-03-02-CTFd_new/IMG_0766(20220305-002755).JPG)](https://up-wind.github.io/assets/2022-03-02-CTFd_new/IMG_0766(20220305-002755).JPG)
+进入 CTFd 平台之后，在 管理面板页面选择 `Whale`
+![img](docs/ctfd-whale-admin-settings-docker.png)
+![img](docs/ctfd-whale-admin-settings-router.png)
 
 ## CTFd动态容器题目部署指南
+![img](docs/challenges-new.png)
+![img](docs/challenges-new-2.png)
+点击 完成 即可发布题目。
 
-[![IMG_0767(20220305-002755)](https://up-wind.github.io/assets/2022-03-02-CTFd_new/IMG_0767(20220305-002755).JPG)](https://up-wind.github.io/assets/2022-03-02-CTFd_new/IMG_0767(20220305-002755).JPG)
-
-[![IMG_0768(20220305-002755)](https://up-wind.github.io/assets/2022-03-02-CTFd_new/IMG_0768(20220305-002755).JPG)](https://up-wind.github.io/assets/2022-03-02-CTFd_new/IMG_0768(20220305-002755).JPG)
-
-点击 Finish 即可发布题目。
+## 给Whale增加的小功能
+- 私有镜像拖拽上传
+![img](docs/ctfd-whale-upload.png)
+- 镜像一键更新
+![img](docs/challenges-update.png)

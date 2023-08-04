@@ -451,7 +451,8 @@ def login():
                 return render_template("login.html", errors=errors)
             except Exception as e:
                 db.session.close()
-                errors.append("账户不存在或对应账户未实名")
+                errors.append("身份验证失败")
+                print(e)
                 return render_template("login.html", errors=errors)
         else:
             db.session.close()
@@ -464,8 +465,7 @@ def decrypt_ticket(ticket):
     # 使用base64解码ticket参数
     encrypted_data = base64.b64decode(ticket)
     # 创建AES CBC解密器
-    cipher = Cipher(algorithms.AES(key), modes.CBC(b"iv"), backend=default_backend())
-    # 替换为你的偏移量
+    cipher = Cipher(algorithms.AES(key), modes.CBC(b"iv"), backend=default_backend())  # 替换为你的偏移量
     decryptor = cipher.decryptor()
     # 解密数据
     decrypted_data = decryptor.update(encrypted_data) + decryptor.finalize()

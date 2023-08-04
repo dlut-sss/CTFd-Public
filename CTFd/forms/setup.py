@@ -67,7 +67,7 @@ class SetupForm(BaseForm):
     )
     theme_color = HiddenField(
         "主题颜色",
-        description="主题使用颜色来控制美观。 需要主题支持。 可选。",
+        description="设置主题颜色。 需要所选主题支持。 可选。",
     )
 
     start = StringField(

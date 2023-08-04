@@ -1,4 +1,5 @@
 import fcntl
+import os
 import warnings
 
 import requests
@@ -89,6 +90,83 @@ def load(app):
                                    request.args.get("page", 1, type=int)),
                                curr_page_start=result['data']['page_start'])
 
+    @page_blueprint.route("/admin/upload", methods=['GET', 'POST'])
+    @admins_only
+    def admin_upload_image():
+        if request.method == 'POST':
+            name = request.args.get("name")
+            if not name:
+                return {
+                           'success': False,
+                           'message': '缺少参数'
+                       }, 400
+            tag = request.args.get("tag")
+            if not tag:
+                return {
+                           'success': False,
+                           'message': '缺少参数'
+                       }, 400
+            # 检查文件是否存在于请求中
+            if 'image' not in request.files:
+                return {
+                           'success': False,
+                           'message': '镜像文件不存在'
+                       }, 500
+            file = request.files['image']
+            # 如果用户未选择文件，浏览器也可能提交一个空的 part
+            if file.filename == '':
+                return {
+                           'success': False,
+                           'message': '镜像文件为空'
+                       }, 500
+            if file:
+                try:
+                    filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+                    file.save(filepath)
+                    print("[CTFd Whale] 上传的镜像文件 " + name + ":" + tag + " 保存至：" + filepath)
+                    try:
+                        image_info = DockerUtils.client.images.get(name + ":" + tag)
+                        DockerUtils.client.api.remove_image(name + ":" + tag)
+                    except Exception as e:
+                        pass
+                    DockerUtils.client.api.import_image_from_file(filepath, repository=name, tag=tag)
+                    print("[CTFd Whale] " + name + ":" + tag + "导入完成")
+                    # 删除上传的文件
+                    os.remove(filepath)
+                    return {
+                               'success': True,
+                               'message': '镜像上传完成'
+                           }, 200
+                except Exception as e:
+                    print(e)
+                    return {
+                               'success': False,
+                               'message': '镜像加载失败<br>' + str(e)
+                           }, 500
+
+        return render_template("whale_upload.html")
+
+    @page_blueprint.route("/admin/image-update")
+    @admins_only
+    def admin_image_update():
+        try:
+            # 获取GET请求中的name参数
+            name = request.args.get('name')
+            DockerUtils.client.api.pull(name)
+            # 返回HTTP状态码200
+            print("[CTFd Whale] " + name + "镜像更新成功")
+            return {
+                       'success': True,
+                       'message': '镜像更新完成'
+                   }, 200
+        except Exception as e:
+            print("[CTFd Whale] " + name + "镜像更新失败")
+            print(e)
+            return {
+                       'success': False,
+                       'message': '镜像更新出错：\n' + str(e.__cause__)
+                   }, 200
+
     def auto_clean_container():
         with app.app_context():
             if not import_in_progress():
@@ -101,8 +179,8 @@ def load(app):
     try:
         Router.check_availability()
         DockerUtils.init()
-    except Exception:
-        warnings.warn("Initialization Failed. Please check your configs.",
+    except Exception as e:
+        warnings.warn("[CTFd Whale] 初始化失败，请检查配置。\n" + e,
                       WhaleWarning)
 
     try:
@@ -118,6 +196,6 @@ def load(app):
                           trigger="interval",
                           seconds=10)
 
-        print("[CTFd Whale] Started successfully")
+        print("[CTFd Whale] 启动成功！")
     except IOError:
         pass

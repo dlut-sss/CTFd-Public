@@ -17,13 +17,13 @@ def challenge_visible(func):
             if not Challenges.query.filter(
                 Challenges.id == challenge_id
             ).first():
-                abort(404, 'no such challenge', success=False)
+                abort(404, '题目不存在', success=False)
         else:
             if not Challenges.query.filter(
                 Challenges.id == challenge_id,
                 and_(Challenges.state != "hidden", Challenges.state != "locked"),
             ).first():
-                abort(403, 'challenge not visible', success=False)
+                abort(403, '题目不可见', success=False)
         return func(*args, **kwargs)
 
     return _challenge_visible
@@ -36,14 +36,14 @@ def frequency_limited(func):
             return func(*args, **kwargs)
         redis_util = CacheProvider(app=current_app, user_id=get_current_user().id)
         if not redis_util.acquire_lock():
-            abort(403, 'Request Too Fast!', success=False)
+            abort(403, '请求速度过快！', success=False)
             # last request was unsuccessful. this is for protection.
 
         if "limit" not in session:
             session["limit"] = int(time.time())
         else:
             if int(time.time()) - session["limit"] < 60:
-                abort(403, 'Frequency limit, You should wait at least 1 min.', success=False)
+                abort(403, '达到请求频率限制，请等待1分钟后再试。', success=False)
         session["limit"] = int(time.time())
 
         result = func(*args, **kwargs)

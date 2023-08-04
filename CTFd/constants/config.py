@@ -52,6 +52,10 @@ class _ConfigsWrapper:
         return get_config(attr)
 
     @property
+    def sso_server_address(self):
+        return get_config("sso_server_address", default="CTFd")
+
+    @property
     def ctf_name(self):
         return get_config("ctf_name", default="CTFd")
 

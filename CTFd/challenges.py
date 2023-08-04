@@ -37,12 +37,12 @@ def listing():
         infos.append("题目可见性设置为仅限管理员")
 
     if ctf_started() is False:
-        errors.append(f"{Configs.ctf_name} 还没开始喵")
+        errors.append(f"{Configs.ctf_name}还没开始喵")
 
     if ctf_paused() is True:
-        infos.append(f"{Configs.ctf_name} 已经暂停")
+        infos.append(f"{Configs.ctf_name}已经暂停")
 
     if ctf_ended() is True:
-        infos.append(f"{Configs.ctf_name} 已经结束了喵")
+        infos.append(f"{Configs.ctf_name}已经结束了喵")
 
     return render_template("challenges.html", infos=infos, errors=errors)

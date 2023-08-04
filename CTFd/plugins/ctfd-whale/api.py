@@ -21,7 +21,7 @@ user_namespace = Namespace("ctfd-whale-user")
 def handle_default(err):
     return {
         'success': False,
-        'message': 'Unexpected things happened'
+        'message': '发生了未知的错误。'
     }, 500
 
 
@@ -76,7 +76,7 @@ class UserContainers(Resource):
             return {'success': True, 'data': {}}
         timeout = int(get_config("whale:docker_timeout", "3600"))
         if int(container.challenge_id) != int(challenge_id):
-            return abort(403, f'Container started but not from this challenge ({container.challenge.name})', success=False)
+            return abort(403, f'题目({container.challenge.name})的容器已经开启，请关闭之后再试！', success=False)
         return {
             'success': True,
             'data': {
@@ -96,7 +96,7 @@ class UserContainers(Resource):
 
         current_count = DBContainer.get_all_alive_container_count()
         if int(get_config("whale:docker_max_container_count")) <= int(current_count):
-            abort(403, 'Max container count exceed.', success=False)
+            abort(403, '超出容器数量限制。', success=False)
 
         challenge_id = request.args.get('challenge_id')
         result, message = ControlUtil.try_add_container(
@@ -117,11 +117,11 @@ class UserContainers(Resource):
         docker_max_renew_count = int(get_config("whale:docker_max_renew_count", 5))
         container = DBContainer.get_current_containers(user_id)
         if container is None:
-            abort(403, 'Instance not found.', success=False)
+            abort(403, '找不到请求的实例。', success=False)
         if int(container.challenge_id) != int(challenge_id):
-            abort(403, f'Container started but not from this challenge（{container.challenge.name}）', success=False)
+            abort(403, f'题目（{container.challenge.name}）的容器已经开启，请关闭之后再试！', success=False)
         if container.renew_count >= docker_max_renew_count:
-            abort(403, 'Max renewal count exceed.', success=False)
+            abort(403, '超出最大延期次数。', success=False)
         result, message = ControlUtil.try_renew_container(user_id=user_id)
         return {'success': result, 'message': message}
 

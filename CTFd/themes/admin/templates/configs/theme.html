@@ -4,7 +4,7 @@
 			<label for="ctf_logo">
 				Logo
 				<small class="form-text text-muted">
-                    用于网站的徽标，而不是 CTF 名称。
+                    网页左上角的徽标，代替默认显示的CTFd平台名称
 				</small>
 			</label>
 
@@ -39,7 +39,7 @@
 			<label for="small_icon">
                 小图标
 				<small class="form-text text-muted">
-					<a href='https://en.wikipedia.org/wiki/Favicon' target='_blank'>图标</a> 在用户的浏览器中使用。 仅接受 PNG。 必须为 32x32 像素。
+					<a href='https://en.wikipedia.org/wiki/Favicon' target='_blank'>图标</a>在用户的浏览器的标签页中显示。 仅接受 PNG格式。 必须为 32x32 像素。
 				</small>
 			</label>
 
@@ -104,12 +104,12 @@
 			<label>
                 主题颜色
 				<small class="form-text text-muted">
-                    主题使用颜色来控制美观。 需要主题支持。
+                    设置主题颜色。 需要所选主题支持。
 				</small>
 			</label>
 			<div class="d-inline-block">
 				<input type="color" id="config-color-picker">
-				<button type="button" class="btn-sm btn-primary" id="config-color-update">Update CSS</button>
+				<button type="button" class="btn-sm btn-primary" id="config-color-update">更新CSS样式表</button>
 			</div>
 		</div>
 
@@ -117,7 +117,7 @@
 			<label>
                 自定义主题页面头
 				<small class="form-text text-muted">
-                    主题标题插入到所有面向公众的页面上的 <code>&lt;/head&gt;</code> 标记之前。需要主题支持。
+                    主题标题插入到所有公开页面上的 <code>&lt;/head&gt;</code> 标记之前。需要所选主题支持。
 				</small>
 			</label>
 			<textarea class="form-control" id="theme-header" name="theme_header" rows="7">{{ theme_header or "" }}</textarea>
@@ -127,7 +127,7 @@
 			<label>
                 主题页脚
 				<small class="form-text text-muted">
-                    主题页脚插入在所有面向公众的页面上的 <code>&lt;/body&gt;</code> 标记之前。需要主题支持。
+                    主题页脚插入在所有公开页面上的 <code>&lt;/body&gt;</code> 标记之前。需要所选主题支持。
 				</small>
 			</label>
 			<textarea class="form-control" id="theme-footer" name="theme_footer" rows="7">{{ theme_footer or "" }}</textarea>
