@@ -51,8 +51,8 @@ class UnlockList(Resource):
         responses={
             200: ("Success", "UnlockListSuccessResponse"),
             400: (
-                "An error occured processing the provided or stored data",
-                "APISimpleErrorResponse",
+                    "An error occured processing the provided or stored data",
+                    "APISimpleErrorResponse",
             ),
         },
     )
@@ -64,8 +64,8 @@ class UnlockList(Resource):
             "type": (str, None),
             "q": (str, None),
             "field": (
-                RawEnum("UnlockFields", {"target": "target", "type": "type"}),
-                None,
+                    RawEnum("UnlockFields", {"target": "target", "type": "type"}),
+                    None,
             ),
         },
         location="query",
@@ -92,15 +92,15 @@ class UnlockList(Resource):
         responses={
             200: ("Success", "UnlockDetailedSuccessResponse"),
             400: (
-                "An error occured processing the provided or stored data",
-                "APISimpleErrorResponse",
+                    "An error occured processing the provided or stored data",
+                    "APISimpleErrorResponse",
             ),
         },
     )
     def post(self):
         req = request.get_json()
         user = get_current_user()
-
+        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
         req["user_id"] = user.id
         req["team_id"] = user.team_id
 
@@ -110,15 +110,26 @@ class UnlockList(Resource):
         # We should use the team's score if in teams mode
         # user.account gives the appropriate account based on team mode
         if target.cost > user.account.score:
-            return (
-                {
-                    "success": False,
-                    "errors": {
-                        "score": "You do not have enough points to unlock this hint"
+            if language == "zh":
+                return (
+                    {
+                        "success": False,
+                        "errors": {
+                            "score": "您没有足够的积分来解锁此提示"
+                        },
                     },
-                },
-                400,
-            )
+                    400,
+                )
+            else:
+                return (
+                    {
+                        "success": False,
+                        "errors": {
+                            "score": "You do not have enough points to unlock this hint"
+                        },
+                    },
+                    400,
+                )
 
         schema = UnlockSchema()
         response = schema.load(req, session=db.session)
@@ -134,14 +145,22 @@ class UnlockList(Resource):
             Unlocks.account_id == user.account_id,
         ).first()
         if existing:
-            return (
+            if language == "zh":
+                return (
                 {
                     "success": False,
-                    "errors": {"target": "You've already unlocked this this target"},
+                    "errors": {"target": "你已经解锁了这个目标"},
                 },
                 400,
             )
-
+            else:
+                return (
+                    {
+                        "success": False,
+                        "errors": {"target": "You've already unlocked this target"},
+                    },
+                    400,
+                )
         db.session.add(response.data)
 
         award_schema = AwardSchema()

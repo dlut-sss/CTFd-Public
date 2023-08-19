@@ -12,8 +12,8 @@
 <div class="container">
     <div class="row">
         <div class="col-md-6 offset-md-3 mt-5 text-center">
-            <h5>Integration enabled!</h5>
-            <p>You may now close this tab.</p>
+            <h5>{{ 'Integration enabled!' if en else '第三方整合已启用！' }}</h5>
+            <p>{{ 'You may now close this tab.' if en else '你现在可以关闭这个页面。' }}</p>
         </div>
     </div>
 </div>

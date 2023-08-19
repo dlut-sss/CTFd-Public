@@ -1,106 +1,249 @@
+{% if en %}
 <div role="tabpanel" class="tab-pane config-section" id="settings">
-	<form method="POST" autocomplete="off" class="w-100">
-		<div class="form-group">
-			<label>
-				题目可见性<br>
-				<small class="form-text text-muted">
-                    控制用户是否必须登录才能查看题目
-				</small>
-			</label>
-			<select class="form-control custom-select" name="challenge_visibility">
-				<option value="public" {% if challenge_visibility == 'public' %}selected{% endif %}>
-					公开
-				</option>
-				<option value="private" {% if challenge_visibility == 'private' %}selected{% endif %}>
-					仅登陆
-				</option>
-				<option value="admins" {% if challenge_visibility == 'admins' %}selected{% endif %}>
-					仅管理员
-				</option>
-			</select>
-		</div>
+    <form method="POST" autocomplete="off" class="w-100">
+        <div class="form-group">
+            <label for="backend-timezone">Backend Timezone</label>
+            <select class="form-control custom-select start-date" id="backend-timezone-select">
+            </select>
+        </div>
+        <input type="hidden" id="backend-timezone" name="backend_timezone" {% if backend_timezone is defined and backend_timezone != None %} value="{{ backend_timezone }}" {% else %} value="Asia/Shanghai" {% endif %}>
+        <div class="form-group">
+            <label>
+                Registration Visibility<br>
+                <small class="form-text text-muted">
+                    Control whether registration is enabled for everyone or disabled
+                </small>
+            </label>
+            <select class="form-control custom-select" name="registration_visibility">
+                <option value="public" {% if registration_visibility == 'public' %}selected{% endif %}>
+                Public
+                </option>
+                <option value="private" {% if registration_visibility == 'private' %}selected{% endif %}>
+                Private
+                </option>
+                <option value="mlc" {% if registration_visibility == 'mlc' %}selected{% endif %}>
+                MajorLeagueCyber Only
+                </option>
+            </select>
+        </div>
 
-		<div class="form-group">
-			<label>
-                账户可见性<br>
-				<small class="form-text text-muted">
-                    控制帐户（用户和团队）是向所有人显示、仅向经过身份验证的用户显示还是仅向管理员显示
-				</small>
-			</label>
-			<select class="form-control custom-select" name="account_visibility">
-				<option value="public" {% if account_visibility == 'public' %}selected{% endif %}>
-                    公开
-				</option>
-				<option value="private" {% if account_visibility == 'private' %}selected{% endif %}>
-                    仅登陆
-				</option>
-				<option value="admins" {% if account_visibility == 'admins' %}selected{% endif %}>
-                    仅管理员
-				</option>
-			</select>
-		</div>
+        <div class="form-group">
+            <label for="ctf_name">
+                Registration Code
+                <small class="form-text text-muted">Registration Code required for account registration (SSO excluded)</small>
+            </label>
+            <input class="form-control" id='registration_code' name='registration_code' type='text' placeholder="Registration Code"
+                   {% if registration_code is defined and registration_code != None %}value="{{ registration_code }}"{% endif %}>
+        </div>
 
-		<div class="form-group">
-			<label>
-				得分可见性<br>
-				<small class="form-text text-muted">
-                    控制是否向公众、登录用户显示解决方案/分数、向所有非管理员隐藏或仅向管理员显示
-				</small>
-			</label>
-			<select class="form-control custom-select" name="score_visibility">
-				<option value="public" {% if score_visibility == 'public' %}selected{% endif %}>
-					公开
-				</option>
-				<option value="private" {% if score_visibility == 'private' %}selected{% endif %}>
-					仅登陆
-				</option>
-				<option value="hidden" {% if score_visibility == 'hidden' %}selected{% endif %}>
-					隐藏
-				</option>
-				<option value="admins" {% if score_visibility == 'admins' %}selected{% endif %}>
-					仅管理员
-				</option>
-			</select>
-			<small class="form-text text-muted">
-                分数可见性是帐户可见性的子集。这意味着，如果帐户对用户可见，则分数可见性将控制他们是否可以看到该用户的分数。如果帐户不可见，则分数可见性无效。
-			</small>
-		</div>
+        <div class="form-group">
+            <label>
+                Challenge Visibility<br>
+                <small class="form-text text-muted">
+                    Control whether users must be logged in to see challenges
+                </small>
+            </label>
+            <select class="form-control custom-select" name="challenge_visibility">
+                <option value="public" {% if challenge_visibility == 'public' %}selected{% endif %}>
+                Public
+                </option>
+                <option value="private" {% if challenge_visibility == 'private' %}selected{% endif %}>
+                Private
+                </option>
+                <option value="admins" {% if challenge_visibility == 'admins' %}selected{% endif %}>
+                Admins Only
+                </option>
+            </select>
+        </div>
 
-		<div class="form-group">
-			<label>
-                注册可见性<br>
-				<small class="form-text text-muted">
-                    控制是否对所有人启用注册或禁用注册
-				</small>
-			</label>
-			<select class="form-control custom-select" name="registration_visibility">
-				<option value="public" {% if registration_visibility == 'public' %}selected{% endif %}>
-					公开
-				</option>
-				<option value="private" {% if registration_visibility == 'private' %}selected{% endif %}>
-					隐藏
-				</option>
-				<option value="mlc" {% if registration_visibility == 'mlc' %}selected{% endif %}>
-					仅限MajorLeagueCyber
-				</option>
-			</select>
-		</div>
+        <div class="form-group">
+            <label>
+                Account Visibility<br>
+                <small class="form-text text-muted">
+                    Control whether accounts (users &amp; teams) are shown to everyone, only to authenticated users, or only to admins
+                </small>
+            </label>
+            <select class="form-control custom-select" name="account_visibility">
+                <option value="public" {% if account_visibility == 'public' %}selected{% endif %}>
+                Public
+                </option>
+                <option value="private" {% if account_visibility == 'private' %}selected{% endif %}>
+                Private
+                </option>
+                <option value="admins" {% if account_visibility == 'admins' %}selected{% endif %}>
+                Admins Only
+                </option>
+            </select>
+        </div>
 
-		<div class="form-group">
-			<label>
-				暂停<br>
-				<small class="form-text text-muted">
-                    阻止用户在解除暂停之前提交答案。 题目仍然可见。
-				</small>
-			</label>
-			<div class="form-check pl-0">
-				<label>
-					<input id="paused" name="paused" type="checkbox" {% if paused %}checked{% endif %}>
-					暂停CTF<br>
-				</label>
-			</div>
-		</div>
+        <div class="form-group">
+            <label>
+                Score Visibility<br>
+                <small class="form-text text-muted">
+                    Control whether solves/score are shown to the public, to logged in users, hidden to all non-admins, or only shown to admins
+                </small>
+            </label>
+            <select class="form-control custom-select" name="score_visibility">
+                <option value="public" {% if score_visibility == 'public' %}selected{% endif %}>
+                Public
+                </option>
+                <option value="private" {% if score_visibility == 'private' %}selected{% endif %}>
+                Private
+                </option>
+                <option value="hidden" {% if score_visibility == 'hidden' %}selected{% endif %}>
+                Hidden
+                </option>
+                <option value="admins" {% if score_visibility == 'admins' %}selected{% endif %}>
+                Admins Only
+                </option>
+            </select>
+            <small class="form-text text-muted">
+                Score Visibility is a subset of Account Visibility.
+                This means that if accounts are visible to a user then score visibility will control whether they can see the score of that user.
+                If accounts are not visibile then score visibility has no effect.
+            </small>
+        </div>
 
-		<button type="submit" class="btn btn-md btn-primary float-right">更新</button>
-	</form>
+        <div class="form-group">
+            <label>
+                Pause<br>
+                <small class="form-text text-muted">
+                    Prevent users from submitting answers until unpaused. Challenges can still be viewed.
+                </small>
+            </label>
+            <div class="form-check pl-0">
+                <label>
+                    <input id="paused" name="paused" type="checkbox" {% if paused %}checked{% endif %}>
+                    Pause CTF<br>
+                </label>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-md btn-primary float-right">Update</button>
+    </form>
 </div>
+{% else %}
+<div role="tabpanel" class="tab-pane config-section" id="settings">
+    <form method="POST" autocomplete="off" class="w-100">
+        <div class="form-group">
+            <label for="backend-timezone">后端时区</label>
+            <select class="form-control custom-select start-date" id="backend-timezone-select">
+            </select>
+        </div>
+        <input type="hidden" id="backend-timezone" name="backend_timezone" {% if backend_timezone is defined and backend_timezone != None %} value="{{ backend_timezone }}" {% else %} value="Asia/Shanghai" {% endif %}>
+
+        <div class="form-group">
+            <label>
+                注册可见性<br>
+                <small class="form-text text-muted">
+                    控制是否对所有人启用注册或禁用注册
+                </small>
+            </label>
+            <select class="form-control custom-select" name="registration_visibility">
+                <option value="public" {% if registration_visibility == 'public' %}selected{% endif %}>
+                公开
+                </option>
+                <option value="private" {% if registration_visibility == 'private' %}selected{% endif %}>
+                隐藏
+                </option>
+                <option value="mlc" {% if registration_visibility == 'mlc' %}selected{% endif %}>
+                仅限MajorLeagueCyber
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="ctf_name">
+                注册码
+                <small class="form-text text-muted">帐户注册所需的注册码（SSO 除外）</small>
+            </label>
+            <input class="form-control" id='registration_code' name='registration_code' type='text' placeholder="Registration Code"
+                   {% if registration_code is defined and registration_code != None %}value="{{ registration_code }}"{% endif %}>
+        </div>
+
+        <div class="form-group">
+            <label>
+                题目可见性<br>
+                <small class="form-text text-muted">
+                    控制用户是否必须登录才能查看题目
+                </small>
+            </label>
+            <select class="form-control custom-select" name="challenge_visibility">
+                <option value="public" {% if challenge_visibility == 'public' %}selected{% endif %}>
+                公开
+                </option>
+                <option value="private" {% if challenge_visibility == 'private' %}selected{% endif %}>
+                仅登陆
+                </option>
+                <option value="admins" {% if challenge_visibility == 'admins' %}selected{% endif %}>
+                仅管理员
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>
+                账户可见性<br>
+                <small class="form-text text-muted">
+                    控制帐户（用户和团队）是向所有人显示、仅向经过身份验证的用户显示还是仅向管理员显示
+                </small>
+            </label>
+            <select class="form-control custom-select" name="account_visibility">
+                <option value="public" {% if account_visibility == 'public' %}selected{% endif %}>
+                公开
+                </option>
+                <option value="private" {% if account_visibility == 'private' %}selected{% endif %}>
+                仅登陆
+                </option>
+                <option value="admins" {% if account_visibility == 'admins' %}selected{% endif %}>
+                仅管理员
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>
+                得分可见性<br>
+                <small class="form-text text-muted">
+                    控制是否向公众、登录用户显示解决方案/分数、向所有非管理员隐藏或仅向管理员显示
+                </small>
+            </label>
+            <select class="form-control custom-select" name="score_visibility">
+                <option value="public" {% if score_visibility == 'public' %}selected{% endif %}>
+                公开
+                </option>
+                <option value="private" {% if score_visibility == 'private' %}selected{% endif %}>
+                仅登陆
+                </option>
+                <option value="hidden" {% if score_visibility == 'hidden' %}selected{% endif %}>
+                隐藏
+                </option>
+                <option value="admins" {% if score_visibility == 'admins' %}selected{% endif %}>
+                仅管理员
+                </option>
+            </select>
+            <small class="form-text text-muted">
+                分数可见性是帐户可见性的子集。这意味着，如果帐户对用户可见，则分数可见性将控制他们是否可以看到该用户的分数。如果帐户不可见，则分数可见性无效。
+            </small>
+        </div>
+
+        <div class="form-group">
+            <label>
+                暂停<br>
+                <small class="form-text text-muted">
+                    阻止用户在解除暂停之前提交答案。 题目仍然可见。
+                </small>
+            </label>
+            <div class="form-check pl-0">
+                <label>
+                    <input id="paused" name="paused" type="checkbox" {% if paused %}checked{% endif %}>
+                    暂停CTF<br>
+                </label>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-md btn-primary float-right">更新</button>
+    </form>
+</div>
+
+{% endif %}

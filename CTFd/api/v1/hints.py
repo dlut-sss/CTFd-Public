@@ -43,8 +43,8 @@ class HintList(Resource):
         responses={
             200: ("Success", "HintListSuccessResponse"),
             400: (
-                "An error occured processing the provided or stored data",
-                "APISimpleErrorResponse",
+                    "An error occured processing the provided or stored data",
+                    "APISimpleErrorResponse",
             ),
         },
     )
@@ -56,8 +56,8 @@ class HintList(Resource):
             "cost": (int, None),
             "q": (str, None),
             "field": (
-                RawEnum("HintFields", {"type": "type", "content": "content"}),
-                None,
+                    RawEnum("HintFields", {"type": "type", "content": "content"}),
+                    None,
             ),
         },
         location="query",
@@ -81,8 +81,8 @@ class HintList(Resource):
         responses={
             200: ("Success", "HintDetailedSuccessResponse"),
             400: (
-                "An error occured processing the provided or stored data",
-                "APISimpleErrorResponse",
+                    "An error occured processing the provided or stored data",
+                    "APISimpleErrorResponse",
             ),
         },
     )
@@ -111,15 +111,15 @@ class Hint(Resource):
         responses={
             200: ("Success", "HintDetailedSuccessResponse"),
             400: (
-                "An error occured processing the provided or stored data",
-                "APISimpleErrorResponse",
+                    "An error occured processing the provided or stored data",
+                    "APISimpleErrorResponse",
             ),
         },
     )
     def get(self, hint_id):
         user = get_current_user()
         hint = Hints.query.filter_by(id=hint_id).first_or_404()
-
+        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
         if hint.requirements:
             requirements = hint.requirements.get("prerequisites", [])
 
@@ -142,17 +142,30 @@ class Hint(Resource):
             if unlock_ids >= prereqs or is_admin():
                 pass
             else:
-                return (
-                    {
-                        "success": False,
-                        "errors": {
-                            "requirements": [
-                                "You must unlock other hints before accessing this hint"
-                            ]
+                if language == "zh":
+                    return (
+                        {
+                            "success": False,
+                            "errors": {
+                                "requirements": [
+                                    "您必须先解锁其他提示才能访问此提示"
+                                ]
+                            },
                         },
-                    },
-                    403,
-                )
+                        403,
+                    )
+                else:
+                    return (
+                        {
+                            "success": False,
+                            "errors": {
+                                "requirements": [
+                                    "You must unlock other hints before accessing this hint"
+                                ]
+                            },
+                        },
+                        403,
+                    )
 
         view = "unlocked"
         if hint.cost:
@@ -180,8 +193,8 @@ class Hint(Resource):
         responses={
             200: ("Success", "HintDetailedSuccessResponse"),
             400: (
-                "An error occured processing the provided or stored data",
-                "APISimpleErrorResponse",
+                    "An error occured processing the provided or stored data",
+                    "APISimpleErrorResponse",
             ),
         },
     )

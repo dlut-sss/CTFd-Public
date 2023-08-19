@@ -11,7 +11,7 @@ function deleteSelectedTeams(_event) {
 
   ezQuery({
     title: "Delete Teams",
-    body: `你确定要删除${teamIDs.length} ${target}?`,
+    body: `Are you sure you want to delete ${teamIDs.length} ${target}?`,
     success: function() {
       const reqs = [];
       for (var teamID of teamIDs) {
@@ -55,7 +55,7 @@ function bulkEditTeams(_event) {
       </div>
     </form>
     `),
-    button: "提交",
+    button: "Submit",
     success: function() {
       let data = $("#teams-bulk-edit").serializeJSON(true);
       const reqs = [];

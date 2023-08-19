@@ -1,9 +1,15 @@
 {% extends "admin/base.html" %}
 
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+    {% set en = true %}
+{% else %}
+    {% set en = false %}
+{% endif %}
+
 {% block content %}
     <div class="jumbotron">
         <div class="container">
-            <h1>Whale插件设置</h1>
+            <h1><b>{{"Whale Plugin Settings" if en else "Whale插件设置"}}</b></h1>
         </div>
     </div>
     <div class="container">

@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block stylesheets %}
+{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+	<div class="container">
+        <h1><b>{{ 'Settings' if en else '账户设置' }}</b></h1>
+	</div>
+</div>
+<div class="container">
+	<div class="row">
+		<div class="col-md-2 offset-md-1">
+			<div class="nav flex-column nav-pills" role="tablist">
+				<a class="nav-link active" id="settings-profile-tab" data-toggle="pill" href="#profile" role="tab">{{ 'Profile' if en else '个人资料' }}</a>
+				<a class="nav-link" id="settings-tokens-tab" data-toggle="pill" href="#tokens" role="tab">{{ 'Access Tokens' if en else '访问密匙' }}</a>
+			</div>
+		</div>
+		<div class="col-md-8">
+			<div class="tab-content" id="v-pills-tabContent">
+				<div class="tab-pane fade show active" id="profile" role="tabpanel">
+					{% include "components/errors.html" %}
+
+					{% with form = Forms.self.SettingsForm(country=country) %}
+					{% from "macros/forms.html" import render_extra_fields %}
+					<form id="user-profile-form" method="post" accept-charset="utf-8" autocomplete="off" role="form"
+						class="form-horizontal">
+						<div class="form-group">
+							<b>{{ 'Username' if en else form.name.label }}</b>
+							{{ form.name(class="form-control", value=name) }}
+						</div>
+						<div class="form-group">
+							<b>{{ 'Email' if en else form.email.label }}</b>
+							{{ form.email(class="form-control", value=email) }}
+						</div>
+                        <div class="form-group">
+                            <b>{{ 'Real Name' if en else form.sname.label }}</b>
+                            {{ form.sname(class="form-control", value=sname) }}
+                        </div>
+                        <div class="form-group">
+                            <b>{{ 'Student Number' if en else form.sid.label }}</b>
+                            {{ form.sid(class="form-control", value=sid) }}
+                        </div>
+
+						<hr>
+
+						<div class="form-group">
+							<b>{{ 'Confirm Password' if en else '确认密码' }}</b>
+							{{ form.confirm(class="form-control") }}
+						</div>
+						<div class="form-group">
+							<b>{{ 'New Password' if en else '新密码' }}</b>
+							{{ form.password(class="form-control") }}
+						</div>
+
+						<hr>
+
+						<div class="form-group">
+							<b>{{ 'Affiliation/Signature' if en else '所属单位/个性签名' }}</b>
+							{{ form.affiliation(class="form-control", value=affiliation or "") }}
+						</div>
+						<div class="form-group">
+							<b>{{ 'Website' if en else form.website.label }}</b>
+							{{ form.website(class="form-control", value=website or "") }}
+						</div>
+						<div class="form-group">
+							<b>{{ 'Country or Region' if en else form.country.label }}</b>
+							{{ form.country(class="form-control custom-select", value=country) }}
+						</div>
+
+						<hr>
+
+						{{ render_extra_fields(form.extra) }}
+
+						<div id="results" class="form-group">
+						</div>
+
+						<div class="form-group">
+                            {% if en %}
+                            {{ form.submit(class="btn btn-md btn-primary btn-outlined float-right",value="Update") }}
+                            {% else %}
+                            {{ form.submit(class="btn btn-md btn-primary btn-outlined float-right",value="更新") }}
+                            {% endif %}
+						</div>
+					</form>
+					{% endwith %}
+				</div>
+				<div class="tab-pane fade" id="tokens" role="tabpanel">
+					{% with form = Forms.self.TokensForm() %}
+					<form method="POST" id="user-token-form">
+						<div class="form-group">
+							<b>{{ 'Expiration Time' if en else form.expiration.label }}</b>
+							{{ form.expiration(class="form-control") }}
+						</div>
+
+						<div class="form-group text-right">
+                            {% if en %}
+                            {{ form.submit(class="btn btn-md btn-primary btn-outlined",value="Generate") }}
+                            {% else %}
+                            {{ form.submit(class="btn btn-md btn-primary btn-outlined",value="生成") }}
+                            {% endif %}
+						</div>
+					</form>
+					{% endwith %}
+
+					{% if tokens %}
+					<hr>
+					<h4 class="text-center">{{ 'Active Tokens' if en else '已启用的密匙' }}</h4>
+					<table class="table table-striped">
+                        {% if en %}
+                        <thead>
+                        <tr>
+                            <td class="text-center"><b>Created</b></td>
+                            <td class="text-center"><b>Expiration</b></td>
+                            <td class="text-center"><b>Delete</b></td>
+                        </tr>
+                        </thead>
+                        {% else %}
+                        <thead>
+                        <tr>
+                            <td class="text-center"><b>创建日期</b></td>
+                            <td class="text-center"><b>过期时间</b></td>
+                            <td class="text-center"><b>删除</b></td>
+                        </tr>
+                        </thead>
+                        {% endif %}
+						<tbody>
+							{% for token in tokens %}
+							<tr>
+								<td><span data-time="{{ token.created | isoformat }}"></span></td>
+								<td><span data-time="{{ token.expiration | isoformat }}"></span></td>
+								<td class="text-center">
+									<span class="delete-token" role="button" data-token-id="{{ token.id }}">
+										<i class="btn-fa fas fa-times"></i>
+									</span>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block entrypoint %}
+	<script defer src="{{ url_for('views.themes', path='js/pages/settings.js') }}"></script>
+{% endblock %}

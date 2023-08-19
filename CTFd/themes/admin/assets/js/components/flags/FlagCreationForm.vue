@@ -6,7 +6,9 @@
           <div class="container">
             <div class="row">
               <div class="col-md-12">
-                <h3>创建Flag</h3>
+                <h3>
+                  {{ language("Create Flag","创建Flag") }}
+                </h3>
               </div>
             </div>
           </div>
@@ -16,6 +18,7 @@
             class="close"
             data-dismiss="modal"
             aria-label="Close"
+            style="position: absolute;top: 0;right: 0;padding: 30px;"
           >
             <span aria-hidden="true">&times;</span>
           </button>
@@ -23,7 +26,7 @@
         <div class="modal-body">
           <div class="create-keys-select-div">
             <label for="create-keys-select" class="control-label">
-              选择Flag类型
+              {{ language("Choose Flag Type","选择Flag类型") }}
             </label>
             <select
               class="form-control custom-select"
@@ -46,7 +49,7 @@
               type="submit"
               v-if="createForm"
             >
-              创建Flag
+              {{ language("Create Flag","创建Flag") }}
             </button>
           </form>
         </div>
@@ -73,6 +76,16 @@ export default {
     };
   },
   methods: {
+    language: function (en, zh) {
+      const cookies = document.cookie.split('; ');
+      for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split('=');
+        if (cookieName === "Scr1wCTFdLanguage") {
+          return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+        }
+      }
+      return zh;
+    },
     selectType: function(event) {
       let flagType = event.target.value;
       if (this.types[flagType] === undefined) {

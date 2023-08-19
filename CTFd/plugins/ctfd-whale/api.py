@@ -19,10 +19,17 @@ user_namespace = Namespace("ctfd-whale-user")
 @admin_namespace.errorhandler
 @user_namespace.errorhandler
 def handle_default(err):
-    return {
-        'success': False,
-        'message': '发生了未知的错误。'
-    }, 500
+    language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+    if language == "zh":
+        return {
+                   'success': False,
+                   'message': '发生了未知的错误。'
+               }, 500
+    else:
+        return {
+                   'success': False,
+                   'message': 'An unknown error has occurred。'
+               }, 500
 
 
 @admin_namespace.route('/container')
@@ -69,6 +76,7 @@ class UserContainers(Resource):
     @authed_only
     @challenge_visible
     def get():
+        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
         user_id = current_user.get_current_user().id
         challenge_id = request.args.get('challenge_id')
         container = DBContainer.get_current_containers(user_id=user_id)
@@ -76,7 +84,10 @@ class UserContainers(Resource):
             return {'success': True, 'data': {}}
         timeout = int(get_config("whale:docker_timeout", "3600"))
         if int(container.challenge_id) != int(challenge_id):
-            return abort(403, f'题目({container.challenge.name})的容器已经开启，请关闭之后再试！', success=False)
+            if language == "zh":
+                return abort(403, f'题目({container.challenge.name})的容器已经开启，请关闭之后再试！', success=False)
+            else:
+                return abort(403, f'Container started but not from this challenge ({container.challenge.name})', success=False)
         return {
             'success': True,
             'data': {
@@ -91,12 +102,16 @@ class UserContainers(Resource):
     @challenge_visible
     @frequency_limited
     def post():
+        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
         user_id = current_user.get_current_user().id
         ControlUtil.try_remove_container(user_id)
 
         current_count = DBContainer.get_all_alive_container_count()
         if int(get_config("whale:docker_max_container_count")) <= int(current_count):
-            abort(403, '超出容器数量限制。', success=False)
+            if language == "zh":
+                abort(403, '超出容器数量限制。', success=False)
+            else:
+                abort(403, 'Max container count exceed.', success=False)
 
         challenge_id = request.args.get('challenge_id')
         result, message = ControlUtil.try_add_container(
@@ -112,16 +127,26 @@ class UserContainers(Resource):
     @challenge_visible
     @frequency_limited
     def patch():
+        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
         user_id = current_user.get_current_user().id
         challenge_id = request.args.get('challenge_id')
         docker_max_renew_count = int(get_config("whale:docker_max_renew_count", 5))
         container = DBContainer.get_current_containers(user_id)
-        if container is None:
-            abort(403, '找不到请求的实例。', success=False)
-        if int(container.challenge_id) != int(challenge_id):
-            abort(403, f'题目（{container.challenge.name}）的容器已经开启，请关闭之后再试！', success=False)
-        if container.renew_count >= docker_max_renew_count:
-            abort(403, '超出最大延期次数。', success=False)
+        if language == "zh":
+            if container is None:
+                abort(403, '找不到请求的实例。', success=False)
+            if int(container.challenge_id) != int(challenge_id):
+                abort(403, f'题目（{container.challenge.name}）的容器已经开启，请关闭之后再试！', success=False)
+            if container.renew_count >= docker_max_renew_count:
+                abort(403, '超出最大延期次数。', success=False)
+        else:
+            if container is None:
+                abort(403, 'Instance not found.', success=False)
+            if int(container.challenge_id) != int(challenge_id):
+                abort(403, f'Container started but not from this challenge（{container.challenge.name}）', success=False)
+            if container.renew_count >= docker_max_renew_count:
+                abort(403, 'Max renewal count exceed.', success=False)
+
         result, message = ControlUtil.try_renew_container(user_id=user_id)
         return {'success': result, 'message': message}
 

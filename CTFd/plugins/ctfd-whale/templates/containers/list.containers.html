@@ -14,13 +14,13 @@
                     </div>
                 </th>
                 <th class="sort-col text-center"><b>ID</b></td>
-                <th class="text-center"><b>昵称</b></td>
-                <th class="sort-col text-center"><b>题目</b></td>
-                <th class="text-center"><b>访问方式</b></td>
+                <th class="text-center"><b>{{"Username" if en else "用户昵称"}}</b></td>
+                <th class="sort-col text-center"><b>{{"Challenge" if en else "题目"}}</b></td>
+                <th class="text-center"><b>{{"Connection Info" if en else "访问方式"}}</b></td>
                 <th class="text-center"><b>Flag</b></td>
-                <th class="sort-col text-center"><b>开启时间</b></td>
-                <th class="sort-col text-center"><b>延期次数</b></td>
-                <th class="text-center"><b>删除实例</b></td>
+                <th class="sort-col text-center"><b>{{"Deploy Time" if en else "开启时间"}}</b></td>
+                <th class="sort-col text-center"><b>{{"Renew Count" if en else "延期次数"}}</b></td>
+                <th class="text-center"><b>{{"Destroy Container" if en else "关闭实例"}}</b></td>
             </tr>
             </thead>
             <tbody>
@@ -58,20 +58,20 @@
                         </svg>
                     </td>
                     <td class="text-center">
-                        {{ container.start_time }}
+                        <span data-time="{{ container.start_time | isoformat }}"></span>
                     </td>
                     <td class="text-center">
                         {{ container.renew_count }}&nbsp;
                         <a class="renew-container" container-id="{{ container.id }}" data-toggle="tooltip"
                            user-id="{{ container.user.id }}" data-placement="top"
-                           title="延期容器 #{{ container.id }}">
+                           title="{{'Renew Container' if en else '延期容器'}} #{{ container.id }}">
                             <i class="fas fa-sync"></i>
                         </a>
                     </td>
                     <td class="text-center">
                         <a class="delete-container" container-id="{{ container.id }}" data-toggle="tooltip"
                            user-id="{{ container.user.id }}" data-placement="top"
-                           title="销毁容器 #{{ container.id }}">
+                           title="{{'Destroy Container' if en else '关闭容器'}} #{{ container.id }}">
                             <i class="fas fa-times"></i>
                         </a>
                     </td>

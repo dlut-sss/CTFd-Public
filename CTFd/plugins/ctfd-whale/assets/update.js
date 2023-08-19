@@ -35,6 +35,17 @@ $('#new-desc-edit').on('shown.bs.tab', function(event) {
     }
 });
 
+function getCookieForLanguage(name) {
+    const cookies = document.cookie.split('; ');
+    for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split('=');
+        if (cookieName === name) {
+            return decodeURIComponent(cookieValue);
+        }
+    }
+    return null;
+}
+
 function loadchal(id, update) {
     $.get(script_root + '/admin/chal/' + id, function(obj) {
         $('#desc-write-link').click(); // Switch to Write tab
@@ -75,13 +86,13 @@ function UpdateDockerImage(){
     }).then(function (response) {
         if (response.success) {
             var e = new Object;
-            e.title = "更新成功！";
-            e.body = "镜像更新完成！";
+            e.title = (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Success" : "更新成功！");
+            e.body = (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Image update command sent!" : "镜像更新命令已发送！");
             CTFd.ui.ezq.ezToast(e)
         } else {
             var e = new Object;
-            e.title = "更新失败！";
-            e.body = response.json()[message];
+            e.title = (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Fail" : "更新失败！");
+            e.body = response.message;
             CTFd.ui.ezq.ezToast(e)
         }
     });

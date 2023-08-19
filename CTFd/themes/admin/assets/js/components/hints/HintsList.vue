@@ -22,16 +22,16 @@
     <table class="table table-striped">
       <thead>
         <tr>
-          <td class="text-center"><b>ID</b></td>
-          <td class="text-center"><b>提示内容</b></td>
-          <td class="text-center"><b>花费</b></td>
-          <td class="text-center"><b>设置</b></td>
+          <td class="text-center"><b>{{ language("ID","ID") }}</b></td>
+          <td class="text-center"><b>{{ language("Hint","提示内容") }}</b></td>
+          <td class="text-center"><b>{{ language("Cost","解锁花费") }}</b></td>
+          <td class="text-center"><b>{{ language("Settings","操作") }}</b></td>
         </tr>
       </thead>
       <tbody>
         <tr v-for="hint in hints" :key="hint.id">
           <td class="text-center">{{ hint.id }}</td>
-          <td class="text-break">
+          <td class="text-break" style="word-wrap: break-word;word-break: break-word;">
             <pre>{{ hint.content }}</pre>
           </td>
           <td class="text-center">{{ hint.cost }}</td>
@@ -52,7 +52,7 @@
     </table>
     <div class="col-md-12">
       <button class="btn btn-success float-right" @click="addHint">
-        创建提示
+        {{ language("Create Hint","创建提示") }}
       </button>
     </div>
   </div>
@@ -79,6 +79,16 @@ export default {
     };
   },
   methods: {
+    language: function (en, zh) {
+      const cookies = document.cookie.split('; ');
+      for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split('=');
+        if (cookieName === "Scr1wCTFdLanguage") {
+          return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+        }
+      }
+      return zh;
+    },
     loadHints: function() {
       CTFd.fetch(`/api/v1/challenges/${this.$props.challenge_id}/hints`, {
         method: "GET",
@@ -125,8 +135,8 @@ export default {
     },
     deleteHint: function(hintId) {
       ezQuery({
-        title: "删除提示",
-        body: "您确定要删除此提示吗？",
+        title: this.language("Delete Hint","删除提示"),
+        body: this.language("Are you sure you want to delete this hint?","您确定要删除此提示吗？"),
         success: () => {
           CTFd.fetch(`/api/v1/hints/${hintId}`, {
             method: "DELETE"

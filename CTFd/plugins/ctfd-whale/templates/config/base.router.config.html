@@ -3,9 +3,9 @@
     {% set cur_type = get_config("whale:router_type", "frp") %}
     <div class="form-group">
         <label for="router-type">
-            路由类型
+            {{"Router Type" if en else "路由类型"}}
             <small class="form-text text-muted">
-               选择后端使用哪种路由
+                {{"Choose which route to use for the backend" if en else "选择后端使用哪种路由"}}
             </small>
         </label>
         <select id="router-type" class="form-control custom-select" onchange="window.updateConfigs">
@@ -18,7 +18,7 @@
     {% include template %}
     <div class="submit-row float-right">
         <button type="submit" tabindex="0" class="btn btn-md btn-primary btn-outlined">
-            确定
+            {{"Confirm" if en else "确定"}}
         </button>
     </div>
 </div>

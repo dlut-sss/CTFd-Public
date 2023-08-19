@@ -21,9 +21,10 @@ challenges = Blueprint("challenges", __name__)
 @require_verified_emails
 @check_challenge_visibility
 def listing():
+    language = request.cookies.get("Scr1wCTFdLanguage", "zh")
     if (
-        Configs.challenge_visibility == ChallengeVisibilityTypes.PUBLIC
-        and authed() is False
+            Configs.challenge_visibility == ChallengeVisibilityTypes.PUBLIC
+            and authed() is False
     ):
         pass
     else:
@@ -33,16 +34,29 @@ def listing():
     infos = get_infos()
     errors = get_errors()
 
-    if Configs.challenge_visibility == ChallengeVisibilityTypes.ADMINS:
-        infos.append("题目可见性设置为仅限管理员")
+    if language == "zh":
+        if Configs.challenge_visibility == ChallengeVisibilityTypes.ADMINS:
+            infos.append("题目可见性设置为仅限管理员")
 
-    if ctf_started() is False:
-        errors.append(f"{Configs.ctf_name}还没开始喵")
+        if ctf_started() is False:
+            errors.append(f"{Configs.ctf_name}还没开始喵")
 
-    if ctf_paused() is True:
-        infos.append(f"{Configs.ctf_name}已经暂停")
+        if ctf_paused() is True:
+            infos.append(f"{Configs.ctf_name}已经暂停")
 
-    if ctf_ended() is True:
-        infos.append(f"{Configs.ctf_name}已经结束了喵")
+        if ctf_ended() is True:
+            infos.append(f"{Configs.ctf_name}已经结束了喵")
+    else:
+        if Configs.challenge_visibility == ChallengeVisibilityTypes.ADMINS:
+            infos.append("Challenge Visibility is set to Admins Only")
+
+        if ctf_started() is False:
+            errors.append(f"{Configs.ctf_name} has not started yet")
+
+        if ctf_paused() is True:
+            infos.append(f"{Configs.ctf_name} is paused")
+
+        if ctf_ended() is True:
+            infos.append(f"{Configs.ctf_name} has ended")
 
     return render_template("challenges.html", infos=infos, errors=errors)

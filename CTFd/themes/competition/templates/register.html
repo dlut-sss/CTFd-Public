@@ -5,72 +5,74 @@
 
 {% block content %}
 <div class="jumbotron">
-	<div class="container">
-		<h1><b>注册</b></h1>
-	</div>
+    <div class="container">
+        <h1><b>注册</b></h1>
+    </div>
 </div>
 <div class="container">
-	<div class="row">
-		<div class="col-md-6 offset-md-3">
-			{% include "components/errors.html" %}
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            {% include "components/errors.html" %}
 
-			{% if integrations.mlc() %}
-			<a class="btn btn-secondary btn-lg btn-block" href="{{ url_for('auth.oauth_login') }}">
-				使用Major League Cyber登陆
-			</a>
+            {% if integrations.mlc() %}
+            <a class="btn btn-secondary btn-lg btn-block" href="{{ url_for('auth.oauth_login') }}">
+                使用Major League Cyber登陆
+            </a>
 
-			<hr>
-			{% endif %}
+            <hr>
+            {% endif %}
 
-			{% with form = Forms.auth.RegistrationForm() %}
-			{% from "macros/forms.html" import render_extra_fields %}
-			<form method="post" accept-charset="utf-8" autocomplete="off" role="form">
-				<div class="form-group">
-					<b>{{ form.name.label }}</b>
-					{{ form.name(class="form-control", value=name) }}
-					<small class="form-text text-muted">
+            {% with form = Forms.auth.RegistrationForm() %}
+            {% from "macros/forms.html" import render_extra_fields %}
+            <form method="post" accept-charset="utf-8" autocomplete="off" role="form">
+                <div class="form-group">
+                    <b>{{ form.name.label }}</b>
+                    {{ form.name(class = "form-control", value = name) }}
+                    <small class="form-text text-muted">
                         您在网站上的用户名
-					</small>
-				</div>
+                    </small>
+                </div>
                 <div class="form-group">
                     <b>真实姓名</b>
-                    {{ form.sname(class="form-control", value=sname) }}
+                    {{ form.sname(class = "form-control", value = sname) }}
+                    <small class="form-text text-muted">
+                        不会公开显示
+                    </small>
+                </div>
+                {% if Configs.register_uid == 1 %}
+                <div class="form-group">
+                    <b>学号</b>
+                    {{ form.sid(class = "form-control", value = sid) }}
+                    <small class="form-text text-muted">
+                        不会公开显示
+                    </small>
+                </div>
+                {% endif %}
+                <div class="form-group">
+                    <b>{{ form.email.label }}</b>
+                    {{ form.email(class = "form-control", value = email) }}
                     <small class="form-text text-muted">
                         不会公开显示
                     </small>
                 </div>
                 <div class="form-group">
-                    <b>学号</b>
-                    {{ form.sid(class="form-control", value=sid) }}
+                    <b>{{ form.password.label }}</b>
+                    {{ form.password(class = "form-control", value = password) }}
                     <small class="form-text text-muted">
-                        不会公开显示
+                        用来登陆的密码
                     </small>
                 </div>
-				<div class="form-group">
-					<b>{{ form.email.label }}</b>
-					{{ form.email(class="form-control", value=email) }}
-					<small class="form-text text-muted">
-                        不会公开显示
-					</small>
-				</div>
-				<div class="form-group">
-					<b>{{ form.password.label }}</b>
-					{{ form.password(class="form-control", value=password) }}
-					<small class="form-text text-muted">
-                        用来登陆的密码
-					</small>
-				</div>
-				{{ form.nonce() }}
+                {{ form.nonce() }}
 
-				{{ render_extra_fields(form.extra) }}
+                {{ render_extra_fields(form.extra) }}
 
-				<div class="row pt-3">
-					<div class="col-md-12">
-						{{ form.submit(class="btn btn-md btn-primary btn-outlined float-right",value="提交") }}
-					</div>
-				</div>
+                <div class="row pt-3">
+                    <div class="col-md-12">
+                        {{ form.submit(class = "btn btn-md btn-primary btn-outlined float-right", value = "提交") }}
+                    </div>
+                </div>
 
-				{% if Configs.tos_or_privacy %}
+                {% if Configs.tos_or_privacy %}
                 <div class="row pt-3">
                     <div class="col-md-12 text-center">
                         <small class="text-muted text-center">
@@ -80,11 +82,11 @@
                         </small>
                     </div>
                 </div>
-				{% endif %}
-			</form>
-			{% endwith %}
-		</div>
-	</div>
+                {% endif %}
+            </form>
+            {% endwith %}
+        </div>
+    </div>
 </div>
 {% endblock %}
 

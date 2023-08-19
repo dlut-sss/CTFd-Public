@@ -3,6 +3,17 @@ import CTFd from "core/CTFd";
 import $ from "jquery";
 import { ezAlert } from "core/ezq";
 
+function language(en,zh) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === "Scr1wCTFdLanguage") {
+      return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+    }
+  }
+  return zh;
+}
+
 const api_func = {
   users: (x, y) => CTFd.api.patch_user_public({ userId: x }, y),
   teams: (x, y) => CTFd.api.patch_team_public({ teamId: x }, y)
@@ -76,20 +87,20 @@ function bulkToggleAccounts(_event) {
   };
 
   ezAlert({
-    title: "切换可见性",
+    title: language("Toggle Visibility","切换可见性"),
     body: $(`
     <form id="scoreboard-bulk-edit">
       <div class="form-group">
-        <label>可见性</label>
+        <label>`+language("Visibility","可见性")+`</label>
         <select name="visibility" data-initial="">
           <option value="">--</option>
-          <option value="visible">可见</option>
-          <option value="hidden">隐藏</option>
+          <option value="visible">`+language("Visible","可见")+`</option>
+          <option value="hidden">`+language("Hidden","隐藏")+`</option>
         </select>
       </div>
     </form>
     `),
-    button: "提交",
+    button: language("Submit","提交"),
     success: function() {
       let data = $("#scoreboard-bulk-edit").serializeJSON(true);
       let state = data.visibility;

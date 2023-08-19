@@ -87,9 +87,9 @@ def setup():
 
             # Robot
             bot = request.form.get("bot")
-            bottext = request.form.get("bottext")   # 解题播报消息 e.g.恭喜%s做出题目%s，默认第一个参数为用户名，第二个参数为题目名称
-            createtext = request.form.get("createtext") # 题目可见播报
-            updatetext = request.form.get("updatetext") # 题目更新播报
+            bottext = request.form.get("bottext")  # 解题播报消息 e.g.恭喜%s做出题目%s，默认第一个参数为用户名，第二个参数为题目名称
+            createtext = request.form.get("createtext")  # 题目可见播报
+            updatetext = request.form.get("updatetext")  # 题目更新播报
 
             # 上面三个text为用户自定格式化字符串，处理不正确将存在FSA漏洞
             # 检查 bottext 中 % 和 %s 的数量是否符合要求
@@ -105,14 +105,14 @@ def setup():
                 if updatetext.count('%') != 2 or updatetext.count('%s') != 2:
                     errors.append("updatetext must contain exactly two '%' and two '%s' placeholders")
 
-            group_id = request.form.get("group_id") #qq群号
-            bot_ip = request.form.get("bot_ip") #机器人服务地址,如 127.0.0.1:8000
+            group_id = request.form.get("group_id")  # qq群号
+            bot_ip = request.form.get("bot_ip")  # 机器人服务地址,如 127.0.0.1:8000
             set_config("bot", bot)
             set_config("bottext", bottext)
             set_config("createtext", createtext)
             set_config("updatetext", updatetext)
-            set_config("group_id",group_id)
-            set_config("bot_ip",bot_ip)
+            set_config("group_id", group_id)
+            set_config("bot_ip", bot_ip)
 
             # Style
             ctf_logo = request.files.get("ctf_logo")
@@ -162,20 +162,37 @@ def setup():
             valid_email = validators.validate_email(request.form["email"])
             team_name_email_check = validators.validate_email(name)
 
-            if not valid_email:
-                errors.append("请输入有效的邮箱地址")
-            if names:
-                errors.append("名字已经被占用了，换一个吧")
-            if team_name_email_check is True:
-                errors.append("你的用户名不能是邮箱名")
-            if emails:
-                errors.append("此邮箱已经存在帐号了！")
-            if pass_short:
-                errors.append("密码太短了")
-            if pass_long:
-                errors.append("密码太长了")
-            if name_len:
-                errors.append("名字太短了")
+            language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+            if language == "zh":
+                if not valid_email:
+                    errors.append("请输入有效的邮箱地址")
+                if names:
+                    errors.append("名字已经被占用了，换一个吧")
+                if team_name_email_check is True:
+                    errors.append("你的用户名不能是邮箱名")
+                if emails:
+                    errors.append("此邮箱已经存在帐号了！")
+                if pass_short:
+                    errors.append("密码太短了")
+                if pass_long:
+                    errors.append("密码太长了")
+                if name_len:
+                    errors.append("名字太短了")
+            else:
+                if not valid_email:
+                    errors.append("Please enter a valid email address")
+                if names:
+                    errors.append("That user name is already taken")
+                if team_name_email_check is True:
+                    errors.append("Your user name cannot be an email address")
+                if emails:
+                    errors.append("That email has already been used")
+                if pass_short:
+                    errors.append("Pick a longer password")
+                if pass_long:
+                    errors.append("Pick a shorter password")
+                if name_len:
+                    errors.append("Pick a longer user name")
 
             if len(errors) > 0:
                 return render_template(
@@ -273,6 +290,14 @@ def setup():
                 ),
             )
 
+            # 默认关闭QQbot播报
+            set_config("bot", 0)
+
+            # sso默认设置
+            set_config("sso_auth", 0)
+            set_config("register_uid", 0)
+            set_config("register_uid_empty", 0)
+
             set_config("setup", True)
 
             try:
@@ -342,6 +367,7 @@ def notifications():
 def settings():
     infos = get_infos()
     errors = get_errors()
+    language = request.cookies.get("Scr1wCTFdLanguage", "zh")
 
     user = get_current_user()
     name = user.name
@@ -354,11 +380,18 @@ def settings():
 
     if is_teams_mode() and get_current_team() is None:
         team_url = url_for("teams.private")
-        infos.append(
-            markup(
-                f'为了参与，您必须<a href="{team_url}">加入或创建团队</a>。'
+        if language == "zh":
+            infos.append(
+                markup(
+                    f'为了参与，您必须<a href="{team_url}">加入或创建团队</a>。'
+                )
             )
-        )
+        else:
+            infos.append(
+                markup(
+                    f'In order to participate you must either <a href="{team_url}">join or create a team</a>.'
+                )
+            )
 
     tokens = UserTokens.query.filter_by(user_id=user.id).all()
 
@@ -366,13 +399,22 @@ def settings():
 
     if get_config("verify_emails") and not user.verified:
         confirm_url = markup(url_for("auth.confirm"))
-        infos.append(
-            markup(
-                "您的电子邮件地址尚未确认！<br>"
-                "请检查您的电子邮件以确认您的电子邮件地址。<br><br>"
-                f'如需重新发送确认电子邮件，请 <a href="{confirm_url}">点击此处</a>.'
+        if language == "zh":
+            infos.append(
+                markup(
+                    "您的电子邮件地址尚未确认！<br>"
+                    "请检查您的电子邮件以确认您的电子邮件地址。<br>"
+                    f'如需重新发送确认电子邮件，请 <a href="{confirm_url}">点击此处</a>.'
+                )
             )
-        )
+        else:
+            infos.append(
+                markup(
+                    "Your email address isn't confirmed!<br>"
+                    "Please check your email to confirm your email address.<br>"
+                    f'To have the confirmation email resent please <a href="{confirm_url}">click here</a>.'
+                )
+            )
 
     return render_template(
         "settings.html",
@@ -474,8 +516,8 @@ def files(path):
 
                 # Check user is admin if challenge_visibility is admins only
                 if (
-                    get_config(ConfigTypes.CHALLENGE_VISIBILITY) == "admins"
-                    and user.type != "admin"
+                        get_config(ConfigTypes.CHALLENGE_VISIBILITY) == "admins"
+                        and user.type != "admin"
                 ):
                     abort(403)
 
@@ -517,10 +559,10 @@ def themes(theme, path):
     :return:
     """
     for cand_path in (
-        safe_join(app.root_path, "themes", cand_theme, "static", path)
-        # The `theme` value passed in may not be the configured one, e.g. for
-        # admin pages, so we check that first
-        for cand_theme in (theme, *config.ctf_theme_candidates())
+            safe_join(app.root_path, "themes", cand_theme, "static", path)
+            # The `theme` value passed in may not be the configured one, e.g. for
+            # admin pages, so we check that first
+            for cand_theme in (theme, *config.ctf_theme_candidates())
     ):
         if os.path.isfile(cand_path):
             return send_file(cand_path)
@@ -537,10 +579,10 @@ def themes_beta(theme, path):
     route will be removed.
     """
     for cand_path in (
-        safe_join(app.root_path, "themes", cand_theme, "static", path)
-        # The `theme` value passed in may not be the configured one, e.g. for
-        # admin pages, so we check that first
-        for cand_theme in (theme, *config.ctf_theme_candidates())
+            safe_join(app.root_path, "themes", cand_theme, "static", path)
+            # The `theme` value passed in may not be the configured one, e.g. for
+            # admin pages, so we check that first
+            for cand_theme in (theme, *config.ctf_theme_candidates())
     ):
         if os.path.isfile(cand_path):
             return send_file(cand_path)

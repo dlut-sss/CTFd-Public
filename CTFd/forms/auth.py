@@ -10,6 +10,7 @@ from CTFd.forms.users import (
     build_custom_user_fields,
     build_registration_code_field,
 )
+from CTFd.utils import get_config
 
 
 def RegistrationForm(*args, **kwargs):
@@ -20,6 +21,9 @@ def RegistrationForm(*args, **kwargs):
         email = EmailField("邮箱地址", validators=[InputRequired()])
         sname = StringField("真实姓名", validators=[InputRequired()])
         sid = StringField("学号", validators=[InputRequired()])
+        register_uid_empty = get_config("register_uid_empty")
+        if register_uid_empty:
+            sid = StringField("学号")
         password = PasswordField("密码", validators=[InputRequired()])
         submit = SubmitField("提交")
 

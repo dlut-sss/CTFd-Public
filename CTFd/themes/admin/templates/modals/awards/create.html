@@ -1,23 +1,28 @@
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+{% set en = true %}
+{% else %}
+{% set en = false %}
+{% endif %}
 {% with form = Forms.awards.AwardCreationForm() %}
 <form id="user-award-form" method="POST">
 	<div class="form-group">
-		<b>{{ form.name.label }}</b>
+		<b>{{ 'Name' if en else form.name.label }}</b>
 		{{ form.name(class="form-control", id="award-name-input") }}
 	</div>
 	<div class="form-group">
-		<b>{{ form.value.label }}</b>
+		<b>{{ 'Value' if en else form.value.label }}</b>
 		{{ form.value(class="form-control", id="award-value-input") }}
 	</div>
 	<div class="form-group">
-		<b>{{ form.category.label }}</b>
+		<b>{{ 'Category' if en else form.category.label }}</b>
 		{{ form.category(class="form-control", id="award-category-input") }}
 	</div>
 	<div class="form-group">
-		<b>{{ form.description.label }}</b>
+		<b>{{ 'Description' if en else form.description.label }}</b>
 		{{ form.description(id="award-description-input", class="form-control", rows="5") }}
 	</div>
 	<div class="form-group">
-		<b>{{ form.icon.label }}</b>
+		<b>{{ 'Icon' if en else '图标' }}</b>
 		<div class="pt-1">
 			<table class="table table-sm w-100">
 				<tr>
@@ -130,7 +135,11 @@
 	<div id="results">
 	</div>
 	<div class="modal-footer">
-		{{ form.submit(id="award-create-button", class="btn btn-primary") }}
+        {% if en %}
+        {{ form.submit(id="award-create-button", class="btn btn-primary",value="Create") }}
+        {% else %}
+        {{ form.submit(id="award-create-button", class="btn btn-primary") }}
+        {% endif %}
 	</div>
 </form>
 {% endwith %}

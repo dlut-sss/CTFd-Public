@@ -6,6 +6,17 @@ import Vue from "vue/dist/vue.esm.browser";
 import MediaLibrary from "./components/files/MediaLibrary.vue";
 import hljs from "highlight.js";
 
+function language(en,zh) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === "Scr1wCTFdLanguage") {
+      return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+    }
+  }
+  return zh;
+}
+
 export function showMediaLibrary(editor) {
   const mediaModal = Vue.extend(MediaLibrary);
 
@@ -52,7 +63,7 @@ export function bindMarkdownEditor(elem) {
             showMediaLibrary(editor);
           },
           className: "fas fa-file-upload",
-          title: "媒体库"
+          title: language("Media Library","媒体库")
         },
         "|",
         "preview",

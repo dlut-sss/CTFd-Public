@@ -17,7 +17,7 @@
           type="button"
           @click="addField()"
         >
-          添加新字段
+          {{ language("Add New Field","添加新字段") }}
         </button>
       </div>
     </div>
@@ -42,6 +42,16 @@ export default {
     };
   },
   methods: {
+    language: function (en, zh) {
+      const cookies = document.cookie.split('; ');
+      for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split('=');
+        if (cookieName === "Scr1wCTFdLanguage") {
+          return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+        }
+      }
+      return zh;
+    },
     loadFields: function() {
       CTFd.fetch(`/api/v1/configs/fields?type=${this.type}`, {
         method: "GET",

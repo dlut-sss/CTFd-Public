@@ -2,22 +2,22 @@
     {% set score_on = get_config('matrix:score_switch') %}
     <div class="form-group">
         <label for="score-switch">
-            新生加分
+            {{"Freshman Bonus Switch" if en else "新生加分"}}
             <small class="form-text text-muted">
-               对于大一的新生加分
+                {{"Whether to add points for freshmen" if en else "对于大一的新生加分"}}
             </small>
         </label>
         <select id="score-switch" name="matrix:score_switch" class="form-control custom-select">
-            <option value="true" {{ "selected" if score_on == true }}>开启</option>
-            <option value="false" {{ "selected" if score_on == false }}>关闭</option>
+            <option value="true" {{ "selected" if score_on == true }}>{{"ON" if en else "开启"}}</option>
+            <option value="false" {{ "selected" if score_on == false }}>{{"OFF" if en else "关闭"}}</option>
         </select>
     </div>
     {% set score_grade_num = get_config('matrix:score_grade') %}
     <div class="form-group">
         <label for="score-grade">
-            加分年级
+            {{"Buff grade" if en else "加分年级"}}
             <small class="form-text text-muted">
-                大一新生学号开头四位
+                {{"The first four digits of the freshman student number" if en else "大一新生学号开头四位"}}
             </small>
         </label>
         <input type="text" class="form-control"
@@ -27,9 +27,9 @@
     {% set score_num = get_config('matrix:score_num') %}
     <div class="form-group">
         <label for="score-num">
-            加分数值
+            {{"Bonus Value Amount" if en else "加分数值"}}
             <small class="form-text text-muted">
-                大一新生计分板加分数值
+                {{"Freshman Scoreboard Bonus Values" if en else "大一新生计分板加分数值"}}
             </small>
         </label>
         <input type="text" class="form-control"
@@ -38,7 +38,7 @@
     </div>
     <div class="submit-row float-right">
         <button type="submit" tabindex="0" class="btn btn-md btn-primary btn-outlined">
-            确定
+            {{"Confirm" if en else "确定"}}
         </button>
     </div>
 </div>

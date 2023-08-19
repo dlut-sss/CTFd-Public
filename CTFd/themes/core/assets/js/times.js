@@ -8,7 +8,7 @@ export default () => {
   $("[data-time]").each((i, elem) => {
     let $elem = $(elem);
     let time = $elem.data("time");
-    let format = $elem.data("time-format") || "MMMM Do, h:mm:ss A";
+    let format = $elem.data("time-format") || "MMMMDo, A h:mm:ss";
     elem.innerText = dayjs(time).format(format);
   });
 };

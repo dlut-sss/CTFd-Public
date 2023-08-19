@@ -1,6 +1,8 @@
+import datetime
 import json
 from enum import Enum
 
+import pytz
 import unicodedata
 import os
 import re
@@ -46,6 +48,20 @@ def fixed_secure_filename(filename: str) -> str:
     ):
         filename = f"_{filename}"
     return filename
+
+
+def current_backend_time():
+    timezone = get_config("backend_timezone")
+    if timezone is None:
+        timezone = 'Asia/Shanghai'
+    try:
+        desired_timezone = pytz.timezone(timezone)
+        current_time = datetime.datetime.now(tz=desired_timezone)
+        return current_time
+    except Exception:
+        desired_timezone = pytz.timezone('Asia/Shanghai')
+        current_time = datetime.datetime.now(tz=desired_timezone)
+        return current_time
 
 
 def markdown(md):

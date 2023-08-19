@@ -39,7 +39,9 @@
                         </a>
                     </div>
                     <div class="col-md-6">
-                        <input class="btn btn-md btn-primary btn-outlined float-right" style="width:70.5px;margin-left: 10px;margin-bottom: 10px;" id="sso" value="sso"  name="_sso" type="button" onclick="window.location.href='http://210.30.97.133:8888/cas/login?serviceUrl='+encodeURIComponent(window.location.href)">
+                        {% if Configs.sso_auth == 1 %}
+                        <input class="btn btn-md btn-primary btn-outlined float-right" style="width:70.5px;margin-left: 10px;margin-bottom: 10px;" id="sso" value="sso"  name="_sso" type="button" onclick="ssologin()">
+                        {% endif %}
                         {{ form.submit(class="btn btn-md btn-primary btn-outlined float-right",value="登陆") }}
                     </div>
                 </div>
@@ -49,6 +51,22 @@
 		</div>
 	</div>
 </div>
+
+{% if Configs.sso_auth == 1 %}
+<script>
+    function ssologin() {
+        var server = "{{ Configs.sso_server_address }}"
+        if (window.location.href.includes("?"))
+        {
+            window.location.href=server+'?serviceUrl='+encodeURIComponent(window.location.href+"&type=encryptedticket")
+        }
+        else
+        {
+            window.location.href=server+'?serviceUrl='+encodeURIComponent(window.location.href+"?type=encryptedticket")
+        }
+    }
+</script>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}

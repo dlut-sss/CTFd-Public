@@ -9,6 +9,17 @@ import { ezAlert, ezToast } from "core/ezq";
 import Vue from "vue/dist/vue.esm.browser";
 import CommentBox from "../components/comments/CommentBox.vue";
 
+function language(en,zh) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === "Scr1wCTFdLanguage") {
+      return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+    }
+  }
+  return zh;
+}
+
 function submit_form() {
   // Save the CodeMirror data to the Textarea
   window.editor.save();
@@ -44,17 +55,17 @@ function submit_form() {
         }
 
         ezAlert({
-          title: "Error",
+          title: language("Error","错误"),
           body: body,
-          button: "OK"
+          button: language("OK","好的")
         });
         return;
       }
 
       if (method === "PATCH" && response.success) {
         ezToast({
-          title: "Saved",
-          body: "Your changes have been saved"
+          title: language("Saved","已保存"),
+          body: language("Your changes have been saved","你的更改已保存")
         });
       } else {
         window.location =

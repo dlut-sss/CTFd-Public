@@ -1,23 +1,50 @@
+{% if en %}
 <div role="tabpanel" class="tab-pane config-section active" id="appearance">
 	<form method="POST" autocomplete="off" class="w-100">
 		<div class="form-group">
 			<label for="ctf_name">
-                比赛名称
-				<small class="form-text text-muted">显示在平台左上角的比赛名称</small>
+				Competition Name
+				<small class="form-text text-muted">Competition name displayed instead of a logo</small>
 			</label>
-			<input class="form-control" id='ctf_name' name='ctf_name' type='text' placeholder="CTF名称"
+			<input class="form-control" id='ctf_name' name='ctf_name' type='text' placeholder="CTF Name"
 				   {% if ctf_name is defined and ctf_name != None %}value="{{ ctf_name }}"{% endif %}>
 		</div>
 
 		<div class="form-group">
 			<label>
-				CTF 介绍<br>
+				CTF Description<br>
 				<small class="form-text text-muted">
-					CTF比赛的介绍
+					Description for the CTF
 				</small>
 			</label>
 			<textarea class="form-control" type="text" id="ctf_description" name="ctf_description" rows="5">{{ ctf_description }}</textarea>
-        </div>
-		<button type="submit" class="btn btn-md btn-primary float-right">更新</button>
+		</div>
+
+		<button type="submit" class="btn btn-md btn-primary float-right">Update</button>
 	</form>
 </div>
+{% else %}
+<div role="tabpanel" class="tab-pane config-section active" id="appearance">
+    <form method="POST" autocomplete="off" class="w-100">
+        <div class="form-group">
+            <label for="ctf_name">
+                比赛名称
+                <small class="form-text text-muted">显示在平台左上角的比赛名称</small>
+            </label>
+            <input class="form-control" id='ctf_name' name='ctf_name' type='text' placeholder="CTF名称"
+                   {% if ctf_name is defined and ctf_name != None %}value="{{ ctf_name }}"{% endif %}>
+        </div>
+
+        <div class="form-group">
+            <label>
+                CTF 介绍<br>
+                <small class="form-text text-muted">
+                    CTF比赛的介绍
+                </small>
+            </label>
+            <textarea class="form-control" type="text" id="ctf_description" name="ctf_description" rows="5">{{ ctf_description }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-md btn-primary float-right">更新</button>
+    </form>
+</div>
+{% endif %}

@@ -1,3 +1,4 @@
+from flask import request
 from wtforms import BooleanField, PasswordField, SelectField, StringField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import InputRequired
@@ -94,12 +95,19 @@ def build_registration_code_field(form_cls):
 
 
 def attach_registration_code_field(form_cls):
+    language = "zh"
+    try:
+        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+    except Exception:
+        pass
+    # ToDo:把前端判断表单语言的代码迁移到后端判断
     """
     If we have a registration code required, we attach it to the form similar
     to attach_custom_user_fields
     """
     if Configs.registration_code:
-        setattr(  # noqa B010
+        if language == "zh":
+            setattr(  # noqa B010
             form_cls,
             "registration_code",
             StringField(
@@ -108,6 +116,16 @@ def attach_registration_code_field(form_cls):
                 validators=[InputRequired()],
             ),
         )
+        else:
+            setattr(  # noqa B010
+                form_cls,
+                "registration_code",
+                StringField(
+                    "Registration Code",
+                    description="Registration code required to create an account",
+                    validators=[InputRequired()],
+                ),
+            )
 
 
 class UserSearchForm(BaseForm):

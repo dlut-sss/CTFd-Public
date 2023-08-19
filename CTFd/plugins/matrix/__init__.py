@@ -65,7 +65,7 @@ def load(app):
         set_config("matrix:score_grade", year_string)
     if not get_config("matrix:score_num"):
         set_config("matrix:score_num", 1200)
-    register_admin_plugin_menu_bar(title='比赛计分板',
+    register_admin_plugin_menu_bar(title='Matrix',
                                    route='/plugins/matrix/admin/settings')
 
     page_blueprint = Blueprint("matrix",
@@ -231,12 +231,17 @@ def load(app):
         return num_misc
 
     def scoreboard_view():
+        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
         if scores_visible() and not authed():
             return redirect(url_for('auth.login', next=request.path))
         if get_config("matrix:switch"):
             if not scores_visible():
-                return render_template('scoreboard-matrix.html',
-                                       errors=['当前分数已隐藏'])
+                if language == "zh":
+                    return render_template('scoreboard-matrix.html',
+                                           errors=['当前分数已隐藏'])
+                else:
+                    return render_template('scoreboard-matrix.html',
+                                           errors=['Score is currently hidden'])
             standings = get_standings()
             return render_template('scoreboard-matrix.html', standings=standings,
                                    score_frozen=is_scoreboard_frozen(),
@@ -245,10 +250,16 @@ def load(app):
         else:
             freeze = get_config("freeze")
             infos = get_infos()
-            if freeze:
-                infos.append("计分板已经冻结。")
-            if not scores_visible():
-                infos.append("当前分数已隐藏。")
+            if language == "zh":
+                if freeze:
+                    infos.append("计分板已经冻结。")
+                if not scores_visible():
+                    infos.append("当前分数已隐藏。")
+            else:
+                if freeze:
+                    infos.append("Scoreboard is frozen")
+                if not scores_visible():
+                    infos.append("Score is currently hidden")
             return render_template("scoreboard.html", standings=CTFd.utils.scores.get_standings(), infos=infos)
 
     def scores():

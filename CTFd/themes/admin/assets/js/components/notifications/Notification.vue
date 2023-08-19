@@ -36,11 +36,21 @@ export default {
     date: String
   },
   methods: {
+    language: function (en, zh) {
+      const cookies = document.cookie.split('; ');
+      for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split('=');
+        if (cookieName === "Scr1wCTFdLanguage") {
+          return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+        }
+      }
+      return zh;
+    },
     localDate: function() {
-      return dayjs(this.date).format("MMMM Do, h:mm:ss A");
+      return dayjs(this.date).format("MMMM Do, HH:mm:ss ");
     },
     deleteNotification: function() {
-      if (confirm("您确定要删除此通知吗？")) {
+      if (confirm(this.language("Are you sure you want to delete this notification?","您确定要删除此通知吗？"))) {
         CTFd.api
           .delete_notification({ notificationId: this.id })
           .then(response => {

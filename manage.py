@@ -73,7 +73,7 @@ def export_ctf(path=None):
             with open(full_name, "wb") as target:
                 shutil.copyfileobj(backup, target)
 
-            print(f"导出 {full_name} 完成")
+            print(f"[CTFd] 导出 {full_name} 完成")
 
 
 @manager.command
@@ -90,7 +90,7 @@ def import_ctf(path, delete_import_on_finish=False):
             set_import_end_time(value=unix_time(datetime.datetime.utcnow()))
 
     if delete_import_on_finish:
-        print(f"正在删除 {path}")
+        print(f"[CTFd] 正在删除 {path}")
         Path(path).unlink()
 
 

@@ -6,8 +6,6 @@
 
 修复了一些原生CTFd的UI和代码问题（如提示创建和附件名称）
 
-（注意，由于pages主题没找到能够阅读的源代码（全都是min.js），于是直接对.min.js进行了修改，dev最后的eval部分并未修改，不要对pages主题进行webpack编译！（或者有空可能重构吧））
-
 ## [开发日志](https://github.com/dlut-sss/CTFD-Public/blob/main/CHANGELOG.md)
 
 ## 配置方法

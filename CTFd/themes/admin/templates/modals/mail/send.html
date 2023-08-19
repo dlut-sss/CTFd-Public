@@ -1,12 +1,26 @@
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+{% set en = true %}
+{% else %}
+{% set en = false %}
+{% endif %}
 {% with form = Forms.email.SendEmailForm() %}
 <form id="user-mail-form" method="POST">
 	<div class="form-group">
-		{{ form.text.label }}
+        {% if en %}
+        <label for="text">Message</label>
+        {% else %}
+        {{ form.text.label }}
+        {% endif %}
 		{{ form.text(class="form-control", rows="15") }}
 	</div>
 	<div id="results">
 
 	</div>
-	{{ form.submit(class="btn btn-primary float-right") }}
+
+    {% if en %}
+    {{ form.submit(class="btn btn-primary float-right",value="Send") }}
+    {% else %}
+    {{ form.submit(class="btn btn-primary float-right") }}
+    {% endif %}
 </form>
 {% endwith %}

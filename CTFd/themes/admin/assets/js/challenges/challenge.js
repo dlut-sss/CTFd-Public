@@ -4,6 +4,17 @@ import { htmlEntities } from "core/utils";
 import CTFd from "core/CTFd";
 import nunjucks from "nunjucks";
 
+function language(en,zh) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === "Scr1wCTFdLanguage") {
+      return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+    }
+  }
+  return zh;
+}
+
 function renderSubmissionResponse(response, cb) {
   const result = response.data;
 
@@ -47,7 +58,7 @@ function renderSubmissionResponse(response, cb) {
           .split(" ")[0]
       ) +
         1 +
-        " Solves"
+        language(" Solves","人解出")
     );
 
     answer_input.val("");
@@ -164,8 +175,8 @@ $(() => {
 
   $(".delete-challenge").click(function(_event) {
     ezQuery({
-      title: "Delete Challenge",
-      body: "你确定要删除{0}".format(
+      title: language("Delete Challenge","删除题目"),
+      body: language("Are you sure you want to delete {0}","你确定要删除{0}").format(
         "<strong>" + htmlEntities(window.CHALLENGE_NAME) + "</strong>"
       ),
       success: function() {
@@ -195,8 +206,8 @@ $(() => {
     }).then(function(data) {
       if (data.success) {
         ezToast({
-          title: "Success",
-          body: "题目更新成功！"
+          title: language("Success","成功"),
+          body: language("Your challenge has been updated!","题目已更新！")
         });
       }
     });

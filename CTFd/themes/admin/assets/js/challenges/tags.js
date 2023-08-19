@@ -1,6 +1,17 @@
 import $ from "jquery";
 import CTFd from "core/CTFd";
 
+function language(en,zh) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === "Scr1wCTFdLanguage") {
+      return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+    }
+  }
+  return zh;
+}
+
 export function deleteTag(_event) {
   const $elem = $(this);
   const tag_id = $elem.attr("tag-id");

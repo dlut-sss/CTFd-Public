@@ -1,20 +1,25 @@
 <!DOCTYPE html>
 <html>
-
+{% block stylesheets %} {% endblock %}
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+{% set en = true %}
+{% else %}
+{% set en = false %}
+{% endif %}
 <head>
-	<title>{{ Configs.ctf_name }}管理面板</title>
+	<title>{{ Configs.ctf_name }}{{ ' Admin Panel' if en else '管理面板' }}</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="{{ Configs.ctf_small_icon }}" type="image/x-icon">
-	<link rel="icon" href="{{ Configs.ctf_small_icon }}" type="image/x-icon">
+	<link rel="shortcut icon" href="{{Configs.ctf_small_icon  if Configs.ctf_small_icon else url_for('views.themes', theme='core', path='img/favicon.ico') }}" type="image/x-icon">
+	<link rel="icon" href="{{Configs.ctf_small_icon  if Configs.ctf_small_icon else url_for('views.themes', theme='core', path='img/favicon.ico') }}" type="image/x-icon">
 	<link rel="stylesheet" href="{{ url_for('views.themes', theme='core', path='css/fonts.css') }}">
 	<link rel="stylesheet" href="{{ url_for('views.themes', theme='core', path='css/main.css') }}">
 	<link rel="stylesheet" href="{{ url_for('views.themes', theme='admin', path='css/admin.css') }}">
 	<link rel="stylesheet" href="{{ url_for('views.themes', theme='admin', path='css/codemirror.css') }}">
-    <style id="theme-color">
+    <style id="admin-theme">
         .bg-dark {
             background-color: #006fce !important;
-            background:url("/themes/core/static/img/back_blue.jpg");
+            background:url("{{ url_for('views.themes', theme='admin', path='img/back_blue.jpg') }}");
             filter:saturate(130%);
         }
         .nav-pills .nav-link.active, .nav-pills .show>.nav-link {
@@ -55,7 +60,7 @@
             border-radius: 5px!important;
         }
     </style>
-    <script type="text/javascript">
+	<script type="text/javascript">
 		var init = {
 			'urlRoot': "{{ request.script_root }}",
 			'csrfNonce': "{{ Session.nonce }}",
@@ -69,7 +74,7 @@
 			'end': {{ Configs.end | tojson }}
 		}
 	</script>
-	{% block stylesheets %} {% endblock %}
+
 	{% for stylesheet in get_registered_admin_stylesheets() %}
 		{% if stylesheet.startswith('http') %}
 			<link rel="stylesheet" type="text/css" href="{{ stylesheet }}">
@@ -86,9 +91,9 @@
 		<div class="container">
             <a href="{{ url_for('views.static_html', route='/') }}" class="navbar-brand">
                 {% if Configs.ctf_logo %}
-                <img class="img-responsive ctf_logo" src="{{ url_for('views.files', path=Configs.ctf_logo) }}" height="25" alt="{{ Configs.ctf_name }}管理面板">
+                <img class="img-responsive ctf_logo" src="{{ url_for('views.files', path=Configs.ctf_logo) }}" height="25" alt="{{ Configs.ctf_name }}">
                 {% else %}
-                {{ Configs.ctf_name }}管理面板
+                {{ Configs.ctf_name }}
                 {% endif %}
             </a>
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#base-navbars"
@@ -97,32 +102,32 @@
 			</button>
 			<div class="collapse navbar-collapse" id="base-navbars">
 				<ul class="navbar-nav mr-auto">
-					<li class="nav-item"><a class="nav-link" href="{{ url_for('admin.statistics') }}">统计数据</a></li>
-					<li class="nav-item"><a class="nav-link" href="{{ url_for('admin.notifications') }}">平台通知</a>
+					<li class="nav-item"><a class="nav-link" href="{{ url_for('admin.statistics') }}">{{ 'Statistics' if en else '统计数据' }}</a></li>
+					<li class="nav-item"><a class="nav-link" href="{{ url_for('admin.notifications') }}">{{ 'Notifications' if en else '通知' }}</a>
 					</li>
 					<li class="nav-item dropdown">
-						<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">页面</a>
+						<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">{{ 'Pages' if en else '页面' }}</a>
 						<div class="dropdown-menu">
-							<a class="dropdown-item" href="{{ url_for('admin.pages_listing') }}">全部页面</a>
-							<a class="dropdown-item" href="{{ url_for('admin.pages_new') }}">新建页面</a>
+							<a class="dropdown-item" href="{{ url_for('admin.pages_listing') }}">{{ 'All Pages' if en else '全部页面' }}</a>
+							<a class="dropdown-item" href="{{ url_for('admin.pages_new') }}">{{ 'New Page' if en else '新建页面' }}</a>
 						</div>
 					</li>
-					<li class="nav-item"><a class="nav-link" href="{{ url_for('admin.users_listing') }}">用户</a></li>
+					<li class="nav-item"><a class="nav-link" href="{{ url_for('admin.users_listing') }}">{{ 'Users' if en else '用户' }}</a></li>
 					{% if get_config('user_mode') == 'teams' %}
-					<li class="nav-item"><a class="nav-link" href="{{ url_for('admin.teams_listing') }}">队伍</a></li>
+					<li class="nav-item"><a class="nav-link" href="{{ url_for('admin.teams_listing') }}">{{ 'Teams' if en else '队伍' }}</a></li>
 					{% endif %}
-					<li class="nav-item"><a class="nav-link" href="{{ url_for('admin.scoreboard_listing') }}">计分板</a></li>
-					<li class="nav-item"><a class="nav-link" href="{{ url_for('admin.challenges_listing') }}">题目</a></li>
+					<li class="nav-item"><a class="nav-link" href="{{ url_for('admin.scoreboard_listing') }}">{{ 'Scoreboard' if en else '计分板' }}</a></li>
+					<li class="nav-item"><a class="nav-link" href="{{ url_for('admin.challenges_listing') }}">{{ 'Challenges' if en else '题目' }}</a></li>
 					<li class="nav-item dropdown">
 						<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
-						   aria-haspopup="true" aria-expanded="true">提交记录</a>
+						   aria-haspopup="true" aria-expanded="true">{{ 'Submissions' if en else '提交记录' }}</a>
 						<div class="dropdown-menu">
-							<a class="dropdown-item" href="{{ url_for('admin.submissions_listing') }}">全部提交</a>
-							<a class="dropdown-item" href="{{ url_for('admin.submissions_listing', submission_type='correct') }}">正确提交</a>
-							<a class="dropdown-item" href="{{ url_for('admin.submissions_listing', submission_type='incorrect') }}">错误提交</a>
+							<a class="dropdown-item" href="{{ url_for('admin.submissions_listing') }}">{{ 'All Submissions' if en else '全部提交' }}</a>
+							<a class="dropdown-item" href="{{ url_for('admin.submissions_listing', submission_type='correct') }}">{{ 'Correct Submissions' if en else '正确提交' }}</a>
+							<a class="dropdown-item" href="{{ url_for('admin.submissions_listing', submission_type='incorrect') }}">{{ 'Incorrect Submissions' if en else '错误提交' }}</a>
 						</div>
 					</li>
-					<li class="nav-item"><a class="nav-link" href="{{ url_for('admin.config') }}">平台配置</a></li>
+					<li class="nav-item"><a class="nav-link" href="{{ url_for('admin.config') }}">{{ 'Config' if en else '平台配置' }}</a></li>
 
 					{% set plugin_menu = get_admin_plugin_menu_bar() %}
 					{% set plugins = get_configurable_plugins() %}
@@ -131,18 +136,23 @@
 							<a class="nav-link d-none d-md-block d-lg-block">|</a>
 						</li>
 
-						{% for menu in plugin_menu %}
-							{% if request.script_root %}
-								{% set route = '/' + request.script_root + '/' + menu.route %}
-							{% else %}
-								{% set route = menu.route %}
-							{% endif %}
-							<li class="nav-item"><a class="nav-link" href="{{ route }}">{{ menu.title }}</a></li>
-						{% endfor %}
+                        <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">{{ 'Plugins' if en else '插件' }}</a>
+                            <div class="dropdown-menu">
+                                {% for menu in plugin_menu %}
+                                {% if request.script_root %}
+                                {% set route = '/' + request.script_root + '/' + menu.route %}
+                                {% else %}
+                                {% set route = menu.route %}
+                                {% endif %}
+                                <a class="dropdown-item" href="{{ route }}">{{ menu.title }}</a>
+                                {% endfor %}
+                            </div>
+                        </li>
 
 						{% if plugins %}
 						<li class="nav-item dropdown">
-							<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Plugins <span class="caret"></span></a>
+							<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ 'Plugins' if en else '插件' }} <span class="caret"></span></a>
 							<ul class="dropdown-menu">
 									{% for plugin in plugins %}
 											<a class="dropdown-item" href="{{ request.script_root }}{{ plugin.route }}">{{ plugin.name }}</a>
@@ -152,6 +162,18 @@
 						{% endif %}
 					{% endif %}
 				</ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="nav-item">
+                        <a class="nav-link" href="" onclick="ChangeLanguage()">
+                                <span class="d-block" data-toggle="tooltip" data-placement="bottom" title="{{ 'English' if en else '简体中文' }}">
+                                    <i class="fas fa-language d-none d-md-block d-lg-none"></i>
+                                </span>
+                            <span class="d-sm-block d-md-none d-lg-block">
+                                    <i class="fas fa-language pr-1"></i>{{ 'English' if en else '简体中文' }}
+                                </span>
+                        </a>
+                    </li>
+                </ul>
 				<ul class="nav navbar-nav navbar-right">
 					<li class="nav-item">
 						<a class="nav-link" href="https://docs.ctfd.io/" target="_blank">
@@ -161,35 +183,70 @@
 				</ul>
 			</div>
 		</div>
+        <script>
+            // 切换语言并存储在cookie中
+            function ChangeLanguage()
+            {
+                // 这里你可以添加其他的切换语言的逻辑，比如更新页面内容等
+                const currentLanguage = getLanguage();
+                const newLanguage = currentLanguage === 'zh' ? 'en' : 'zh';
+                setLanguage(newLanguage);
+            }
+
+            // 获取当前语言
+            function getLanguage() {
+                const language = getCookie('Scr1wCTFdLanguage');
+                if (language == null)
+                {
+                    setLanguage('zh');
+                }
+                return language || 'zh'; // 默认为中文
+            }
+
+            // 设置语言并存储在cookie中
+            function setLanguage(language) {
+                setCookie('Scr1wCTFdLanguage', language, 365 * 10); // 存储10年，近乎永不过期
+            }
+
+            // 获取cookie
+            function getCookie(name) {
+                const cookies = document.cookie.split('; ');
+                for (const cookie of cookies) {
+                    const [cookieName, cookieValue] = cookie.split('=');
+                    if (cookieName === name) {
+                        return decodeURIComponent(cookieValue);
+                    }
+                }
+                return null;
+            }
+
+            // 设置cookie
+            function setCookie(name, value, days) {
+                const date = new Date();
+                date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+                const expires = `expires=${date.toUTCString()}`;
+                document.cookie = `${name}=${encodeURIComponent(value)}; ${expires}; path=/`;
+            }
+
+        </script>
 	</nav>
 
 	<main role="main">
-        <!--{% if get_config('version_latest') %}
-    <div class="container-fluid bg-warning text-center py-3">
-      <div class="row">
-        <div class="col-md-12">
-          <a class="btn btn-warning" href="{{ get_config('version_latest') }}">
-            A new CTFd version is available!
-          </a>
-        </div>
-      </div>
-    </div>
-    {% endif %}-->
 		{% block content %}
 		{% endblock %}
 	</main>
 
 	<footer class="footer pt-2">
-		<div class="container text-center">
-			<a href="http://210.30.97.133:8001/" class="text-secondary">
-				<small class="text-muted">
-					Powered by Scr1w
-				</small>
-			</a>
-			<span>
+        <div class="container text-center">
+            <a href="https://space.bilibili.com/690549848" class="text-secondary">
+                <small class="text-muted">
+                    Powered by Scr1w
+                </small>
+            </a>
+            <span>
 				<small class="text-muted"><br> Version {{ get_config('ctf_version') }}</small>
 			</span>
-		</div>
+        </div>
 	</footer>
 
 	<script defer src="{{ url_for('views.themes', theme='admin', path='js/vendor.bundle.js') }}"></script>

@@ -1,16 +1,21 @@
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+{% set en = true %}
+{% else %}
+{% set en = false %}
+{% endif %}
 <table id="keysboard" class="table table-striped">
 	<thead>
 		<tr>
-			<td class="text-center"><b>Type</b></td>
-			<td class="text-center"><b>Key</b></td>
-			<td class="text-center"><b>Settings</b></td>
+			<td class="text-center"><b>{{ 'Type' if en else '类别' }}</b></td>
+			<td class="text-center"><b>{{ 'Key' if en else 'Flag' }}</b></td>
+			<td class="text-center"><b>{{ 'Settings' if en else '设置' }}</b></td>
 		</tr>
 	</thead>
 	<tbody>
 	{% for flag in flags %}
 		<tr name="{{flag.id}}">
 			<td class="key-type text-center">{{flag.type}}</td>
-			<td class="key-value"><pre>{{flag.content}}</pre></td>
+			<td class="key-value"><pre style="word-wrap: break-word;word-break: break-word;">{{flag.content}}</pre></td>
 			<td class="text-center"><span>
 				<i role="button" class="btn-fa fas fa-edit" onclick="javascript:load_edit_key_modal({{flag.id}}, '{{flag.type}}')"></i>
 				<i role="button" class="btn-fa fas fa-times" onclick="javascript:deletekey({{flag.id}})"></i>

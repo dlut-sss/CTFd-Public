@@ -38,15 +38,15 @@
 
       <div class="form-group">
         <label>
-          <b>未解锁时的行为</b>
+          <b>{{ language("Behavior if not unlocked","未解锁时的显示方式") }}</b>
         </label>
         <select
           class="form-control custom-select"
           name="anonymize"
           v-model="selectedAnonymize"
         >
-          <option :value="false">隐藏</option>
-          <option :value="true">匿名</option>
+          <option :value="false">{{ language("Hidden","隐藏") }}</option>
+          <option :value="true">{{ language("Anonymized","匿名 ") }}</option>
         </select>
       </div>
 
@@ -55,7 +55,7 @@
           class="btn btn-success float-right"
           :disabled="!newRequirements"
         >
-          Save
+          {{ language("Save","保存") }}
         </button>
       </div>
     </form>
@@ -109,6 +109,16 @@ export default {
     }
   },
   methods: {
+    language: function (en, zh) {
+      const cookies = document.cookie.split('; ');
+      for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split('=');
+        if (cookieName === "Scr1wCTFdLanguage") {
+          return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+        }
+      }
+      return zh;
+    },
     loadChallenges: function() {
       CTFd.fetch("/api/v1/challenges?view=admin", {
         method: "GET",

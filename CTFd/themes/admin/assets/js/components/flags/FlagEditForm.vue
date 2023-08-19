@@ -6,7 +6,7 @@
           <div class="container">
             <div class="row">
               <div class="col-md-12">
-                <h3 class="text-center">编辑Flag</h3>
+                <h3 class="text-center">{{ language("Edit Flag","编辑Flag") }}</h3>
               </div>
             </div>
           </div>
@@ -15,6 +15,7 @@
             class="close"
             data-dismiss="modal"
             aria-label="Close"
+            style="position: absolute;top: 0;right: 0;padding: 30px;"
           >
             <span aria-hidden="true">&times;</span>
           </button>
@@ -58,6 +59,16 @@ export default {
     }
   },
   methods: {
+    language: function (en, zh) {
+      const cookies = document.cookie.split('; ');
+      for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split('=');
+        if (cookieName === "Scr1wCTFdLanguage") {
+          return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+        }
+      }
+      return zh;
+    },
     loadFlag: function() {
       CTFd.fetch(`/api/v1/flags/${this.$props.flag_id}`, {
         method: "GET"

@@ -1,10 +1,18 @@
 {% extends "challenge.html" %}
 
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+{% set en = true %}
+{% else %}
+{% set en = false %}
+{% endif %}
+
 {% block description %}
     {{ challenge.html }}
     <div class="row text-center pb-3">
         <div id="whale-panel" style="width: 100%;">
-            <button type="button" class="btn btn-primary" onclick="window.challenge.boot()">启动实例</button>
+            <button type="button" class="btn btn-primary" onclick="window.challenge.boot()">
+                {{ 'Launch an instance' if en else '启动实例' }}
+            </button>
         </div>
     </div>
 {% endblock %}
@@ -16,6 +24,6 @@
 
 {% block submit %}
     <button id="challenge-submit" class="challenge-submit" type="submit">
-        提交
+        {{ 'Submit' if en else '提交' }}
     </button>
 {% endblock %}

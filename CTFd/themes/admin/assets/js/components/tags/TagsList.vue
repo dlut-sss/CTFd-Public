@@ -13,9 +13,9 @@
 
     <div class="form-group">
       <label
-        >Tag
+        >{{ language("Tag","标签") }}
         <br />
-        <small class="text-muted">输入标签并按回车键</small>
+        <small class="text-muted">{{ language("Type tag and press Enter","输入标签并按 Enter 键") }}</small>
       </label>
       <input
         id="tags-add-input"
@@ -44,6 +44,16 @@ export default {
     };
   },
   methods: {
+    language: function (en, zh) {
+      const cookies = document.cookie.split('; ');
+      for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split('=');
+        if (cookieName === "Scr1wCTFdLanguage") {
+          return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+        }
+      }
+      return zh;
+    },
     loadTags: function() {
       CTFd.fetch(`/api/v1/challenges/${this.$props.challenge_id}/tags`, {
         method: "GET",

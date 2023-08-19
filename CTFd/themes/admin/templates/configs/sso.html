@@ -1,3 +1,72 @@
+{% if en %}
+<div role="tabpanel" class="tab-pane config-section" id="sso">
+    <form method="POST" autocomplete="off" class="w-100">
+        <div class="form-group">
+            <label for="server-ip">
+                Server Address<br>
+                <small class="form-text text-muted">
+                    Auth Server Address
+                </small>
+                <small class="form-text text-muted">
+                    eg. http://scr1w.dlut.edu.cn/cas/login
+                </small>
+            </label>
+            <input class="form-control" id='sso-server-address' name='sso_server_address' type='text'
+                   {% if sso_server_address is defined and sso_server_address != None %}value="{{ sso_server_address }}"{% endif %}>
+        </div>
+
+        <div class="form-group">
+            <label for="sso-auth">
+                Allow sso login
+            </label>
+            <div>
+                <select class="form-control custom-select" id="sso-auth" name="sso_auth">
+                    <option value=0 {% if sso_auth == 0 %}selected{% endif %}>
+                        OFF
+                    </option>
+                    <option value=1 {% if sso_auth == 1 %}selected{% endif %}>
+                        ON
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="register-uid">
+                Student number required on register
+            </label>
+            <div>
+                <select class="form-control custom-select" id="register-uid" name="register_uid">
+                    <option value=0 {% if register_uid == 0 %}selected{% endif %}>
+                        OFF
+                    </option>
+                    <option value=1 {% if register_uid == 1 %}selected{% endif %}>
+                        ON
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="register-uid-empty">
+                Allow empty student number on register
+            </label>
+            <div>
+                <select class="form-control custom-select" id="register-uid-empty" name="register_uid_empty">
+                    <option value=0 {% if register_uid_empty == 0 %}selected{% endif %}>
+                        OFF
+                    </option>
+                    <option value=1 {% if register_uid_empty == 1 %}selected{% endif %}>
+                        ON
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-md btn-primary float-right">Update</button>
+    </form>
+</div>
+{% else %}
 <div role="tabpanel" class="tab-pane config-section" id="sso">
     <form method="POST" autocomplete="off" class="w-100">
         <div class="form-group">
@@ -14,6 +83,55 @@
                    {% if sso_server_address is defined and sso_server_address != None %}value="{{ sso_server_address }}"{% endif %}>
         </div>
 
+        <div class="form-group">
+            <label for="sso-auth">
+                登陆页面sso认证开关
+            </label>
+            <div>
+                <select class="form-control custom-select" id="sso-auth" name="sso_auth">
+                    <option value=0 {% if sso_auth == 0 %}selected{% endif %}>
+                        关
+                    </option>
+                    <option value=1 {% if sso_auth == 1 %}selected{% endif %}>
+                        开
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="register-uid">
+                注册页面要求学号开关
+            </label>
+            <div>
+                <select class="form-control custom-select" id="register-uid" name="register_uid">
+                    <option value=0 {% if register_uid == 0 %}selected{% endif %}>
+                        关
+                    </option>
+                    <option value=1 {% if register_uid == 1 %}selected{% endif %}>
+                        开
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="register-uid-empty">
+                注册时是否允许学号为空
+            </label>
+            <div>
+                <select class="form-control custom-select" id="register-uid-empty" name="register_uid_empty">
+                    <option value=0 {% if register_uid_empty == 0 %}selected{% endif %}>
+                        否
+                    </option>
+                    <option value=1 {% if register_uid_empty == 1 %}selected{% endif %}>
+                        是
+                    </option>
+                </select>
+            </div>
+        </div>
+
         <button type="submit" class="btn btn-md btn-primary float-right">更新</button>
     </form>
 </div>
+{% endif %}

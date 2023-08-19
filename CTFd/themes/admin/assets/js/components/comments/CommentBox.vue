@@ -4,18 +4,18 @@
       <div class="col-md-12">
         <div class="comment">
           <textarea
-            class="form-control mb-2"
-            rows="2"
-            id="comment-input"
-            placeholder="添加评论"
-            v-model.lazy="comment"
+              class="form-control mb-2"
+              rows="2"
+              id="comment-input"
+              :placeholder="language('Add comment','添加评论')"
+              v-model.lazy="comment"
           ></textarea>
           <button
-            class="btn btn-sm btn-success btn-outlined float-right"
-            type="submit"
-            @click="submitComment()"
+              class="btn btn-sm btn-success btn-outlined float-right"
+              type="submit"
+              @click="submitComment()"
           >
-            评论
+            {{ language('Comment','评论') }}
           </button>
         </div>
       </div>
@@ -26,18 +26,18 @@
         <div class="text-center">
           <!-- Inversed ternary b/c disabled will turn the button off -->
           <button
-            type="button"
-            class="btn btn-link p-0"
-            @click="prevPage()"
-            :disabled="prev ? false : true"
+              type="button"
+              class="btn btn-link p-0"
+              @click="prevPage()"
+              :disabled="prev ? false : true"
           >
             &lt;&lt;&lt;
           </button>
           <button
-            type="button"
-            class="btn btn-link p-0"
-            @click="nextPage()"
-            :disabled="next ? false : true"
+              type="button"
+              class="btn btn-link p-0"
+              @click="nextPage()"
+              :disabled="next ? false : true"
           >
             &gt;&gt;&gt;
           </button>
@@ -45,25 +45,25 @@
       </div>
       <div class="col-md-12">
         <div class="text-center">
-          <small class="text-muted"
-            >Page {{ page }} of {{ total }} comments</small
-          >
+          <small class="text-muted">
+            {{ language("Page ","第") }}{{ page }}{{ language(" of ","页 （共") }} {{ total }} {{ language(" comments","条评论）") }}
+          </small>
         </div>
       </div>
     </div>
     <div class="comments">
       <transition-group name="comment-card">
         <div
-          class="comment-card card mb-2"
-          v-for="comment in comments"
-          :key="comment.id"
+            class="comment-card card mb-2"
+            v-for="comment in comments"
+            :key="comment.id"
         >
           <div class="card-body pl-0 pb-0 pt-2 pr-2">
             <button
-              type="button"
-              class="close float-right"
-              aria-label="Close"
-              @click="deleteComment(comment.id)"
+                type="button"
+                class="close float-right"
+                aria-label="Close"
+                @click="deleteComment(comment.id)"
             >
               <span aria-hidden="true">&times;</span>
             </button>
@@ -73,8 +73,8 @@
             <small class="text-muted float-left">
               <span>
                 <a :href="`${urlRoot}/admin/users/${comment.author_id}`">{{
-                  comment.author.name
-                }}</a>
+                    comment.author.name
+                  }}</a>
               </span>
             </small>
             <small class="text-muted float-right">
@@ -89,18 +89,18 @@
         <div class="text-center">
           <!-- Inversed ternary b/c disabled will turn the button off -->
           <button
-            type="button"
-            class="btn btn-link p-0"
-            @click="prevPage()"
-            :disabled="prev ? false : true"
+              type="button"
+              class="btn btn-link p-0"
+              @click="prevPage()"
+              :disabled="prev ? false : true"
           >
             &lt;&lt;&lt;
           </button>
           <button
-            type="button"
-            class="btn btn-link p-0"
-            @click="nextPage()"
-            :disabled="next ? false : true"
+              type="button"
+              class="btn btn-link p-0"
+              @click="nextPage()"
+              :disabled="next ? false : true"
           >
             &gt;&gt;&gt;
           </button>
@@ -108,9 +108,9 @@
       </div>
       <div class="col-md-12">
         <div class="text-center">
-          <small class="text-muted"
-            >Page {{ page }} of {{ total }} comments</small
-          >
+          <small class="text-muted">
+            {{ language("Page ","第") }}{{ page }}{{ language(" of ","页 （共") }} {{ total }} {{ language(" comments","条评论）") }}
+          </small>
         </div>
       </div>
     </div>
@@ -119,9 +119,10 @@
 
 <script>
 import CTFd from "core/CTFd";
-import { default as helpers } from "core/helpers";
+import {default as helpers} from "core/helpers";
 import dayjs from "dayjs";
 import hljs from "highlight.js";
+
 export default {
   props: {
     // These props are passed to the api via query string.
@@ -129,7 +130,7 @@ export default {
     type: String,
     id: Number
   },
-  data: function() {
+  data: function () {
     return {
       page: 1,
       pages: null,
@@ -142,23 +143,33 @@ export default {
     };
   },
   methods: {
-    toLocalTime(date) {
-      return dayjs(date).format("MMMM Do, h:mm:ss A");
+    language: function (en, zh) {
+      const cookies = document.cookie.split('; ');
+      for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split('=');
+        if (cookieName === "Scr1wCTFdLanguage") {
+          return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+        }
+      }
+      return zh;
     },
-    nextPage: function() {
+    toLocalTime(date) {
+      return dayjs(date).format("MMMM Do, HH:mm:ss ");
+    },
+    nextPage: function () {
       this.page++;
       this.loadComments();
     },
-    prevPage: function() {
+    prevPage: function () {
       this.page--;
       this.loadComments();
     },
-    getArgs: function() {
+    getArgs: function () {
       let args = {};
       args[`${this.$props.type}_id`] = this.$props.id;
       return args;
     },
-    loadComments: function() {
+    loadComments: function () {
       let apiArgs = this.getArgs();
       apiArgs[`page`] = this.page;
       apiArgs[`per_page`] = 10;
@@ -173,22 +184,22 @@ export default {
         return this.comments;
       });
     },
-    submitComment: function() {
+    submitComment: function () {
       let comment = this.comment.trim();
       if (comment.length > 0) {
         helpers.comments.add_comment(
-          comment,
-          this.$props.type,
-          this.getArgs(),
-          () => {
-            this.loadComments();
-          }
+            comment,
+            this.$props.type,
+            this.getArgs(),
+            () => {
+              this.loadComments();
+            }
         );
       }
       this.comment = "";
     },
-    deleteComment: function(commentId) {
-      if (confirm("Are you sure you'd like to delete this comment?")) {
+    deleteComment: function (commentId) {
+      if (confirm(this.language("Are you sure you'd like to delete this comment?","您确定要删除此评论吗？"))) {
         helpers.comments.delete_comment(commentId).then(response => {
           if (response.success === true) {
             for (let i = this.comments.length - 1; i >= 0; --i) {
@@ -217,9 +228,11 @@ export default {
   opacity: 0;
   transition: 0.2s;
 }
+
 .card:hover .close {
   opacity: 0.5;
 }
+
 .close:hover {
   opacity: 0.75 !important;
 }
@@ -227,12 +240,15 @@ export default {
 .comment-card-leave {
   max-height: 200px;
 }
+
 .comment-card-leave-to {
   max-height: 0;
 }
+
 .comment-card-active {
   position: absolute;
 }
+
 .comment-card-enter-active,
 .comment-card-move,
 .comment-card-leave-active {

@@ -2,6 +2,8 @@ import "./main";
 import "core/utils";
 import "bootstrap/js/dist/tab";
 import dayjs from "dayjs";
+import 'dayjs/locale/zh-cn';
+import 'dayjs/locale/en';
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -14,6 +16,17 @@ import CodeMirror from "codemirror";
 import "codemirror/mode/htmlmixed/htmlmixed.js";
 import Vue from "vue/dist/vue.esm.browser";
 import FieldList from "../components/configs/fields/FieldList.vue";
+
+function language(en,zh) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === "Scr1wCTFdLanguage") {
+      return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+    }
+  }
+  return zh;
+}
 
 dayjs.extend(advancedFormat);
 dayjs.extend(utc);
@@ -125,9 +138,9 @@ function updateConfigs(event) {
     } else {
       let errors = _response.errors.value.join("\n");
       ezAlert({
-        title: "Error!",
+        title: language("Error!","错误！"),
         body: errors,
-        button: "Okay"
+        button: language("Okay","好吧")
       });
     }
   });
@@ -153,9 +166,9 @@ function uploadLogo(event) {
           window.location.reload();
         } else {
           ezAlert({
-            title: "Error!",
-            body: "Logo uploading failed!",
-            button: "Okay"
+            title: language("Error!","错误！"),
+            body: language("Icon uploading failed!","图标上传失败！"),
+            button: language("Okay","好吧")
           });
         }
       });
@@ -166,7 +179,7 @@ function switchUserMode(event) {
   event.preventDefault();
   if (
     confirm(
-      "Are you sure you'd like to switch user modes?\n\nAll user submissions, awards, unlocks, and tracking will be deleted!"
+        language("Are you sure you'd like to switch user modes?\n\nAll user submissions, awards, unlocks, and tracking will be deleted!","您确定要切换用户模式吗？\n\n所有用户的提交记录、奖励、解锁内容和IP记录都将被删除！")
     )
   ) {
     let formData = new FormData();
@@ -185,8 +198,8 @@ function switchUserMode(event) {
 
 function removeLogo() {
   ezQuery({
-    title: "Remove logo",
-    body: "Are you sure you'd like to remove the CTF logo?",
+    title: language("Remove logo","移除logo"),
+    body: language("Are you sure you'd like to remove the CTF logo?","“您确定要删除 CTF 徽标吗？”"),
     success: function() {
       const params = {
         value: null
@@ -220,9 +233,9 @@ function smallIconUpload(event) {
           window.location.reload();
         } else {
           ezAlert({
-            title: "Error!",
-            body: "Icon uploading failed!",
-            button: "Okay"
+            title: language("Error!","错误！"),
+            body: language("Icon uploading failed!","图标上传失败！"),
+            button: language("Okay","好吧")
           });
         }
       });
@@ -231,8 +244,8 @@ function smallIconUpload(event) {
 
 function removeSmallIcon() {
   ezQuery({
-    title: "Remove logo",
-    body: "Are you sure you'd like to remove the small site icon?",
+    title: language("Remove logo","移除logo"),
+    body: language("Are you sure you'd like to remove the small site icon?","您确定要删除网站小图标吗？"),
     success: function() {
       const params = {
         value: null
@@ -258,7 +271,7 @@ function importCSV(event) {
 
   let pg = ezProgressBar({
     width: 0,
-    title: "上传进度"
+    title: language("Upload Progress","上传进度")
   });
 
   $.ajax({
@@ -327,7 +340,7 @@ function importConfig(event) {
 
   let pg = ezProgressBar({
     width: 0,
-    title: "上传进度"
+    title: language("Upload Progress","上传进度")
   });
 
   $.ajax({
@@ -468,6 +481,11 @@ $(() => {
   insertTimezones($("#start-timezone"));
   insertTimezones($("#end-timezone"));
   insertTimezones($("#freeze-timezone"));
+  insertTimezones($("#backend-timezone-select"));
+
+  $('#backend-timezone-select').on('change', function() {
+    $('#backend-timezone').val($(this).val());
+  });
 
   $(".config-section > form:not(.form-upload, .custom-config-form)").submit(
     updateConfigs

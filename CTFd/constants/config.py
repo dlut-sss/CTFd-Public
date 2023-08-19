@@ -56,6 +56,18 @@ class _ConfigsWrapper:
         return get_config("sso_server_address", default="CTFd")
 
     @property
+    def sso_auth(self):
+        return get_config("sso_auth", default="CTFd")
+
+    @property
+    def register_uid(self):
+        return get_config("register_uid", default="CTFd")
+
+    @property
+    def register_uid_empty(self):
+        return get_config("register_uid_empty", default="CTFd")
+
+    @property
     def ctf_name(self):
         return get_config("ctf_name", default="CTFd")
 

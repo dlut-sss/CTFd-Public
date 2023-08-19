@@ -1,9 +1,9 @@
 import logging
 import logging.handlers
-import time
 
 from flask import session
 
+from CTFd.utils import current_backend_time
 from CTFd.utils.user import get_ip
 
 
@@ -11,7 +11,7 @@ def log(logger, format, **kwargs):
     logger = logging.getLogger(logger)
     props = {
         "id": session.get("id"),
-        "date": time.strftime("%m/%d/%Y %X"),
+        "date": current_backend_time().strftime("%Y/%m/%d %X"),
         "ip": get_ip(),
     }
     props.update(kwargs)

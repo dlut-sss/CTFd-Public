@@ -1,4 +1,9 @@
 {% macro render_extra_fields(fields, show_labels=True, show_optionals=True, show_descriptions=True) -%}
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+{% set en = true %}
+{% else %}
+{% set en = false %}
+{% endif %}
     {% for field in fields %}
     <div class="form-group">
         {% if field.field_type == "text" %}
@@ -8,7 +13,7 @@
 
             {% if show_optionals %}
                 {% if field.flags.required is false %}
-                    <small class="float-right text-muted">Optional</small>
+                    <small class="float-right text-muted">{{ 'Optional' if en else '可选' }}</small>
                 {% endif %}
             {% endif %}
 
@@ -28,7 +33,7 @@
 
                 {% if show_optionals %}
                     {% if field.flags.required is false %}
-                        <sup class="text-muted">Optional</sup>
+                        <sup class="text-muted">{{ 'Optional' if en else '可选' }}</sup>
                     {% endif %}
                 {% endif %}
             </div>

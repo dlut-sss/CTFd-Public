@@ -2,23 +2,23 @@
 
 {% block menu %}
     <li class="nav-item">
-        <a class="nav-link" href="/plugins/ctfd-whale/admin/settings">🔗 设置</a>
+        <a class="nav-link" href="/plugins/ctfd-whale/admin/settings">🔗{{"Settings" if en else "设置"}}</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link active" href="#">实例</a>
+        <a class="nav-link active" href="#">{{"Instances" if en else "实例"}}</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="/plugins/ctfd-whale/admin/upload">🔗 上传</a>
+        <a class="nav-link" href="/plugins/ctfd-whale/admin/upload">🔗{{"Upload" if en else "上传"}}</a>
     </li>
 
     <li class="nav-item nav-link">
         <div class="btn-group" role="group">
             <button type="button" class="btn btn-outline-secondary"
-                data-toggle="tooltip" title="延期容器" id="containers-renew-button">
+                data-toggle="tooltip" title="{{"Renew Containers" if en else "延期容器"}}" id="containers-renew-button">
                 <i class="btn-fa fas fa-sync"></i>
             </button>
-            <button type="button" class="btn btn-outline-danger"
-                data-toggle="tooltip" title="关闭容器" id="containers-delete-button">
+            <button type="button" class="btn btn-outline-danger" style="margin-left: 10px"
+                data-toggle="tooltip" title="{{"Destroy Containers" if en else "关闭容器"}}" id="containers-delete-button">
                 <i class="btn-fa fas fa-times"></i>
             </button>
         </div>
@@ -31,7 +31,7 @@
                    href="/plugins/ctfd-whale/admin/containers?page={{ curr_page - 1 }}"
                 >
                     <span aria-hidden="true">&laquo;</span>
-                    <span class="sr-only">上一页</span>
+                    <span class="sr-only">{{"Previous Page" if en else "上一页"}}</span>
                 </a>
             </li>
             {% set range_l = [[curr_page - 1, 1]|max, [pages - 3, 1]|max]|min %}
@@ -48,7 +48,7 @@
                    href="/plugins/ctfd-whale/admin/containers?page={{ curr_page + 1 }}"
                 >
                     <span aria-hidden="true">&raquo;</span>
-                    <span class="sr-only">下一页</span>
+                    <span class="sr-only">{{"Next Page" if en else "下一页"}}</span>
                 </a>
             </li>
         </ul>
@@ -56,9 +56,9 @@
 
     <li class="nav-item nav-link">
         {% if session['view_mode'] == 'card' %}
-            <a href="?mode=list">切换到列表模式</a>
+            <a href="?mode=list">{{"List Mode" if en else "切换到列表模式"}}</a>
         {% else %}
-            <a href="?mode=card">切换到卡片模式</a>
+            <a href="?mode=card">{{"Card Mode" if en else "切换到卡片模式"}}</a>
         {% endif %}
     </li>
 {% endblock %}

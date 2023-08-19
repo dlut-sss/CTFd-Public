@@ -58,7 +58,7 @@
 							</div>
 						</div>
 						<small class="form-text text-muted">
-                            分享此链接以便用户加入该团队
+							Share this link for users to join this team
 						</small>
 					</div>
 				</form>
@@ -252,13 +252,13 @@
 	<div class="row min-vh-25 pt-5 pb-5">
 		<div class="col-md-12 table-responsive">
 			<table class="table table-striped">
-				<h3 class="text-center">团队成员</h3>
+				<h3 class="text-center">Team Members</h3>
 				<thead>
 				<tr>
 					<td class="text-center"></td>
-					<td class="text-center"><b>用户名</b></td>
-					<td class="text-center"><b>电子邮件l</b></td>
-					<td class="text-center"><b>得分</b></td>
+					<td class="text-center"><b>User Name</b></td>
+					<td class="text-center"><b>E-Mail</b></td>
+					<td class="text-center"><b>Score</b></td>
 					<td class="text-center"></td>
 				</tr>
 				</thead>
@@ -364,7 +364,7 @@
 										{{ solve.user.name }}
 									</a>
 								</td>
-								<td class="flag" id="{{ solve.id }}"><pre style="word-wrap: break-word;word-break: break-word;">{{ solve.provided }}</pre></td>
+								<td class="flag" id="{{ solve.id }}"><pre>{{ solve.provided }}</pre></td>
 								<td class="text-center">{{ solve.challenge.category }}</td>
 								<td class="text-center">{{ solve.challenge.value }}</td>
 								<td class="text-center solve-time">
@@ -428,7 +428,7 @@
 										{{ fail.user.name }}
 									</a>
 								</td>
-								<td class="flag" id="{{ fail.id }}"><pre style="word-wrap: break-word;word-break: break-word;">{{ fail.provided }}</pre></td>
+								<td class="flag" id="{{ fail.id }}"><pre>{{ fail.provided }}</pre></td>
 								<td class="text-center solve-time">
 									<span data-time="{{ fail.date | isoformat }}"></span>
 								</td>

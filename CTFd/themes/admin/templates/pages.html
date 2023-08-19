@@ -6,9 +6,9 @@
 {% block content %}
 <div class="jumbotron">
 	<div class="container">
-        <h1><b>自定义页面</b>
+		<h1><b>{{ 'Pages' if en else '自定义页面' }}</b>
 			<a class="no-decoration" href="{{ url_for('admin.pages_new') }}">
-				<span class="create-page" role="button" data-toggle="tooltip" title="添加页面">
+				<span class="create-page" role="button" data-toggle="tooltip" title="{{ 'Create Page' if en else '添加页面' }}">
 					<i class="btn-fa fas fa-plus-circle"></i>
 				</span>
 			</a>
@@ -21,7 +21,7 @@
 		<div class="col-md-12">
 			<div class="float-right pb-3">
 				<div class="btn-group" role="group">
-					<button type="button" class="btn btn-outline-danger" data-toggle="tooltip" title="删除页面" id="pages-delete-button">
+					<button type="button" class="btn btn-outline-danger" data-toggle="tooltip" title="{{ 'Delete Pages' if en else '删除页面' }}" id="pages-delete-button">
 						<i class="btn-fa fas fa-trash-alt"></i>
 					</button>
 				</div>
@@ -38,11 +38,11 @@
 							<input type="checkbox" class="form-check-input" id="pages-bulk-select" autocomplete="off" data-checkbox-all>&nbsp;
 						</div>
 					</th>
-					<th class="sort-col text-center"><b>标题</b></th>
-					<th class="sort-col text-center"><b>路由</b></th>
-					<th class="sort-col text-center"><b>是否需要认证</b></th>
-					<th class="sort-col text-center"><b>是否隐藏</b></th>
-					<th class="sort-col text-center"><b>是否发布</b></th>
+					<th class="sort-col text-center"><b>{{ 'Title' if en else '标题' }}</b></th>
+					<th class="sort-col text-center"><b>{{ 'Route' if en else '路由' }}</b></th>
+					<th class="sort-col text-center"><b>{{ 'Authentication' if en else '是否需要认证' }}</b></th>
+					<th class="sort-col text-center"><b>{{ 'Hidden' if en else '可见性' }}</b></th>
+					<th class="sort-col text-center"><b>{{ 'Published' if en else '发布状态' }}</b></th>
 				</tr>
 				</thead>
 				<tbody>
@@ -63,21 +63,23 @@
 						</td>
 						<td class="text-center">
 							{% if page.auth_required %}
-							需要
+							{{ 'Required' if en else '需要' }}
 							{% else %}
+                            {{ 'Not required' if en else '不需要' }}
 							{% endif %}
 						</td>
 						<td class="text-center">
 							{% if page.hidden %}
-								隐藏
+								{{ 'Hidden' if en else '隐藏' }}
 							{% else %}
+                                {{ 'Visible' if en else '可见' }}
 							{% endif %}
 						</td>
 						<td class="text-center">
 							{% if page.draft %}
-								草稿
+								{{ 'Draft' if en else '草稿' }}
 							{% else %}
-								已发布
+								{{ 'Published' if en else '已发布' }}
 							{% endif %}
 						</td>
 					</tr>

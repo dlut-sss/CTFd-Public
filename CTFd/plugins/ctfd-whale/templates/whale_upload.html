@@ -2,39 +2,39 @@
 
 {% block menu %}
     <li class="nav-item">
-        <a class="nav-link" href="/plugins/ctfd-whale/admin/settings">🔗 设置</a>
+        <a class="nav-link" href="/plugins/ctfd-whale/admin/settings">🔗{{"Settings" if en else "设置"}}</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="/plugins/ctfd-whale/admin/containers">🔗 实例</a>
+        <a class="nav-link" href="/plugins/ctfd-whale/admin/containers">🔗{{"Instances" if en else "实例"}}</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link active" href="#">上传</a>
+        <a class="nav-link active" href="#">{{"Upload" if en else "上传"}}</a>
     </li>
 {% endblock %}
 
 {% block panel %}
     <div>
         <div class="form-group" id="drop">
-            <p>您可以在下面上传镜像的tar文件，服务器端会尝试导入镜像。您应该只上传您信任的镜像！</p>
+            <p>{{"You can upload the tar file of the image below, and the server will try to import the image. You should only upload image that you trust!" if en else "您可以在下面上传镜像的tar文件，服务器端会尝试导入镜像。您应该只上传您信任的镜像！"}}</p>
             <div class="form-group">
                 <div style="display: flex;gap: 10px;">
                     <div style="flex: 1;">
-                        <label for="value">镜像name<br>
+                        <label for="value">{{"Image Name" if en else "镜像name"}}<br>
                             <small class="form-text text-muted">
                                 eg. fr000g/untrain1
                             </small>
                         </label>
                         <input type="text" class="form-control" name="docker_image_name" id="docker_image_name"
-                               placeholder="输入镜像name" id="docker_name_input" required="" value="">
+                               placeholder="{{"Enter Image Name" if en else "输入镜像name"}}" id="docker_name_input" required="" value="">
                     </div>
                     <div style="flex: 1;">
-                        <label for="value">镜像tag<br>
+                        <label for="value">{{"Image Tag" if en else "镜像tag"}}<br>
                             <small class="form-text text-muted">
                                 eg. latest
                             </small>
                         </label>
                         <input type="text" class="form-control" name="docker_image_tag" id="docker_image_tag"
-                               placeholder="输入镜像tag" id="docker_tag_input" required="" value="latest">
+                               placeholder="{{"Enter Image Tag" if en else "输入镜像tag"}}" id="docker_tag_input" required="" value="latest">
                     </div>
                 </div>
             </div>
@@ -42,7 +42,7 @@
                  style="border: 2px dashed #ccc;padding: 20px;text-align: center;height: 200px;display: flex;align-items: center;justify-content: center;">
                 <div class="centered-content"
                      style="display: flex;flex-direction: column;align-items: center;justify-content: center;height: 100%;">
-                    <h2>将镜像文件拖拽至此处上传(请一次仅拖拽一个文件)</h2>
+                    <h2>{{"Drag and drop the image file here to upload (please only drag and drop one file at a time)" if en else "将镜像文件拖拽至此处上传(请一次仅拖拽一个文件)"}}</h2>
                 </div>
             </div>
         </div>
@@ -56,18 +56,18 @@
             if (docker_image_name.value=="")
             {
                 var e = new Object;
-                e.title = "警告";
-                e.body = "未设置镜像name";
-                e.button="知道了";
+                e.title = "{{'Warning' if en else '警告'}}";
+                e.body = "{{'Image name not set' if en else '未设置镜像name'}}";
+                e.button="{{'Got it' if en else '知道了'}}";
                 CTFd.ui.ezq.ezAlert(e)
                 return;
             }
             if (docker_image_tag.value=="")
             {
                 var e = new Object;
-                e.title = "警告";
-                e.body = "未设置镜像tag";
-                e.button="知道了";
+                e.title = "{{'Warning' if en else '警告'}}";
+                e.body = "{{'Image tag not set' if en else '未设置镜像tag'}}";
+                e.button="{{'Got it' if en else '知道了'}}";
                 CTFd.ui.ezq.ezAlert(e)
                 return;
             }
@@ -131,17 +131,17 @@
                     progressBar.remove();
                     docker_image_name.value="";
                     var e = new Object;
-                    e.title = "上传成功！";
-                    e.body = "镜像上传完成！";
+                    e.title = "{{'Upload success!' if en else '上传成功！'}}";
+                    e.body = "{{'Image upload success!' if en else '镜像上传完成！'}}";
                     CTFd.ui.ezq.ezToast(e)
                 },
                 error: function (xhr, status, error) {
                     fileNameElement.remove();
                     progressBar.remove();
                     var e = new Object;
-                    e.title = "上传失败！";
+                    e.title = "{{'Upload fail!' if en else '上传失败！'}}";
                     e.body = JSON.parse(xhr.responseText).message;
-                    e.button="知道了";
+                    e.button="{{'Got it' if en else '知道了'}}";
                     CTFd.ui.ezq.ezAlert(e)
                 }
             });

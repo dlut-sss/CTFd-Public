@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{{ Configs.ctf_name }}</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon" href="{{ Configs.ctf_small_icon }}" type="image/x-icon">
+	<link rel="stylesheet" href="{{ url_for('views.themes', path='css/fonts.css') }}">
+	<link rel="stylesheet" href="{{ url_for('views.themes', path='css/main.css') }}">
+	<link rel="stylesheet" href="{{ url_for('views.themes', path='css/core.css') }}">
+	{% block stylesheets %}
+	{% endblock %}
+    <style id="pages_style">
+        /* cyrillic-ext */
+        @font-face {
+            font-family: 'Press Start 2P';
+            font-style: normal;
+            font-weight: 400;
+            src: url('{{ url_for('views.themes', path='fonts/PressStart2P1.woff2') }}') format('woff2');
+            unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+        }
+        /* cyrillic */
+        @font-face {
+            font-family: 'Press Start 2P';
+            font-style: normal;
+            font-weight: 400;
+            src: url('{{ url_for('views.themes', path='fonts/PressStart2P2.woff2') }}') format('woff2');
+            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+        }
+        /* greek */
+        @font-face {
+            font-family: 'Press Start 2P';
+            font-style: normal;
+            font-weight: 400;
+            src: url('{{ url_for('views.themes', path='fonts/PressStart2P3.woff2') }}') format('woff2');
+            unicode-range: U+0370-03FF;
+        }
+        /* latin-ext */
+        @font-face {
+            font-family: 'Press Start 2P';
+            font-style: normal;
+            font-weight: 400;
+            src: url('{{ url_for('views.themes', path='fonts/PressStart2P4.woff2') }}') format('woff2');
+            unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+        }
+        /* latin */
+        @font-face {
+            font-family: 'Press Start 2P';
+            font-style: normal;
+            font-weight: 400;
+            src: url('{{ url_for('views.themes', path='fonts/PressStart2P5.woff2') }}') format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+        @font-face {
+            font-family: 'FantasqueSansMonoRegular';
+            src: url('{{ url_for('views.themes', path='fonts/FantasqueSansMonoRegular.ttf') }}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'FantasqueSansMonoBold';
+            src: url('{{ url_for('views.themes', path='fonts/FantasqueSansMonoBold.ttf') }}') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'AnitaSemisquareNormal';
+            src: url('{{ url_for('views.themes', path='fonts/AnitaSemisquareNormal.ttf') }}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        code, pre, h1, h2, h3, #submission-input {
+            font-family: 'FantasqueSansMonoRegular', "Raleway";
+        }
+        h3 {
+            font-family: 'AnitaSemisquareNormal';
+            font-weight: normal;
+            font-style: normal;
+            white-space: nowrap;
+        }
+        .bg-dark {
+            background-color: #006fce !important;
+            background:url('{{ url_for('views.themes', path='img/back_blue.jpg') }}');
+            filter:saturate(130%);
+        }
+        .jumbotron {
+            background: url('{{ url_for('views.themes', path='img/halfbg.png') }}');
+            height: 300px;
+        }
+        .jumbotron h1 {
+            margin-top: 2rem;
+            font-family: 'Press Start 2P', cursive;
+        }
+        html, body, main {
+            background-color: #ffffff !important;
+            background-size: 100%;
+            color: rgb(0, 0, 0);
+        }
+        .modal-content {
+            background-color: #ffffff;
+            border-radius: 10px!important;
+        }
+        .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+            background-color: #45629d;
+            color: rgb(255, 255, 255);
+        }
+        .btn{
+            line-height: 25px;
+            border-radius: 5px!important;
+        }
+        .btn-primary {
+            color: #fff;
+            background-color: #45629d;
+            border-color: #45629d;
+            border-radius: 5px!important;
+        }
+        .btn-primary:hover {
+            color: #fff;
+            background-color: #45629da1;
+            border-color: #45629d00;
+            border-radius: 5px!important;
+        }
+        .btn-outline-secondary:hover {
+            color: #fff;
+            background-color: #45629d;
+            border-color: #45629d;
+            border-radius: 5px!important;
+        }
+        .btn-info {
+            background-color: #45629d !important;
+            border-radius: 5px!important;
+        }
+        .btn-dark {
+            color: #fff;
+            background-color: #45629d;
+            border: none;
+            border-radius: 5px!important;
+        }
+        .btn-dark:hover {
+            /*  border-color: #6666997d;*/
+            color: #fff;
+            background-color: #45629da1;
+            border: none;
+            border-radius: 5px!important;
+        }
+        .challenge-button {
+            box-shadow: 0 0 0  #006fce;
+        }
+        .challenge-input {
+            border-radius: 5px!important;
+        }
+        .form-control {
+            border-radius: 5px!important;
+        }
+        .solved-challenge {
+            background-color: #70a998 !important;
+            opacity: 1;
+            border: none;
+        }
+        .nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+            color: #fff;
+            background-color: #45629d;
+        }
+        .card {
+            border-radius: 10px!important;
+        }
+        .category-bar{
+            top: 80px;
+            padding: 14px 10px 10px;
+            margin-top:40px;
+            border-radius: 10px;
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            width:200px;
+            position: sticky;
+            z-index: 1020;
+        }
+        .challenge-button-container{
+            max-width: 20%;
+            padding-left:0px;
+            min-width:200px;
+        }
+        .challenge-button-content{
+            padding: 0px;
+            border-radius: 10px;
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 8px 12px;
+            transition: transform 0.3s ease 0s;
+            transform: none;
+        }
+    </style>
+
+
+    {% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+    {% set en = true %}
+    {% else %}
+    {% set en = false %}
+    {% endif %}
+
+	{{ Plugins.styles }}
+	<script type="text/javascript">
+		var init = {
+			'urlRoot': "{{ request.script_root }}",
+			'csrfNonce': "{{ Session.nonce }}",
+			'userMode': "{{ Configs.user_mode }}",
+			'userId': {{ Session.id }},
+			'userName': {{ User.name | tojson }},
+			'userEmail': {{ User.email | tojson }},
+			'teamId': {{ Team.id | tojson }},
+			'teamName': {{ Team.name | tojson }},
+			'start': {{ Configs.start | tojson }},
+			'end': {{ Configs.end | tojson }},
+			'theme_settings': {{ Configs.theme_settings | tojson }}
+		}
+	</script>
+	{{ Configs.theme_header }}
+</head>
+<body>
+	{% include "components/navbar.html" %}
+
+	<main role="main">
+		{% block content %}
+		{% endblock %}
+	</main>
+
+    <footer class="footer">
+        <div class="container text-center">
+            <a href="https://space.bilibili.com/690549848" class="text-secondary">
+                <small class="text-muted">Powered by Scr1w</small>
+            </a>
+        </div>
+    </footer>
+
+	<script defer src="{{ url_for('views.themes', path='js/vendor.bundle.js') }}"></script>
+	<script defer src="{{ url_for('views.themes', path='js/core.js') }}"></script>
+	<script defer src="{{ url_for('views.themes', path='js/helpers.js') }}"></script>
+
+	{% block entrypoint %}
+	<script defer src="{{ url_for('views.themes', path='js/pages/main.js') }}"></script>
+	{% endblock %}
+
+	{% block scripts %}
+	{% endblock %}
+
+	{{ Plugins.scripts }}
+
+	{{ Configs.theme_footer }}
+</body>
+</html>

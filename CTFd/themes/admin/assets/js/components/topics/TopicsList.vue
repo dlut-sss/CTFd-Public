@@ -9,9 +9,9 @@
 
     <div class="form-group">
       <label>
-        主题
+        {{ language("Topic","话题") }}
         <br />
-        <small class="text-muted">输入主题并按回车</small>
+        <small class="text-muted">{{ language("Type topic and press Enter","输入话题并按 Enter") }}</small>
       </label>
       <input
         id="tags-add-input"
@@ -61,6 +61,16 @@ export default {
     };
   },
   methods: {
+    language: function (en, zh) {
+      const cookies = document.cookie.split('; ');
+      for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split('=');
+        if (cookieName === "Scr1wCTFdLanguage") {
+          return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+        }
+      }
+      return zh;
+    },
     loadTopics: function() {
       CTFd.fetch(`/api/v1/challenges/${this.$props.challenge_id}/topics`, {
         method: "GET",

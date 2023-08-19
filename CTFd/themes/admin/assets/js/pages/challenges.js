@@ -3,6 +3,17 @@ import CTFd from "core/CTFd";
 import $ from "jquery";
 import { ezAlert, ezQuery } from "core/ezq";
 
+function language(en,zh) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === "Scr1wCTFdLanguage") {
+      return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+    }
+  }
+  return zh;
+}
+
 function deleteSelectedChallenges(_event) {
   let challengeIDs = $("input[data-challenge-id]:checked").map(function() {
     return $(this).data("challenge-id");
@@ -10,8 +21,8 @@ function deleteSelectedChallenges(_event) {
   let target = challengeIDs.length === 1 ? "challenge" : "challenges";
 
   ezQuery({
-    title: "删除题目",
-    body: `你确定要删除 ${challengeIDs.length} 个 ${target}?`,
+    title: language("Delete Challenges","删除题目"),
+    body: language(`Are you sure you want to delete ${challengeIDs.length} ${target}?`,`你确定要删除${challengeIDs.length}个题目吗`),
     success: function() {
       const reqs = [];
       for (var chalID of challengeIDs) {
@@ -34,28 +45,54 @@ function bulkEditChallenges(_event) {
   });
 
   ezAlert({
-    title: "编辑题目",
-    body: $(`
+    title: language("Edit Challenges","编辑题目"),
+    body: $(language(`
     <form id="challenges-bulk-edit">
       <div class="form-group">
-        <label>类别</label>
+        <label>Category</label>
         <input type="text" name="category" data-initial="" value="">
       </div>
       <div class="form-group">
-        <label>分值</label>
+        <label>Subcategory</label>
+        <input type="text" name="subcategory" data-initial="" value="">
+      </div>
+      <div class="form-group">
+        <label>Value</label>
         <input type="number" name="value" data-initial="" value="">
       </div>
       <div class="form-group">
         <label>State</label>
         <select name="state" data-initial="">
           <option value="">--</option>
+          <option value="visible">Visible</option>
+          <option value="hidden">Hidden</option>
+        </select>
+      </div>
+    </form>
+    `,`
+    <form id="challenges-bulk-edit">
+      <div class="form-group">
+        <label>类别</label>
+        <input type="text" name="category" data-initial="" value="">
+      </div>
+      <div class="form-group">
+        <label>子类别</label>
+        <input type="text" name="subcategory" data-initial="" value="">
+      </div>
+      <div class="form-group">
+        <label>分值</label>
+        <input type="number" name="value" data-initial="" value="">
+      </div>
+      <div class="form-group">
+        <label>状态</label>
+        <select name="state" data-initial="">
+          <option value="">--</option>
           <option value="visible">可见</option>
           <option value="hidden">隐藏</option>
         </select>
       </div>
-    </form>
-    `),
-    button: "提交",
+    </form>`)),
+    button: language("Submit","提交"),
     success: function() {
       let data = $("#challenges-bulk-edit").serializeJSON(true);
       const reqs = [];

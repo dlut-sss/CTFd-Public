@@ -68,14 +68,20 @@ class DynamicValueDockerChallenge(BaseChallenge):
     def attempt(cls, challenge, request):
         data = request.form or request.get_json()
         submission = data["submission"].strip()
-
+        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
         flags = Flags.query.filter_by(challenge_id=challenge.id).all()
 
         if len(flags) > 0:
             for flag in flags:
                 if get_flag_class(flag.type).compare(flag, submission):
-                    return True, "Bingo！答对啦！"
-            return False, "答案不对喵"
+                    if language == "zh":
+                        return True, "Bingo！答对啦！"
+                    else:
+                        return True, "Correct!"
+            if language == "zh":
+                return False, "答案不对喵！"
+            else:
+                return False, "Incorrect!"
         else:
             user_id = current_user.get_current_user().id
             q = db.session.query(WhaleContainer)
@@ -83,12 +89,21 @@ class DynamicValueDockerChallenge(BaseChallenge):
             q = q.filter(WhaleContainer.challenge_id == challenge.id)
             records = q.all()
             if len(records) == 0:
-                return False, "Please solve it during the container is running"
+                if language == "zh":
+                    return False, "请在容器处于开启状态时提交答案"
+                else:
+                    return False, "Please solve it during the container is running"
 
             container = records[0]
             if container.flag == submission:
-                return True, "Bingo！答对啦！"
-            return False, "答案不对喵"
+                if language == "zh":
+                    return True, "Bingo！答对啦！"
+                else:
+                    return True, "Correct!"
+            if language == "zh":
+                return False, "答案不对喵！"
+            else:
+                return False, "Incorrect!"
 
     @classmethod
     def solve(cls, user, team, challenge, request):

@@ -7,6 +7,17 @@ import { createGraph, updateGraph } from "core/graphs";
 import Vue from "vue/dist/vue.esm.browser";
 import CommentBox from "../components/comments/CommentBox.vue";
 
+function language(en,zh) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === "Scr1wCTFdLanguage") {
+      return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+    }
+  }
+  return zh;
+}
+
 function createUser(event) {
   event.preventDefault();
   const params = $("#user-info-create-form").serializeJSON(true);
@@ -121,8 +132,8 @@ function updateUser(event) {
 function deleteUser(event) {
   event.preventDefault();
   ezQuery({
-    title: "Delete User",
-    body: "你确定要删除{0}".format(
+    title: language("Delete User","删除用户"),
+    body: language("Are you sure you want to delete {0}","你确定要删除{0}").format(
       "<strong>" + htmlEntities(window.USER_NAME) + "</strong>"
     ),
     success: function() {
@@ -199,7 +210,7 @@ function emailUser(event) {
         $("#user-mail-form > #results").append(
           ezBadge({
             type: "success",
-            body: "E-Mail sent successfully!"
+            body: language("E-Mail sent successfully!","邮件发送成功！")
           })
         );
         $("#user-mail-form")
@@ -233,12 +244,12 @@ function deleteSelectedSubmissions(event, target) {
     case "solves":
       submissions = $("input[data-submission-type=correct]:checked");
       type = "solve";
-      title = "Solves";
+      title = language(" Solves","正确提交");
       break;
     case "fails":
       submissions = $("input[data-submission-type=incorrect]:checked");
       type = "fail";
-      title = "Fails";
+      title = language(" Fails","错误提交");
       break;
     default:
       break;
@@ -250,10 +261,8 @@ function deleteSelectedSubmissions(event, target) {
   let target_string = submissionIDs.length === 1 ? type : type + "s";
 
   ezQuery({
-    title: `Delete ${title}`,
-    body: `你确定要删除${
-      submissionIDs.length
-    } ${target_string}?`,
+    title: (language("Delete","删除")+`${title}`),
+    body: language(`Are you sure you want to delete ${submissionIDs.length} ${target_string}?`,`你确定要删除${submissionIDs.length}个${title}吗？`),
     success: function() {
       const reqs = [];
       for (var subId of submissionIDs) {
@@ -270,11 +279,11 @@ function deleteSelectedAwards(_event) {
   let awardIDs = $("input[data-award-id]:checked").map(function() {
     return $(this).data("award-id");
   });
-  let target = awardIDs.length === 1 ? "award" : "awards";
+  let target = awardIDs.length === 1 ? language(" award","个奖励") : language(" awards","个奖励");
 
   ezQuery({
-    title: `Delete Awards`,
-    body: `你确定要删除${awardIDs.length} ${target}?`,
+    title: language("Delete Awards","删除奖励"),
+    body: language("Are you sure you want to delete ","你确定要删除")+`${awardIDs.length}${target}?`,
     success: function() {
       const reqs = [];
       for (var awardID of awardIDs) {
@@ -305,10 +314,8 @@ function solveSelectedMissingChallenges(event) {
   let target = challengeIDs.length === 1 ? "challenge" : "challenges";
 
   ezQuery({
-    title: `Mark Correct`,
-    body: `Are you sure you want to mark ${
-      challengeIDs.length
-    } ${target} correct for ${htmlEntities(window.USER_NAME)}?`,
+    title: language("Mark Correct","标记解出"),
+    body: language(`Are you sure you want to mark ${challengeIDs.length} ${target} correct for ${htmlEntities(window.USER_NAME)}?`,`你确定要标记${htmlEntities(window.USER_NAME)}解出了${challengeIDs.length}个题目吗`)+` `,
     success: function() {
       const reqs = [];
       for (var challengeID of challengeIDs) {

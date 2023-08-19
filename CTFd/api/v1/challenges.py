@@ -1,4 +1,6 @@
+import logging
 from typing import List  # noqa: I001
+from urllib.parse import urlencode
 
 from flask import abort, render_template, request, url_for
 from flask_restx import Namespace, Resource
@@ -22,7 +24,7 @@ from CTFd.schemas.challenges import ChallengeSchema
 from CTFd.schemas.flags import FlagSchema
 from CTFd.schemas.hints import HintSchema
 from CTFd.schemas.tags import TagSchema
-from CTFd.utils import config, get_config
+from CTFd.utils import config, get_config, current_backend_time
 from CTFd.utils import user as current_user
 from CTFd.utils.challenges import (
     get_all_challenges,
@@ -475,8 +477,38 @@ class Challenge(Resource):
         challenge_class = get_chal_class(challenge.type)
         challenge = challenge_class.update(challenge, request)
         response = challenge_class.read(challenge)
-        thread = threading.Thread(target=SendCreateMessage, args=(challenge, state_before))
-        thread.start()
+
+        # 上题和题目更新播报
+        try:
+            bot = get_config("bot")
+            if bot:
+                bot_url = "http://" + str(get_config("bot_ip")) + "/send_group_msg?group_id=" + str(
+                    get_config("group_id")) + "&message="
+                if challenge.state != "hidden" and challenge.state != "locked":
+                    if state_before == "hidden":
+                        bot_message = get_config("createtext") % (challenge.category, challenge.name)
+                        url = bot_url + bot_message
+                        log("bot",
+                            "[{date}] [CTFd] Bot发送消息：{bot_message}",
+                            bot_message=bot_message,
+                            )
+                        thread = threading.Thread(target=SendGetRequest, args=(url,))
+                        thread.start()
+                    elif state_before != "hidden":
+                        bot_message = get_config("updatetext") % (challenge.category, challenge.name)
+                        url = bot_url + bot_message
+                        log("bot",
+                            "[{date}] [CTFd] Bot发送消息：{bot_message}",
+                            bot_message=bot_message,
+                            )
+                        thread = threading.Thread(target=SendGetRequest, args=(url,))
+                        thread.start()
+        except Exception as e:
+            log("bot",
+                "[{date}] [CTFd] Bot发送消息失败：错误原因({reason}) 错误消息({error_message})",
+                reason=type(e).__name__, error_message=str(e),
+                )
+
         clear_standings()
         clear_challenges()
 
@@ -498,45 +530,23 @@ class Challenge(Resource):
         return {"success": True}
 
 
-def SendSolveMessage(challenge_id, user):
+def SendGetRequest(url):
+    logger = logging.getLogger("request")
+    current_date = current_backend_time().strftime("%Y/%m/%d %X")
+    logger.info("[{}] [CTFd] 尝试发送网络请求: URL({})".format(current_date, url))
     try:
-        # Robot API
-        # TODO: send http request when the challenge plugin says the input is right
-        bot = get_config("bot")
-        if bot:
-            group_id = get_config("group_id")
-            bot_ip = get_config("bot_ip")
-            boturl = "http://" + str(bot_ip) + "/send_group_msg?group_id=" + str(group_id) + "&message="
-            bottext = get_config("bottext")
-            challenge = Challenges.query.filter_by(id=challenge_id).first_or_404()
-            botmessage = (bottext) % (user.name, challenge.name)
-            url = boturl + botmessage
-            requests.get(str(url))
+        response = requests.get(str(url))
+        if response.status_code == 200:
+            current_date = current_backend_time().strftime("%Y/%m/%d %X")
+            logger.info(
+                "[{}] [CTFd] 请求响应: 状态码({}) URL({}) 内容：{}".format(current_date, response.status_code, url,
+                                                                          response.text.replace('\n', '')))
+        else:
+            current_date = current_backend_time().strftime("%Y/%m/%d %X")
+            logger.info("[{}] [CTFd] 请求失败: 状态码({}) URL({})".format(current_date, response.status_code, url))
     except Exception as e:
-        cause_exception = e.__cause__
-
-
-def SendCreateMessage(challenge, state_before):
-    try:
-        # ROBOT send message when update the information of challenge
-        bot = get_config("bot")
-        if bot:
-            group_id = get_config("group_id")
-            bot_ip = get_config("bot_ip")
-            boturl = "http://" + str(bot_ip) + "/send_group_msg?group_id=" + str(group_id) + "&message="
-            if challenge.state != "hidden" and challenge.state != "locked":
-                if state_before == "hidden":
-                    bottext = get_config("createtext")
-                    botmessage = (bottext) % (challenge.category, challenge.name)
-                    url = boturl + botmessage
-                    requests.get(str(url))
-                elif state_before != "hidden":
-                    bottext = get_config("updatetext")
-                    botmessage = (bottext) % (challenge.category, challenge.name)
-                    url = boturl + botmessage
-                    requests.get(str(url))
-    except Exception as e:
-        cause_exception = e.__cause__
+        current_date = current_backend_time().strftime("%Y/%m/%d %X")
+        logger.info("[{}] [CTFd] 请求失败: 错误原因({}) 错误消息({})".format(current_date, type(e).__name__, str(e)))
 
 
 @challenges_namespace.route("/attempt")
@@ -570,17 +580,31 @@ class ChallengeAttempt(Resource):
                     },
                 }
 
+        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+
         if ctf_paused():
-            return (
-                {
-                    "success": True,
-                    "data": {
-                        "status": "paused",
-                        "message": "{} 已经暂停".format(config.ctf_name()),
+            if language == "zh":
+                return (
+                    {
+                        "success": True,
+                        "data": {
+                            "status": "paused",
+                            "message": "{} 已经暂停".format(config.ctf_name()),
+                        },
                     },
-                },
-                403,
-            )
+                    403,
+                )
+            else:
+                return (
+                    {
+                        "success": True,
+                        "data": {
+                            "status": "paused",
+                            "message": "{} is paused".format(config.ctf_name()),
+                        },
+                    },
+                    403,
+                )
 
         user = get_current_user()
         team = get_current_team()
@@ -632,23 +656,35 @@ class ChallengeAttempt(Resource):
                 )
             log(
                 "submissions",
-                "[{date}] {name} submitted {submission} on {challenge_id} with kpm {kpm} [TOO FAST]",
+                "[{date}] {name} 以 {kpm} 的kpm 提交了题目(ID:{challenge_id})的答案 {submission} [提交过快]",
                 name=user.name,
                 submission=request_data.get("submission", "").encode("utf-8"),
                 challenge_id=challenge_id,
                 kpm=kpm,
             )
             # Submitting too fast
-            return (
-                {
-                    "success": True,
-                    "data": {
-                        "status": "ratelimited",
-                        "message": "你提交flag的速度太快了，慢点",
+            if language == "zh":
+                return (
+                    {
+                        "success": True,
+                        "data": {
+                            "status": "ratelimited",
+                            "message": "你提交flag的速度太快了，慢点。",
+                        },
                     },
-                },
-                429,
-            )
+                    429,
+                )
+            else:
+                return (
+                    {
+                        "success": True,
+                        "data": {
+                            "status": "ratelimited",
+                            "message": "You're submitting flags too fast. Slow down.",
+                        },
+                    },
+                    429,
+                )
 
         solves = Solves.query.filter_by(
             account_id=user.account_id, challenge_id=challenge_id
@@ -659,19 +695,33 @@ class ChallengeAttempt(Resource):
             # Hit max attempts
             max_tries = challenge.max_attempts
             if max_tries and fails >= max_tries > 0:
-                return (
-                    {
-                        "success": True,
-                        "data": {
-                            "status": "incorrect",
-                            "message": "你用尽了全部尝试次数",
+                if language == "zh":
+                    return (
+                        {
+                            "success": True,
+                            "data": {
+                                "status": "incorrect",
+                                "message": "你用尽了全部尝试次数",
+                            },
                         },
-                    },
-                    403,
-                )
+                        403,
+                    )
+                else:
+                    return (
+                        {
+                            "success": True,
+                            "data": {
+                                "status": "incorrect",
+                                "message": "You have 0 tries remaining",
+                            },
+                        },
+                        403,
+                    )
 
             status, message = chal_class.attempt(challenge, request)
             if status:  # The challenge plugin says the input is right
+                challenge = Challenges.query.filter_by(id=challenge_id).first_or_404()
+
                 if ctftime() or current_user.is_admin():
                     chal_class.solve(
                         user=user, team=team, challenge=challenge, request=request
@@ -679,12 +729,29 @@ class ChallengeAttempt(Resource):
                     clear_standings()
                     clear_challenges()
 
-                thread = threading.Thread(target=SendSolveMessage, args=(challenge_id, user))
-                thread.start()
+                # 解题成功发送bot消息
+                try:
+                    bot = get_config("bot")
+                    if bot:
+                        bot_url = "http://" + str(get_config("bot_ip")) + "/send_group_msg?group_id=" + str(
+                            get_config("group_id")) + "&message="
+                        bot_message = get_config("bottext") % (user.name, challenge.name)
+                        url = bot_url + bot_message
+                        log("bot",
+                            "[{date}] [CTFd] Bot发送消息：{bot_message}",
+                            bot_message=bot_message,
+                            )
+                        thread = threading.Thread(target=SendGetRequest, args=(url,))
+                        thread.start()
+                except Exception as e:
+                    log("bot",
+                        "[{date}] [CTFd] Bot发送消息失败：错误原因({reason}) 错误消息({error_message})",
+                        reason=type(e).__name__, error_message=str(e),
+                        )
 
                 log(
                     "submissions",
-                    "[{date}] {name} submitted {submission} on {challenge_id} with kpm {kpm} [CORRECT]",
+                    "[{date}] {name} 以 {kpm} 的kpm 提交了题目(ID:{challenge_id})的答案 {submission} [提交正确]",
                     name=user.name,
                     submission=request_data.get("submission", "").encode("utf-8"),
                     challenge_id=challenge_id,
@@ -704,7 +771,7 @@ class ChallengeAttempt(Resource):
 
                 log(
                     "submissions",
-                    "[{date}] {name} submitted {submission} on {challenge_id} with kpm {kpm} [WRONG]",
+                    "[{date}] {name} 以 {kpm} 的kpm 提交了题目(ID:{challenge_id})的答案 {submission} [提交错误]",
                     name=user.name,
                     submission=request_data.get("submission", "").encode("utf-8"),
                     challenge_id=challenge_id,
@@ -712,23 +779,42 @@ class ChallengeAttempt(Resource):
                 )
 
                 if max_tries:
-                    # Off by one since fails has changed since it was gotten
-                    attempts_left = max_tries - fails - 1
-                    tries_str = "次"
-                    if attempts_left == 1:
+                    if language == "zh":
+                        # Off by one since fails has changed since it was gotten
+                        attempts_left = max_tries - fails - 1
                         tries_str = "次"
-                    # Add a punctuation mark if there isn't one
-                    if message[-1] not in "!().;?[]{}":
-                        message = message + "."
-                    return {
-                        "success": True,
-                        "data": {
-                            "status": "incorrect",
-                            "message": "{} 你还剩 {} {} 尝试次数.".format(
-                                message, attempts_left, tries_str
-                            ),
-                        },
-                    }
+                        if attempts_left == 1:
+                            tries_str = "次"
+                        # Add a punctuation mark if there isn't one
+                        if message[-1] not in "!().;?[]{}":
+                            message = message + "."
+                        return {
+                            "success": True,
+                            "data": {
+                                "status": "incorrect",
+                                "message": "{} 你还剩 {} {} 尝试次数.".format(
+                                    message, attempts_left, tries_str
+                                ),
+                            },
+                        }
+                    else:
+                        # Off by one since fails has changed since it was gotten
+                        attempts_left = max_tries - fails - 1
+                        tries_str = "tries"
+                        if attempts_left == 1:
+                            tries_str = "try"
+                        # Add a punctuation mark if there isn't one
+                        if message[-1] not in "!().;?[]{}":
+                            message = message + "."
+                        return {
+                            "success": True,
+                            "data": {
+                                "status": "incorrect",
+                                "message": "{} You have {} {} remaining.".format(
+                                    message, attempts_left, tries_str
+                                ),
+                            },
+                        }
                 else:
                     return {
                         "success": True,
@@ -739,19 +825,28 @@ class ChallengeAttempt(Resource):
         else:
             log(
                 "submissions",
-                "[{date}] {name} submitted {submission} on {challenge_id} with kpm {kpm} [ALREADY SOLVED]",
+                "[{date}] {name} 以 {kpm} 的kpm 提交了题目(ID:{challenge_id})的答案 {submission} [已经解出]",
                 name=user.name,
                 submission=request_data.get("submission", "").encode("utf-8"),
                 challenge_id=challenge_id,
                 kpm=kpm,
             )
-            return {
-                "success": True,
-                "data": {
-                    "status": "already_solved",
-                    "message": "这道题你已经做过了哦",
-                },
-            }
+            if language == "zh":
+                return {
+                    "success": True,
+                    "data": {
+                        "status": "already_solved",
+                        "message": "这道题你已经做过了哦",
+                    },
+                }
+            else:
+                return {
+                    "success": True,
+                    "data": {
+                        "status": "already_solved",
+                        "message": "You already solved this",
+                    },
+                }
 
 
 @challenges_namespace.route("/<challenge_id>/solves")

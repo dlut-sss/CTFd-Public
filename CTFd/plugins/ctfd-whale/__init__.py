@@ -1,5 +1,8 @@
 import fcntl
+import logging
 import os
+import sys
+import traceback
 import warnings
 
 import requests
@@ -12,8 +15,9 @@ from CTFd.plugins import (
     register_admin_plugin_menu_bar,
 )
 from CTFd.plugins.challenges import CHALLENGE_CLASSES
-from CTFd.utils import get_config, set_config, import_in_progress
+from CTFd.utils import get_config, set_config, import_in_progress, current_backend_time
 from CTFd.utils.decorators import admins_only
+from CTFd.utils.logging import log
 
 from .api import user_namespace, admin_namespace, AdminContainers
 from .challenge_type import DynamicValueDockerChallenge
@@ -64,6 +68,8 @@ def load(app):
 
     worker_config_commit = None
 
+    init_logs(app)
+
     @page_blueprint.route('/admin/settings')
     @admins_only
     def admin_list_configs():
@@ -93,6 +99,7 @@ def load(app):
     @page_blueprint.route("/admin/upload", methods=['GET', 'POST'])
     @admins_only
     def admin_upload_image():
+        global filepath
         if request.method == 'POST':
             name = request.args.get("name")
             if not name:
@@ -123,14 +130,25 @@ def load(app):
                 try:
                     filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
                     file.save(filepath)
-                    print("[CTFd Whale] 上传的镜像文件 " + name + ":" + tag + " 保存至：" + filepath)
+                    log(
+                        "whale",
+                        "[{date}] [CTFd Whale] {ip}上传的镜像文件({name}:{tag})保存至:{filepath}",
+                        name=name,
+                        tag=tag,
+                        filepath=filepath,
+                    )
                     try:
                         image_info = DockerUtils.client.images.get(name + ":" + tag)
                         DockerUtils.client.api.remove_image(name + ":" + tag)
                     except Exception as e:
                         pass
                     DockerUtils.client.api.import_image_from_file(filepath, repository=name, tag=tag)
-                    print("[CTFd Whale] " + name + ":" + tag + "导入完成")
+                    log(
+                        "whale",
+                        "[{date}] [CTFd Whale] {name}:{tag}导入完成。",
+                        name=name,
+                        tag=tag,
+                    )
                     # 删除上传的文件
                     os.remove(filepath)
                     return {
@@ -138,7 +156,18 @@ def load(app):
                                'message': '镜像上传完成'
                            }, 200
                 except Exception as e:
-                    print(e)
+                    try:
+                        os.remove(filepath)
+                    except Exception:
+                        pass
+                    traceback_str = ''.join(traceback.format_tb(e.__traceback__))
+                    log(
+                        "whale",
+                        "[{date}] [CTFd Whale] {name}镜像加载失败。{error}\n{tb}",
+                        name=(name + ":" + tag),
+                        error=e,
+                        tb=traceback_str,
+                    )
                     return {
                                'success': False,
                                'message': '镜像加载失败<br>' + str(e)
@@ -152,19 +181,35 @@ def load(app):
         try:
             # 获取GET请求中的name参数
             name = request.args.get('name')
+            log(
+                "whale",
+                "[{date}] [CTFd Whale] 尝试更新镜像{name}。",
+                name=name,
+            )
             DockerUtils.client.api.pull(name)
             # 返回HTTP状态码200
-            print("[CTFd Whale] " + name + "镜像更新成功")
+            log(
+                "whale",
+                "[{date}] [CTFd Whale] {name}镜像更新成功。",
+                name=name,
+            )
             return {
                        'success': True,
                        'message': '镜像更新完成'
                    }, 200
         except Exception as e:
-            print("[CTFd Whale] " + name + "镜像更新失败")
-            print(e)
+            name = request.args.get('name')
+            traceback_str = ''.join(traceback.format_tb(e.__traceback__))
+            log(
+                "whale",
+                "[{date}] [CTFd Whale] {name}镜像更新失败。{error}\n{tb}",
+                name=name,
+                error=e,
+                tb=traceback_str
+            )
             return {
                        'success': False,
-                       'message': '镜像更新出错：\n' + str(e.__cause__)
+                       'message': '镜像更新出错：<br>' + str(e.__cause__)
                    }, 200
 
     def auto_clean_container():
@@ -180,8 +225,12 @@ def load(app):
         Router.check_availability()
         DockerUtils.init()
     except Exception as e:
-        warnings.warn("[CTFd Whale] 初始化失败，请检查配置。\n" + e,
-                      WhaleWarning)
+        traceback_str = ''.join(traceback.format_tb(e.__traceback__))
+        logger = logging.getLogger("whale")
+        current_date = current_backend_time().strftime("%Y/%m/%d %X")
+        logger.info(
+            "[{}] [CTFd Whale] 初始化失败，请检查配置。\n{} \n{}\n{}".format(current_date, e, WhaleWarning, traceback_str)
+        )
 
     try:
         lock_file = open("/tmp/ctfd_whale.lock", "w")
@@ -196,6 +245,33 @@ def load(app):
                           trigger="interval",
                           seconds=10)
 
-        print("[CTFd Whale] 启动成功！")
+        logger = logging.getLogger("whale")
+        current_date = current_backend_time().strftime("%Y/%m/%d %X")
+        logger.info("[{}] [CTFd Whale] 启动初始化完成。".format(current_date))
     except IOError:
         pass
+
+
+def init_logs(app):
+    logger_whale = logging.getLogger("whale")
+    logger_whale.setLevel(logging.INFO)
+
+    log_dir = app.config["LOG_FOLDER"]
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+    logs = {
+        "whale": os.path.join(log_dir, "whale.log"),
+    }
+    try:
+        for log in logs.values():
+            if not os.path.exists(log):
+                open(log, "a").close()
+        whale_log = logging.handlers.RotatingFileHandler(
+            logs["whale"], maxBytes=10485760, backupCount=5
+        )
+        logger_whale.addHandler(whale_log)
+    except IOError:
+        pass
+    stdout = logging.StreamHandler(stream=sys.stdout)
+    logger_whale.addHandler(stdout)
+    logger_whale.propagate = 0

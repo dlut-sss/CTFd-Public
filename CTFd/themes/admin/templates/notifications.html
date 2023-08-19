@@ -3,7 +3,7 @@
 {% block content %}
 	<div class="jumbotron">
 		<div class="container">
-            <h1><b>通知</b></h1>
+            <h1><b>{{ 'Notifications' if en else '通知' }}</b></h1>
 		</div>
 	</div>
 	<div class="container">
@@ -12,23 +12,23 @@
 				{% with form = Forms.notifications.NotificationForm() %}
 				<form method="POST" id="notifications_form" autocomplete="off">
 					<div class="form-group">
-						<b>{{ form.title.label }}</b>
+						<b>{{ 'Title' if en else form.title.label }}</b>
 						{{ form.title(class="form-control") }}
 						<small class="form-text text-muted">
-							{{ form.title.description }}
+                            {{ 'Notification title' if en else form.title.description }}
 						</small>
 					</div>
 					<div class="form-group">
-						<b>{{ form.content.label }}</b>
+						<b>{{ 'Content' if en else form.content.label }}</b>
 						{{ form.content(class="form-control", rows="3") }}
 						<small class="form-text text-muted">
-							{{ form.content.description }}
+                            {{ 'Notification contents. Can consist of HTML and/or Markdown.' if en else form.content.description }}
 						</small>
 					</div>
 					<div class="form-row">
 						<div class="col">
 							<div class="form-group">
-								<b>{{ form.type.label }}</b>
+								<b>{{ 'Notification Type' if en else form.type.label }}</b>
 							</div>
 							{% for radio in form.type %}
 								<div class="form-check form-check-inline pr-1">
@@ -37,12 +37,12 @@
 								</div>
 							{% endfor %}
 							<small class="form-text text-muted">
-								{{ form.type.description }}
+                                {{ 'What type of notification users receive' if en else form.type.description }}
 							</small>
 						</div>
 						<div class="col">
 							<div class="form-group">
-								<b>{{ form.sound.label }}</b>
+								<b>{{ 'Play Sound' if en else form.sound.label }}</b>
 							</div>
 							<div class="form-check">
 								{{ form.sound(class="form-check-input") }}
@@ -54,7 +54,11 @@
 						</div>
 					</div>
 					<div class="float-right">
-						{{ form.submit(class="btn btn-success text-center") }}
+                        {% if en %}
+                        {{ form.submit(class="btn btn-success text-center",value="Submit") }}
+                        {% else %}
+                        {{ form.submit(class="btn btn-success text-center",value="提交") }}
+                        {% endif %}
 					</div>
 				</form>
 				{% endwith %}

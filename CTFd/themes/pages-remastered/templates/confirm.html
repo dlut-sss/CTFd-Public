@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block stylesheets %}
+{% endblock %}
+
+{% block content %}
+	<div class="jumbotron">
+		<div class="container">
+            <h1><b>{{ 'Confirm' if en else '确认邮件' }}</b></h1>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-6 offset-md-3">
+				{% include "components/errors.html" %}
+                {% if en %}
+                <h5 class="text-center">
+                    We've sent a confirmation email to your email address.
+                </h5>
+                <br>
+                <h5 class="text-center">
+                    Please click the link in that email to confirm your account.
+                </h5>
+                <br>
+                <h5 class="text-center">
+                    If the email doesn’t arrive, check your spam folder or
+                    contact an administrator to manually verify your account.
+                </h5>
+                <hr>
+                {% else %}
+                <h5 class="text-center">
+                    我们已向您的电子邮件地址发送了一封确认电子邮件。
+                </h5>
+                <br>
+                <h5 class="text-center">
+                    请点击该电子邮件中的链接以确认您的帐户。
+                </h5>
+                <br>
+                <h5 class="text-center">
+                    如果电子邮件未到达，请检查您的垃圾邮件文件夹
+                    或联系管理员手动验证您的帐户。
+                </h5>
+                <hr>
+                {% endif %}
+
+				{% with form = Forms.auth.ConfirmForm() %}
+				<form method="POST" action="{{ url_for('auth.confirm') }}">
+					<div class="row">
+						<div class="col-md-6">
+							{{ form.submit(class="btn btn-md btn-primary btn-outlined w-100") }}
+						</div>
+						<div class="col-md-6">
+							<a href="{{ url_for('views.settings') }}" class="btn btn-md btn-secondary btn-outlined w-100">
+								{{ 'Change Email Address' if en else '修改邮箱地址' }}
+							</a>
+						</div>
+						{{ form.nonce() }}
+					</div>
+				</form>
+				{% endwith %}
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+

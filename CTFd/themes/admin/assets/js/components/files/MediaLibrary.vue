@@ -6,7 +6,9 @@
           <div class="container">
             <div class="row">
               <div class="col-md-12">
-                <h3 class="text-center">媒体库</h3>
+                <h3 class="text-center">
+                  {{ language("Media Library","媒体库") }}
+                </h3>
               </div>
             </div>
           </div>
@@ -47,7 +49,9 @@
                   </div>
                 </div>
                 <div class="col-md-6" id="media-library-details">
-                  <h4 class="text-center">媒体详情</h4>
+                  <h4 class="text-center">
+                    {{ language("Media Details","媒体文件信息") }}
+                  </h4>
                   <div id="media-item">
                     <div class="text-center" id="media-icon">
                       <div v-if="this.selectedFile">
@@ -88,7 +92,7 @@
 
                     <div class="form-group">
                       <div v-if="this.selectedFile">
-                        Link:
+                        {{ language("Link:","链接：") }}
                         <input
                           class="form-control"
                           type="text"
@@ -98,7 +102,7 @@
                         />
                       </div>
                       <div v-else>
-                        Link:
+                        {{ language("Link:","链接：") }}
                         <input
                           class="form-control"
                           type="text"
@@ -117,9 +121,9 @@
                             id="media-insert"
                             data-toggle="tooltip"
                             data-placement="top"
-                            title="将链接插入编辑器"
+                            :title="language('Insert link into editor','将链接插入编辑器')"
                           >
-                            插入
+                            {{ language("Insert","插入链接") }}
                           </button>
                         </div>
                         <div class="col-md-3">
@@ -129,7 +133,7 @@
                             id="media-download"
                             data-toggle="tooltip"
                             data-placement="top"
-                            title="下载文件"
+                            :title="language('Download file','下载文件')"
                           >
                             <i class="fas fa-download"></i>
                           </button>
@@ -141,7 +145,7 @@
                             id="media-delete"
                             data-toggle="tooltip"
                             data-placement="top"
-                            title="删除文件"
+                            :title="language('Delete file','删除文件')"
                           >
                             <i class="far fa-trash-alt"></i>
                           </button>
@@ -157,7 +161,7 @@
           <form id="media-library-upload" enctype="multipart/form-data">
             <div class="form-group">
               <label for="media-files">
-                上传文件
+                {{ language("Upload Files","上传文件") }}
               </label>
               <input
                 type="file"
@@ -167,7 +171,7 @@
                 multiple
               />
               <sub class="help-block">
-                使用 Control+单击或 Cmd+单击附加多个文件。
+                {{ language("Attach multiple files using Control+Click or Cmd+Click.","使用 Control+单击或 Cmd+单击附加多个文件。") }}
               </sub>
             </div>
             <input type="hidden" value="page" name="type" />
@@ -180,7 +184,7 @@
               type="submit"
               class="btn btn-primary media-upload-button"
             >
-              上传
+              {{ language("Upload","上传") }}
             </button>
           </div>
         </div>
@@ -213,6 +217,16 @@ export default {
     };
   },
   methods: {
+    language: function (en, zh) {
+      const cookies = document.cookie.split('; ');
+      for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split('=');
+        if (cookieName === "Scr1wCTFdLanguage") {
+          return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+        }
+      }
+      return zh;
+    },
     getPageFiles: function() {
       get_page_files().then(response => {
         this.files = response.data;
@@ -237,7 +251,7 @@ export default {
     deleteSelectedFile: function() {
       var file_id = this.selectedFile.id;
 
-      if (confirm("你确定要删除这个文件吗？")) {
+      if (confirm(this.language("Are you sure you want to delete this file?", "您确定要删除该文件吗？"))) {
         CTFd.fetch("/api/v1/files/" + file_id, {
           method: "DELETE"
         }).then(response => {

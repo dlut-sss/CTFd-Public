@@ -1,9 +1,15 @@
 {% extends "admin/base.html" %}
 
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+{% set en = true %}
+{% else %}
+{% set en = false %}
+{% endif %}
+
 {% block content %}
     <div class="jumbotron">
         <div class="container">
-            <h1>计分板插件设置</h1>
+            <h1><b>{{"Matrix Scoreboard Setting" if en else "计分板插件设置"}}</b></h1>
         </div>
     </div>
     <div class="container">

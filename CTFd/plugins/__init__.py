@@ -6,6 +6,7 @@ from collections import namedtuple
 from flask import current_app as app
 from flask import send_file, send_from_directory, url_for
 
+from CTFd.utils import current_backend_time
 from CTFd.utils.config.pages import get_pages
 from CTFd.utils.decorators import admins_only as admins_only_wrapper
 from CTFd.utils.plugins import override_template as utils_override_template
@@ -201,9 +202,11 @@ def init_plugins(app):
             module = "." + plugin
             module = importlib.import_module(module, package="CTFd.plugins")
             module.load(app)
-            print(" * Loaded module, %s" % module)
+            current_date = current_backend_time().strftime("%Y/%m/%d %X")
+            print("[{}] [Plugins] 模块{}加载完成。".format(current_date, plugin))
     else:
-        print("SAFE_MODE is enabled. Skipping plugin loading.")
+        current_date = current_backend_time().strftime("%Y/%m/%d %X")
+        print("[{}] [Plugins] 安全模式已启用。 跳过插件加载。".format(current_date))
 
     app.jinja_env.globals.update(get_admin_plugin_menu_bar=get_admin_plugin_menu_bar)
     app.jinja_env.globals.update(get_user_page_menu_bar=get_user_page_menu_bar)

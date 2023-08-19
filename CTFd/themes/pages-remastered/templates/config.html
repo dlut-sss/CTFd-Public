@@ -1,0 +1,17 @@
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+{% set en = true %}
+{% else %}
+{% set en = false %}
+{% endif %}
+<form>
+  <div class="form-group">
+    <label>{{ 'Challenge Window Size' if en else '题目窗口大小' }}</label>
+    <select class="form-control custom-select" name="challenge_window_size">
+        <option value="sm">{{ 'Small' if en else '小' }}</option>
+        <option value="norm">{{ 'Normal' if en else '常规' }}</option>
+        <option value="lg">{{ 'Large' if en else '大' }}</option>
+        <option value="xl">{{ 'Extra Large' if en else '超大' }}</option>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary float-right">{{ 'Update' if en else '更新设置' }}</button>
+</form>

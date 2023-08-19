@@ -1,2 +1,2 @@
 ADMIN_THEME = "admin"
-DEFAULT_THEME = "pages"
+DEFAULT_THEME = "pages-remastered"

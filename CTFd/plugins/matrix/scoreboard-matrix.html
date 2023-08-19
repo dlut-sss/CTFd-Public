@@ -1,4 +1,5 @@
-{% extends "base.html" %} {% block stylesheets %}
+{% extends "base.html" %}
+{% block stylesheets %}
 <style>
     th.chalname {
         height: 80px;
@@ -51,10 +52,18 @@
         cursor: -webkit-grab;
     }
 </style>
-{% endblock %} {% block content %}
+{% endblock %}
+
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+{% set en = true %}
+{% else %}
+{% set en = false %}
+{% endif %}
+
+{% block content %}
 <div class="jumbotron home">
     <div class="container">
-        <h1>{{Configs.ctf_name}}计分板</h1>
+        <h1><b>{{"Scoreboard" if en else "计分板"}}</b></h1>
     </div>
 </div>
 <div class="container main-container">
@@ -69,7 +78,7 @@
     {% else %} {% if score_frozen %}
     <div class="container main-container">
         <div class="row">
-            <h1>计分板已经冻结。</h1>
+            <h1>{{"The scoreboard is frozen." if en else "计分板已经冻结。"}}</h1>
         </div>
     </div>
     {% endif %}
@@ -77,11 +86,11 @@
         <table id="scoreboard" class="table table-striped">
             <thead>
                 <tr>
-                    <th width="5%" rowspan="3"><b>排名</b>
+                    <th width="5%" rowspan="3"><b>{{"Place" if en else "排名"}}</b>
                     </th>
-                    <th width="10%" rowspan="3"><b>昵称</b>
+                    <th width="10%" rowspan="3"><b>{{"Username" if en else "昵称"}}</b>
                     </th>
-                    <th width="5%" rowspan="3"><b>得分</b>
+                    <th width="5%" rowspan="3"><b>{{"Score" if en else "得分"}}</b>
                     </th>
                     <!-- TODO: 可适应布局调整  -->
                     <th data-halign="center" data-align="center" colspan="{{get_cry()}}" style="text-align: center">

@@ -6,7 +6,7 @@
           <div class="container">
             <div class="row">
               <div class="col-md-12">
-                <h3>修改提示</h3>
+                <h3>{{ language("Edit Hint","编辑提示") }}</h3>
               </div>
             </div>
           </div>
@@ -15,6 +15,7 @@
             class="close"
             data-dismiss="modal"
             aria-label="Close"
+            style="position: absolute;top: 0;right: 0;padding: 30px;"
           >
             <span aria-hidden="true">&times;</span>
           </button>
@@ -26,8 +27,8 @@
                 <div class="col-md-12">
                   <div class="form-group">
                     <label>
-                      提示<br />
-                      <small>支持Markdown &amp; HTML 语法</small>
+                      {{ language("Hint:","提示内容：") }}<br />
+                      <small>{{ language("Markdown & HTML are supported","支持Markdown & HTML") }}</small>
                     </label>
                     <!-- Explicitly don't put the markdown class on this because we will add it later -->
                     <textarea
@@ -42,8 +43,8 @@
 
                   <div class="form-group">
                     <label>
-                      花费<br />
-                      <small>需要多少积分才能看到你的提示。</small>
+                      {{ language("Cost:","解锁花费：") }}<br />
+                      <small>{{ language("How many points it costs to see your hint.","需要多少积分才能看到你的提示。") }}</small>
                     </label>
                     <input
                       type="number"
@@ -55,8 +56,10 @@
 
                   <div class="form-group">
                     <label>
-                      需求<br />
-                      <small>解锁前必须先解锁的提示</small>
+                      {{ language("Requirements:","前置要求：") }}<br />
+                      <small>
+                        {{ language("Hints that must be unlocked before unlocking this hint","解锁此提示之前必须先解锁的提示") }}
+                      </small>
                     </label>
                     <div
                       class="form-check"
@@ -70,7 +73,7 @@
                           :value="hint.id"
                           v-model="selectedHints"
                         />
-                        提示ID：{{ hint.id }} - 花费：{{ hint.cost }}
+                        ID: {{ hint.content }} - {{ language("Content:","内容：") }}{{ hint.content }} - {{ language("Cost:","花费：") }}{{ hint.cost }}
                       </label>
                     </div>
                   </div>
@@ -82,7 +85,7 @@
             <div class="container">
               <div class="row">
                 <div class="col-md-12">
-                  <button class="btn btn-primary float-right">提交</button>
+                  <button class="btn btn-primary float-right">{{ language("Submit","提交") }}</button>
                 </div>
               </div>
             </div>
@@ -130,6 +133,16 @@ export default {
     }
   },
   methods: {
+    language: function (en, zh) {
+      const cookies = document.cookie.split('; ');
+      for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split('=');
+        if (cookieName === "Scr1wCTFdLanguage") {
+          return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+        }
+      }
+      return zh;
+    },
     loadHint: function() {
       CTFd.fetch(`/api/v1/hints/${this.$props.hint_id}?preview=true`, {
         method: "GET",

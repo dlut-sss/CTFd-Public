@@ -30,10 +30,14 @@
 				<div class="form-group">
 					<div class="col-md-12">
 						{% set title = page.title if page is defined %}
-						<b>{{ form.title.label }}</b>
-						{{ form.title(class="form-control radius", id="route", placeholder="标题", value=title) }}
+						<b>{{ 'Title' if en else form.title.label }}</b>
+                        {% if en %}
+                        {{ form.title(class="form-control radius", id="route", placeholder="Title", value=title) }}
+                        {% else %}
+                        {{ form.title(class="form-control radius", id="route", placeholder="标题", value=title) }}
+                        {% endif %}
 						<small class="text-muted">
-							{{ form.title.description }}
+                            {{ 'This is the title shown on the navigation bar' if en else form.title.description }}
 						</small>
 					</div>
 				</div>
@@ -41,20 +45,24 @@
 				<div class="form-group">
 					<div class="col-md-12">
 						{% set route = page.route if page is defined %}
-						<b>{{ form.route.label }}</b>
-						{{ form.route(class="form-control radius", placeholder="路由", value=route) }}
+						<b>{{ 'Route' if en else form.route.label }}</b>
+                        {% if en %}
+                        {{ form.route(class="form-control radius", placeholder="Route", value=route) }}
+                        {% else %}
+                        {{ form.route(class="form-control radius", placeholder="路由", value=route) }}
+                        {% endif %}
 						<small class="text-muted">
-							{{ form.route.description }}
+                            {{ 'This is the URL route that your page will be at (e.g. /page). You can also enter links to link to that page.' if en else form.route.description }}
 						</small>
 					</div>
 				</div>
 
 				<div class="form-group">
 					<div class="col-md-12">
-						<b>格式</b>
-						{{ form.format(class="form-control custom-select", placeholder="格式", value=format) }}
+						<b>{{ 'Format' if en else '格式' }}</b>
+						{{ form.format(class="form-control custom-select", value=format) }}
 						<small class="text-muted">
-							{{ form.format.description }}
+                            {{ 'The markup format used to render the page' if en else form.format.description }}
 						</small>
 					</div>
 				</div>
@@ -62,21 +70,21 @@
 				<div class="form-group">
 					<div class="col-md-12">
 
-						<h3>内容</h3>
-						<small class="text-muted">这是您页面的 HTML 内容</small>
+						<h3>{{ 'Content' if en else '内容' }}</h3>
+						<small class="text-muted">{{ 'This is the HTML content of your page' if en else '这是您页面的内容' }}</small>
 
 						<ul class="nav nav-tabs" role="tablist" id="content-edit">
 							<li class="nav-item" role="presentation" class="active">
 								<a class="nav-link active" href="#content-write" aria-controls="home" role="tab"
-								   data-toggle="tab">编辑</a>
+								   data-toggle="tab">{{ 'Edit' if en else '编辑' }}</a>
 							</li>
 							<li class="nav-item" role="presentation">
-								<a class="nav-link preview-page" href="#">预览</a>
+								<a class="nav-link preview-page" href="#">{{ 'Preview' if en else '预览' }}</a>
 							</li>
 						</ul>
 
 						<div class="tab-content">
-							<div role="tabpanel" class="tab-pane active" id="content-write" style="height:600px">
+							<div role="tabpanel" class="tab-pane active" id="content-write" style="height:200px">
 								<br>
 
 								<div class="form-inline">
@@ -84,7 +92,7 @@
 										<div class="btn-group">
 											<button type="button" class="btn btn-primary" id="media-button">
 												<i class="fas fa-camera-retro"></i>
-												媒体库
+                                                {{ 'Media Library' if en else '媒体库' }}
 											</button>
 										</div>
 									</div>
@@ -94,26 +102,38 @@
 									<div class="form-group pr-3">
 										{% set draft = page is defined and page.draft == True %}
 										{{ form.draft(class="form-check-input", checked=draft) }}
-										{{ form.draft.label(class="form-check-label") }}
+                                        {% if en %}
+                                        <label class="form-check-label" for="draft">draft</label>
+                                        {% else %}
+                                        {{ form.draft.label(class="form-check-label") }}
+                                        {% endif %}
 									</div>
 
 									<div class="form-group pr-3">
 										{% set hidden = page is defined and page.hidden == True %}
 										{{ form.hidden(class="form-check-input", checked=hidden) }}
-										{{ form.hidden.label(class="form-check-label") }}
+                                        {% if en %}
+                                        <label class="form-check-label" for="hidden">hidden</label>
+                                        {% else %}
+                                        {{ form.hidden.label(class="form-check-label") }}
+                                        {% endif %}
 									</div>
 
 									<div class="form-group pr-3">
 										{% set auth_required = page is defined and page.auth_required == True %}
 										{{ form.auth_required(class="form-check-input", checked=auth_required) }}
-										{{ form.auth_required.label(class="form-check-label") }}
+                                        {% if en %}
+                                        <label class="form-check-label" for="auth_required">auth required</label>
+                                        {% else %}
+                                        {{ form.auth_required.label(class="form-check-label") }}
+                                        {% endif %}
 									</div>
 								</div>
 
 								<br>
 
 								<small class="form-text text-muted text-right">
-									<a href="https://docs.ctfd.io/docs/pages/variables/" target="_blank">CTFd 页面变量</a>
+									<a href="https://docs.ctfd.io/docs/pages/variables/" target="_blank">{{ 'CTFd Page variables' if en else 'CTFd 页面变量' }}</a>
 									<i class="far fa-question-circle pr-2"></i>
 								</small>
 
@@ -124,7 +144,7 @@
 								<div class="form-group float-right pt-3">
 									{{ form.nonce() }}
 									<button class="btn btn-primary" id="save-page">
-										保存
+                                        {{ 'Save' if en else '保存' }}
 									</button>
 								</div>
 							</div>
@@ -142,7 +162,7 @@
 	<div class="row min-vh-25 pt-5">
 		<div class="col-md-10 offset-md-1">
 			<h3 class="text-center py-3 d-block">
-				评论
+                {{ 'Comments' if en else '评论' }}
 			</h3>
 			<div id="comment-box">
 			</div>

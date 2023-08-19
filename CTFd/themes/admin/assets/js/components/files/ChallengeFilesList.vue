@@ -2,27 +2,35 @@
   <div>
     <table id="filesboard" class="table table-striped">
       <thead>
-        <tr>
-          <td class="text-center"><b>文件</b></td>
-          <td class="text-center"><b>设置</b></td>
-        </tr>
+      <tr>
+        <td class="text-center">
+          <b>
+            {{ language("File", "文件") }}
+          </b>
+        </td>
+        <td class="text-center">
+          <b>
+            {{ language("Settings","操作")}}
+          </b>
+        </td>
+      </tr>
       </thead>
       <tbody>
-        <tr v-for="file in files" :key="file.id">
-          <td class="text-center">
-            <a :href="`${urlRoot}/files/${file.location}`">{{
+      <tr v-for="file in files" :key="file.id">
+        <td class="text-center">
+          <a :href="`${urlRoot}/files/${file.location}`">{{
               file.location.split("/").pop()
             }}</a>
-          </td>
+        </td>
 
-          <td class="text-center">
-            <i
+        <td class="text-center">
+          <i
               role="button"
               class="btn-fa fas fa-times delete-file"
               @click="deleteFile(file.id)"
-            ></i>
-          </td>
-        </tr>
+          ></i>
+        </td>
+      </tr>
       </tbody>
     </table>
 
@@ -30,24 +38,24 @@
       <form method="POST" ref="FileUploadForm" @submit.prevent="addFiles">
         <div class="form-group">
           <input
-            class="form-control-file"
-            id="file"
-            multiple=""
-            name="file"
-            required=""
-            type="file"
+              class="form-control-file"
+              id="file"
+              multiple=""
+              name="file"
+              required=""
+              type="file"
           />
           <sub class="text-muted">
-            使用 Control+单击或 Cmd+单击附加多个文件。
+            {{ language("Attach multiple files using Control+Click or Cmd+Click.", "使用 Control+单击或 Cmd+单击附加多个文件。") }}
           </sub>
         </div>
         <div class="form-group">
           <input
-            class="btn btn-success float-right"
-            id="_submit"
-            name="_submit"
-            type="submit"
-            value="上传"
+              class="btn btn-success float-right"
+              id="_submit"
+              name="_submit"
+              type="submit"
+              :value="language('Upload','上传')"
           />
         </div>
       </form>
@@ -56,35 +64,45 @@
 </template>
 
 <script>
-import { ezQuery } from "core/ezq";
-import { default as helpers } from "core/helpers";
+import {ezQuery} from "core/ezq";
+import {default as helpers} from "core/helpers";
 import CTFd from "core/CTFd";
 
 export default {
   props: {
     challenge_id: Number
   },
-  data: function() {
+  data: function () {
     return {
       files: [],
       urlRoot: CTFd.config.urlRoot
     };
   },
   methods: {
-    loadFiles: function() {
+    language: function (en, zh) {
+      const cookies = document.cookie.split('; ');
+      for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split('=');
+        if (cookieName === "Scr1wCTFdLanguage") {
+          return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+        }
+      }
+      return zh;
+    },
+    loadFiles: function () {
       CTFd.fetch(`/api/v1/challenges/${this.$props.challenge_id}/files`, {
         method: "GET"
       })
-        .then(response => {
-          return response.json();
-        })
-        .then(response => {
-          if (response.success) {
-            this.files = response.data;
-          }
-        });
+          .then(response => {
+            return response.json();
+          })
+          .then(response => {
+            if (response.success) {
+              this.files = response.data;
+            }
+          });
     },
-    addFiles: function() {
+    addFiles: function () {
       let data = {
         challenge: this.$props.challenge_id,
         type: "challenge"
@@ -96,22 +114,22 @@ export default {
         }, 700);
       });
     },
-    deleteFile: function(fileId) {
+    deleteFile: function (fileId) {
       ezQuery({
-        title: "删除文件",
-        body: "你确定要删除这个文件吗？",
+        title: this.language("Delete Files", "删除文件"),
+        body: this.language("Are you sure you want to delete this file?", "您确定要删除该文件吗？"),
         success: () => {
           CTFd.fetch(`/api/v1/files/${fileId}`, {
             method: "DELETE"
           })
-            .then(response => {
-              return response.json();
-            })
-            .then(response => {
-              if (response.success) {
-                this.loadFiles();
-              }
-            });
+              .then(response => {
+                return response.json();
+              })
+              .then(response => {
+                if (response.success) {
+                  this.loadFiles();
+                }
+              });
         }
       });
     }

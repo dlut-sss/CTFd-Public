@@ -14,37 +14,38 @@
     <div class="row">
       <div class="col-md-3">
         <div class="form-group">
-          <label>字段类型</label>
+          <label>{{ language("Field Type","字段类型") }}</label>
           <select
             class="form-control custom-select"
             v-model.lazy="field.field_type"
           >
-            <option value="text">文本字段</option>
-            <option value="boolean">复选框</option>
+            <option value="text">{{ language("Text Field","文本域") }}</option>
+            <option value="boolean">{{ language("Checkbox","复选框") }}</option>
           </select>
           <small class="form-text text-muted"
-            >显示给用户的字段类型</small
+            >{{ language("Type of field shown to the user","显示给用户的字段类型") }}</small
           >
         </div>
       </div>
       <div class="col-md-9">
         <div class="form-group">
-          <label>字段名称</label>
+          <label>{{ language("Field Name","字段名称") }}</label>
           <input type="text" class="form-control" v-model.lazy="field.name" />
-          <small class="form-text text-muted">字段名称</small>
+          <small class="form-text text-muted">{{ language("Field name","字段名称") }}</small>
         </div>
       </div>
 
       <div class="col-md-12">
         <div class="form-group">
-          <label>字段描述</label>
+          <label>{{ language("Field Description","字段说明") }}</label>
           <input
             type="text"
             class="form-control"
             v-model.lazy="field.description"
           />
           <small id="emailHelp" class="form-text text-muted"
-            >字段描述</small
+            >
+            {{ language("Field Description","字段说明") }}</small
           >
         </div>
       </div>
@@ -57,7 +58,7 @@
               type="checkbox"
               v-model.lazy="field.editable"
             />
-            用户是否可在个人资料中编辑
+            {{ language("Editable by user in profile","用户可在个人资料中编辑") }}
           </label>
         </div>
         <div class="form-check">
@@ -67,7 +68,7 @@
               type="checkbox"
               v-model.lazy="field.required"
             />
-            注册时是否需要填写
+            {{ language("Required on registration","注册时需要填写") }}
           </label>
         </div>
         <div class="form-check">
@@ -77,7 +78,7 @@
               type="checkbox"
               v-model.lazy="field.public"
             />
-            是否公开展示
+            {{ language("Shown on public profile","显示在公开资料上") }}
           </label>
         </div>
       </div>
@@ -91,7 +92,7 @@
             type="button"
             @click="saveField()"
           >
-            保存
+            {{ language("Save","保存") }}
           </button>
         </div>
       </div>
@@ -114,6 +115,16 @@ export default {
     };
   },
   methods: {
+    language: function (en, zh) {
+      const cookies = document.cookie.split('; ');
+      for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split('=');
+        if (cookieName === "Scr1wCTFdLanguage") {
+          return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+        }
+      }
+      return zh;
+    },
     persistedField: function() {
       // We're using Math.random() for unique IDs so new items have IDs < 1
       // Real items will have an ID > 1
@@ -138,8 +149,8 @@ export default {
             if (response.success === true) {
               this.field = response.data;
               ezToast({
-                title: "成功",
-                body: "字段更新成功!",
+                title: this.language("Success","成功"),
+                body: this.language("Field has been updated!","字段更新完成！"),
                 delay: 1000
               });
             }
@@ -161,8 +172,8 @@ export default {
             if (response.success === true) {
               this.field = response.data;
               ezToast({
-                title: "成功",
-                body: "字段创建成功!",
+                title: this.language("Success","成功"),
+                body: this.language("Field has been created!","字段创建成功！"),
                 delay: 1000
               });
             }
@@ -170,7 +181,7 @@ export default {
       }
     },
     deleteField: function() {
-      if (confirm("您确定要删除此字段吗?")) {
+      if (confirm(this.language("Are you sure you'd like to delete this field?","你确定你要删除这个字段吗？"))) {
         if (this.persistedField()) {
           CTFd.fetch(`/api/v1/configs/fields/${this.field.id}`, {
             method: "DELETE",

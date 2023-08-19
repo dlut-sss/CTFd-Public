@@ -18,11 +18,22 @@ import HintsList from "../components/hints/HintsList.vue";
 import NextChallenge from "../components/next/NextChallenge.vue";
 import hljs from "highlight.js";
 
+function language(en,zh) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === "Scr1wCTFdLanguage") {
+      return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+    }
+  }
+  return zh;
+}
+
 const displayHint = data => {
   ezAlert({
-    title: "提示",
+    title: language("Hint","提示"),
     body: data.html,
-    button: "明白了!"
+    button: language("Got it!","明白了")
   });
 };
 
@@ -79,7 +90,7 @@ function renderSubmissionResponse(response, cb) {
           .split(" ")[0]
       ) +
         1 +
-        "人解出"
+        language(" Solves","人解出")
     );
 
     answer_input.val("");
@@ -159,9 +170,9 @@ function loadChalTemplate(challenge) {
               }
 
               ezAlert({
-                title: "错误",
+                title: language("Error","错误"),
                 body: body,
-                button: "OK"
+                button: language("OK","好的")
               });
             }
           });
@@ -333,8 +344,8 @@ $(() => {
 
   $(".delete-challenge").click(function(_e) {
     ezQuery({
-      title: "删除题目",
-      body: "你确定要删除{0}".format(
+      title: language("Delete Challenge","删除题目"),
+      body: language("Are you sure you want to delete {0}","你确定要删除{0}").format(
         "<strong>" + htmlEntities(window.CHALLENGE_NAME) + "</strong>"
       ),
       success: function() {
@@ -400,8 +411,8 @@ $(() => {
                     break;
                 }
                 ezToast({
-                  title: "成功",
-                  body: "题目更新成功!"
+                  title: language("Success","成功"),
+                  body: language("Your challenge has been updated!","题目已更新！")
                 });
               } else {
                 let body = "";
@@ -411,9 +422,9 @@ $(() => {
                 }
 
                 ezAlert({
-                  title: "错误",
+                  title: language("Error","错误"),
                   body: body,
-                  button: "OK"
+                  button: language("OK","好的")
                 });
               }
             });
@@ -421,9 +432,9 @@ $(() => {
         // Check if the challenge doesn't have any flags before marking visible
         if (response.data.length === 0 && params.state === "visible") {
           ezQuery({
-            title: "没有设置FLAG",
+            title: language("Missing Flags","缺少FLag"),
             body:
-              "此挑战没有任何FLAG，这意味着它可能无法解决。 您确定要更新此挑战吗？(动态容器的动态FLAG留空即可，可无视此提示)",
+                language("This challenge does not have any flags meaning it may be unsolveable. Are you sure you'd like to update this challenge?(If using dynamic_docker, ignore)","此题目没有任何Flag，这意味着它可能无法解答。 您确定要更新此挑战吗？（如果使用dynamic_docker，请忽略）"),
             success: update_challenge
           });
         } else {

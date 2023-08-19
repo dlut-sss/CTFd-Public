@@ -118,15 +118,22 @@ class BaseChallenge(object):
         :return: (boolean, string)
         """
         data = request.form or request.get_json()
+        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
         submission = data["submission"].strip()
         flags = Flags.query.filter_by(challenge_id=challenge.id).all()
         for flag in flags:
             try:
                 if get_flag_class(flag.type).compare(flag, submission):
-                    return True, "Bingo！答对啦！"
+                    if language == "zh":
+                        return True, "Bingo！答对啦！"
+                    else:
+                        return True, "Correct!"
             except FlagException as e:
                 return False, str(e)
-        return False, "答案不对喵"
+        if language == "zh":
+            return False, "答案不对喵！"
+        else:
+            return False, "Incorrect!"
 
     @classmethod
     def solve(cls, user, team, challenge, request):

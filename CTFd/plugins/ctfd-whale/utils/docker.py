@@ -9,6 +9,7 @@ import docker
 from flask import current_app
 
 from CTFd.utils import get_config
+from CTFd.utils.logging import log
 
 from .cache import CacheProvider
 from .exceptions import WhaleError
@@ -69,9 +70,23 @@ class DockerUtils:
         try:
             image = client.images.get(container.challenge.docker_image)
         except Exception as e:
-            print(e)
+            log(
+                "whale",
+                "[{date}] [CTFd Whale] 本机不存在{name}镜像，正在尝试拉取镜像。",
+                name=container.challenge.docker_image,
+            )
             client.api.pull(container.challenge.docker_image)
+            log(
+                "whale",
+                "[{date}] [CTFd Whale] {name}镜像拉取成功。",
+                name=container.challenge.docker_image,
+            )
 
+        log(
+            "whale",
+            "[{date}] [CTFd Whale] 尝试启动镜像服务{name}。",
+            name=container.challenge.docker_image,
+        )
         service = client.services.create(
             image=container.challenge.docker_image,
             name=f'{container.user_id}-{container.uuid}',
@@ -88,7 +103,11 @@ class DockerUtils:
             constraints=['node.labels.name==' + node],
             endpoint_spec=docker.types.EndpointSpec(mode='dnsrr', ports={})
         )
-
+        log(
+            "whale",
+            "[{date}] [CTFd Whale] {name}服务部署完成，正在等待容器启动。",
+            name=container.challenge.docker_image,
+        )
         count = 0
         while True:
             count += 1
@@ -97,15 +116,24 @@ class DockerUtils:
                 for task in tasks:
                     current_state = task['Status']['State']
                     if 'running'.lower() in current_state.lower():
-                        print("容器启动成功！")
+                        log(
+                            "whale",
+                            "[{date}] [CTFd Whale] 容器{name}启动成功！",
+                            name=container.challenge.docker_image,
+                        )
                         return
             except Exception as e:
                 print(e)
                 pass
 
             if count > 960:
+                log(
+                    "whale",
+                    "[{date}] [CTFd Whale] 容器{name}创建超时！正在自动释放资源。",
+                    name=container.challenge.docker_image,
+                )
                 service.remove()
-                raise Exception("容器创建超时")
+                raise Exception("[CTFd Whale] 容器创建超时")
             time.sleep(0.5)  # 等待0.5秒后重新检查
 
     @staticmethod

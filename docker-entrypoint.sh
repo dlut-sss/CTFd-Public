@@ -25,11 +25,12 @@ python ping.py
 python manage.py db upgrade
 
 # Start CTFd
-echo "Starting CTFd"
+echo "[CTFd] 正在启动CTFd"
 exec gunicorn 'CTFd:create_app()' \
     --bind '0.0.0.0:8000' \
     --workers $WORKERS \
     --worker-tmp-dir "$WORKER_TEMP_DIR" \
     --worker-class "$WORKER_CLASS" \
     --access-logfile "$ACCESS_LOG" \
-    --error-logfile "$ERROR_LOG"
+    --error-logfile "$ERROR_LOG" \
+    --access-logformat '%(t)s (IP:%(h)s) 访问:"%(r)s" 响应状态:%(s)s Referer:"%(f)s"'

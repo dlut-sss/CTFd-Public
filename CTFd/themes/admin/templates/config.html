@@ -7,107 +7,165 @@
 {% block content %}
 <div class="jumbotron">
 	<div class="container">
-		<h1><b>平台配置</b></h1>
+		<h1><b>{{ 'Configuration' if en else '平台配置' }}</b></h1>
 	</div>
 </div>
 <div class="container">
+    {% if en %}
 	<div class="row">
 		<div class="col-md-3">
 			<ul class="nav nav-pills flex-column">
 				<li class="nav-item">
-					<a class="nav-link rounded-0 active" href="#appearance" role="tab" data-toggle="tab">平台外观</a>
+					<a class="nav-link rounded-1 active" href="#appearance" role="tab" data-toggle="tab">Appearance</a>
+				</li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#theme" role="tab" data-toggle="tab">Theme</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#bot" role="tab" data-toggle="tab">QQ Message</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#sso" role="tab" data-toggle="tab">SSO</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#settings" role="tab" data-toggle="tab">Settings</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#usermode" role="tab" data-toggle="tab">User Mode</a>
+                </li>
+				<li class="nav-item">
+					<a class="nav-link rounded-1" href="#accounts" role="tab" data-toggle="tab">Accounts</a>
+				</li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#ctftime" role="tab" data-toggle="tab">Time</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#email" role="tab" data-toggle="tab">Email</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#legal" role="tab" data-toggle="tab">Legal</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#backup" role="tab" data-toggle="tab">Backup</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#fields" role="tab" data-toggle="tab">Custom Fields</a>
+                </li>
+				<li class="nav-item">
+					<a class="nav-link rounded-1" href="#pages" role="tab" data-toggle="tab">Pages</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#bot" role="tab" data-toggle="tab">消息播报</a>
+					<a class="nav-link rounded-1" href="#mlc" role="tab" data-toggle="tab">MajorLeagueCyber</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#sso" role="tab" data-toggle="tab">统一认证</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#theme" role="tab" data-toggle="tab">平台主题</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#accounts" role="tab" data-toggle="tab">账户控制</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#pages" role="tab" data-toggle="tab">爬虫协议</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#fields" role="tab" data-toggle="tab">自定义字段</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#mlc" role="tab" data-toggle="tab">MajorLeagueCyber</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#settings" role="tab" data-toggle="tab">平台设置</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#security" role="tab" data-toggle="tab">平台保护</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#email" role="tab" data-toggle="tab">邮件系统</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#ctftime" role="tab" data-toggle="tab">起止时间</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#legal" role="tab" data-toggle="tab">隐私合规</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#backup" role="tab" data-toggle="tab">数据备份</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link rounded-0" href="#usermode" role="tab" data-toggle="tab">用户模式</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link rounded-0" href="{{ url_for('admin.reset') }}" role="tab">重置平台</a>
+					<a class="nav-link rounded-1" href="{{ url_for('admin.reset') }}" role="tab">Reset</a>
 				</li>
 			</ul>
 		</div>
 		<div class="col-md-9">
 			{% for error in errors %}
 				<div class="alert alert-danger alert-dismissable" role="alert">
-					<span class="sr-only">错误：</span>
+					<span class="sr-only">Error:</span>
 					{{ error }}
 					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 						<span aria-hidden="true">×</span>
 					</button>
 				</div>
 			{% endfor %}
+    {% else %}
+    <div class="row">
+        <div class="col-md-3">
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item">
+                    <a class="nav-link rounded-1 active" href="#appearance" role="tab" data-toggle="tab">平台外观</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#theme" role="tab" data-toggle="tab">平台主题</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#bot" role="tab" data-toggle="tab">消息播报</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#sso" role="tab" data-toggle="tab">统一认证</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#settings" role="tab" data-toggle="tab">功能设置</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#usermode" role="tab" data-toggle="tab">用户模式</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#accounts" role="tab" data-toggle="tab">账户控制</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#ctftime" role="tab" data-toggle="tab">起止时间</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#email" role="tab" data-toggle="tab">邮件系统</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#legal" role="tab" data-toggle="tab">隐私合规</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#backup" role="tab" data-toggle="tab">数据备份</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#fields" role="tab" data-toggle="tab">自定义字段</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#pages" role="tab" data-toggle="tab">爬虫协议</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="#mlc" role="tab" data-toggle="tab">MajorLeagueCyber</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-1" href="{{ url_for('admin.reset') }}" role="tab">重置平台</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-9">
+            {% for error in errors %}
+            <div class="alert alert-danger alert-dismissable" role="alert">
+                <span class="sr-only">错误：</span>
+                {{ error }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            {% endfor %}
+    {% endif %}
 
-			<div class="tab-content">
-				{% include "admin/configs/appearance.html" %}
+            <div class="tab-content">
+                {% include "admin/configs/appearance.html" %}
 
-				{% include "admin/configs/bot.html" %}
+                {% include "admin/configs/settings.html" %}
 
-				{% include "admin/configs/sso.html" %}
+                {% include "admin/configs/bot.html" %}
 
-				{% include "admin/configs/theme.html" %}
+                {% include "admin/configs/sso.html" %}
 
-				{% include "admin/configs/accounts.html" %}
+                {% include "admin/configs/theme.html" %}
 
-				{% include "admin/configs/pages.html" %}
+                {% include "admin/configs/accounts.html" %}
 
-				{% include "admin/configs/fields.html" %}
+                {% include "admin/configs/pages.html" %}
 
-				{% include "admin/configs/mlc.html" %}
+                {% include "admin/configs/fields.html" %}
 
-				{% include "admin/configs/settings.html" %}
+                {% include "admin/configs/mlc.html" %}
 
-				{% include "admin/configs/security.html" %}
+                {% include "admin/configs/email.html" %}
 
-				{% include "admin/configs/email.html" %}
+                {% include "admin/configs/time.html" %}
 
-				{% include "admin/configs/time.html" %}
+                {% include "admin/configs/legal.html" %}
 
-				{% include "admin/configs/legal.html" %}
+                {% include "admin/configs/backup.html" %}
 
-				{% include "admin/configs/backup.html" %}
-
-				{% include "admin/configs/usermode.html" %}
-			</div>
-		</div>
-	</div>
+                {% include "admin/configs/usermode.html" %}
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 

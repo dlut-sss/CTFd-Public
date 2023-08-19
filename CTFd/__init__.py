@@ -1,4 +1,6 @@
 import datetime
+import logging
+import logging.handlers
 import os
 import sys
 import weakref
@@ -151,6 +153,31 @@ def run_upgrade():
 
 
 def create_app(config="CTFd.config.Config"):
+    gunicorn_logger = logging.getLogger('gunicorn.access')
+    werkzeug_logger = logging.getLogger('werkzeug')
+    log_dir = "/var/log/CTFd"
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+    logs = {
+        "access": os.path.join(log_dir, "access.log"),
+    }
+    try:
+        for log in logs.values():
+            if not os.path.exists(log):
+                open(log, "a").close()
+
+        access_log = logging.handlers.RotatingFileHandler(
+            logs["access"], maxBytes=10485760, backupCount=5
+        )
+
+        werkzeug_logger.addHandler(access_log)
+        gunicorn_logger.handlers=werkzeug_logger.handlers
+    except IOError:
+        pass
+
+    werkzeug_logger.propagate = 0
+    gunicorn_logger.propagate = 0
+
     app = CTFdFlask(__name__)
     app.config['SESSION_COOKIE_NAME'] = 'Scr1wCTFDSessionId'
     with app.app_context():
@@ -269,7 +296,8 @@ def create_app(config="CTFd.config.Config"):
         if not utils.get_config("ctf_theme"):
             utils.set_config("ctf_theme", DEFAULT_THEME)
 
-        update_check(force=True)
+        # 不检查更新
+        # update_check(force=True)
 
         init_request_processors(app)
         init_template_filters(app)

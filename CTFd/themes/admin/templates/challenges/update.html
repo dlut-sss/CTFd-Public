@@ -1,104 +1,208 @@
 {% block header %}
 {% endblock %}
 
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+{% set en = true %}
+{% else %}
+{% set en = false %}
+{% endif %}
 <form method="POST">
 	{% block name %}
-	<div class="form-group">
-		<label>
-			名称<br>
-			<small class="form-text text-muted">题目名称</small>
-		</label>
-		<input type="text" class="form-control chal-name" name="name" value="{{ challenge.name }}">
-	</div>
+    {% if en %}
+    <div class="form-group">
+        <label>
+            Name<br>
+            <small class="form-text text-muted">Challenge Name</small>
+        </label>
+        <input type="text" class="form-control chal-name" name="name" value="{{ challenge.name }}">
+    </div>
+    {% else %}
+    <div class="form-group">
+        <label>
+            名称<br>
+            <small class="form-text text-muted">题目名称</small>
+        </label>
+        <input type="text" class="form-control chal-name" name="name" value="{{ challenge.name }}">
+    </div>
+    {% endif %}
 	{% endblock %}
 
 	{% block category %}
-	<div class="form-group">
-		<label>
-			类别<br>
-			<small class="form-text text-muted">题目类别</small>
-		</label>
-		<input type="text" class="form-control chal-category" name="category" value="{{ challenge.category }}">
+    {% if en %}
+    <div class="form-group">
+        <label>
+            Category<br>
+            <small class="form-text text-muted">Challenge Category</small>
+        </label>
+        <input type="text" class="form-control chal-category" name="category" value="{{ challenge.category }}">
     </div>
-    {% endblock %}
+    {% else %}
+    <div class="form-group">
+        <label>
+            类别<br>
+            <small class="form-text text-muted">题目类别</small>
+        </label>
+        <input type="text" class="form-control chal-category" name="category" value="{{ challenge.category }}">
+    </div>
+    {% endif %}
+	{% endblock %}
 
-    {% block subcategory %}
+	{% block subcategory %}
+    {% if en %}
+    <div class="form-group">
+        <label>
+            Subcategory<br>
+            <small class="form-text text-muted">Challenge Subcategory</small>
+        </label>
+        <input type="text" class="form-control chal-category" name="subcategory" value="{{ challenge.subcategory }}">
+    </div>
+    {% else %}
     <div class="form-group">
         <label>
             子类别<br>
             <small class="form-text text-muted">题目子类别</small>
         </label>
         <input type="text" class="form-control chal-category" name="subcategory" value="{{ challenge.subcategory }}">
-	</div>
+    </div>
+    {% endif %}
 	{% endblock %}
 
 	{% block message %}
-	<div class="form-group">
-		<label>
-			题目信息<br>
-			<small class="form-text text-muted">
+    {% if en %}
+    <div class="form-group">
+        <label>
+            Message<br>
+            <small class="form-text text-muted">
+                Use this to give a brief introduction to your challenge.
+            </small>
+        </label>
+        <textarea id="desc-editor" class="form-control chal-desc-editor markdown" name="description" rows="10">{{ challenge.description }}</textarea>
+    </div>
+    {% else %}
+    <div class="form-group">
+        <label>
+            题目信息<br>
+            <small class="form-text text-muted">
                 用它来简要介绍您的题目。
-			</small>
-		</label>
-		<textarea id="desc-editor" class="form-control chal-desc-editor markdown" name="description" rows="10">{{ challenge.description }}</textarea>
-	</div>
+            </small>
+        </label>
+        <textarea id="desc-editor" class="form-control chal-desc-editor markdown" name="description" rows="10">{{ challenge.description }}</textarea>
+    </div>
+    {% endif %}
 	{% endblock %}
 
 	{% block connection_info %}
-	<div class="form-group">
-		<label>
-			连接信息<br>
-			<small class="form-text text-muted">
+    {% if en %}
+    <div class="form-group">
+        <label>
+            Connection Info<br>
+            <small class="form-text text-muted">
+                Use this to specify a link, hostname, or connection instructions for your challenge.
+            </small>
+        </label>
+        <input type="text" class="form-control chal-connection-info" name="connection_info" value="{{ challenge.connection_info | default('', true) }}">
+    </div>
+    {% else %}
+    <div class="form-group">
+        <label>
+            连接信息<br>
+            <small class="form-text text-muted">
                 使用它来指定您的题目的链接、主机名或连接说明。
-			</small>
-		</label>
-		<input type="text" class="form-control chal-connection-info" name="connection_info" value="{{ challenge.connection_info | default('', true) }}">
-	</div>
+            </small>
+        </label>
+        <input type="text" class="form-control chal-connection-info" name="connection_info" value="{{ challenge.connection_info | default('', true) }}">
+    </div>
+    {% endif %}
 	{% endblock %}
 
 	{% block value %}
-	<div class="form-group">
-		<label for="value">
-			分值<br>
-			<small class="form-text text-muted">
+    {% if en %}
+    <div class="form-group">
+        <label for="value">
+            Value<br>
+            <small class="form-text text-muted">
+                This is how many points teams will receive once they solve this challenge.
+            </small>
+        </label>
+        <input type="number" class="form-control chal-value" name="value" value="{{ challenge.value }}" required>
+    </div>
+    {% else %}
+    <div class="form-group">
+        <label for="value">
+            分值<br>
+            <small class="form-text text-muted">
                 这是团队解决此题目后将获得的积分。
-			</small>
-		</label>
-		<input type="number" class="form-control chal-value" name="value" value="{{ challenge.value }}" required>
-	</div>
+            </small>
+        </label>
+        <input type="number" class="form-control chal-value" name="value" value="{{ challenge.value }}" required>
+    </div>
+    {% endif %}
 	{% endblock %}
 
 	{% block max_attempts %}
-	<div class="form-group">
-		<label>
-            最大尝试次数<br>
-			<small class="form-text text-muted">用户的最大尝试次数。 保留为 0 表示无限制。</small>
-		</label>
+    {% if en %}
+    <div class="form-group">
+        <label>
+            Max Attempts<br>
+            <small class="form-text text-muted">Maximum amount of attempts users receive. Leave at 0 for unlimited.</small>
+        </label>
 
-		<input type="number" class="form-control chal-attempts" name="max_attempts" value="{{ challenge.max_attempts }}">
-	</div>
+        <input type="number" class="form-control chal-attempts" name="max_attempts" value="{{ challenge.max_attempts }}">
+    </div>
+    {% else %}
+    <div class="form-group">
+        <label>
+            最大尝试次数<br>
+            <small class="form-text text-muted">用户的最大尝试次数。 保留为 0 表示无限制。</small>
+        </label>
+
+        <input type="number" class="form-control chal-attempts" name="max_attempts" value="{{ challenge.max_attempts }}">
+    </div>
+    {% endif %}
 	{% endblock %}
 
 	{% block state %}
-	<div class="form-group">
-		<label>
-			状态<br>
-			<small class="form-text text-muted">更改题目的状态（例如可见、隐藏）</small>
-		</label>
+    {% if en %}
+    <div class="form-group">
+        <label>
+            State<br>
+            <small class="form-text text-muted">Changes the state of the challenge (e.g. visible, hidden)</small>
+        </label>
 
-		<select class="form-control custom-select" name="state">
-			<option value="visible" {% if challenge.state == "visible" %}selected{% endif %}>可见</option>
-			<option value="hidden" {% if challenge.state == "hidden" %}selected{% endif %}>隐藏</option>
-		</select>
-	</div>
+        <select class="form-control custom-select" name="state">
+            <option value="visible" {% if challenge.state == "visible" %}selected{% endif %}>Visible</option>
+            <option value="hidden" {% if challenge.state == "hidden" %}selected{% endif %}>Hidden</option>
+        </select>
+    </div>
+    {% else %}
+    <div class="form-group">
+        <label>
+            状态<br>
+            <small class="form-text text-muted">更改题目的状态（例如可见、隐藏）</small>
+        </label>
+
+        <select class="form-control custom-select" name="state">
+            <option value="visible" {% if challenge.state == "visible" %}selected{% endif %}>可见</option>
+            <option value="hidden" {% if challenge.state == "hidden" %}selected{% endif %}>隐藏</option>
+        </select>
+    </div>
+    {% endif %}
 	{% endblock %}
 
 	{% block submit %}
-	<div>
-		<button class="btn btn-success btn-outlined float-right" type="submit">
-			更新
-		</button>
-	</div>
+    {% if en %}
+    <div>
+        <button class="btn btn-success btn-outlined float-right" type="submit">
+            Update
+        </button>
+    </div>
+    {% else %}
+    <div>
+        <button class="btn btn-success btn-outlined float-right" type="submit">
+            更新
+        </button>
+    </div>
+    {% endif %}
 	{% endblock %}
 </form>
 

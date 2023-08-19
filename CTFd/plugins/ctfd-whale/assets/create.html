@@ -1,96 +1,102 @@
 {% extends "admin/challenges/create.html" %}
 
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+{% set en = true %}
+{% else %}
+{% set en = false %}
+{% endif %}
+
 {% block header %}
     <div class="alert alert-secondary" role="alert">
-        动态容器题目允许玩家部署每个题目的独立实例。
+        {{ 'Dynamic docker challenge allows players to deploy their per-challenge standalone instances.' if en else '动态容器题目允许用户部署题目的独立实例。' }}
     </div>
 {% endblock %}
 
 
 {% block value %}
     <div class="form-group">
-        <label for="value">Docker镜像<br>
+        <label for="value">{{ 'Docker Image' if en else 'Docker镜像' }}<br>
             <small class="form-text text-muted">
-                用来部署的docker镜像名称
+                {{ 'The docker image used to deploy' if en else '用来部署的docker镜像名称' }}
             </small>
         </label>
-        <input type="text" class="form-control" name="docker_image" placeholder="输入镜像名称" required>
+        <input type="text" class="form-control" name="docker_image" placeholder="{{ 'Enter docker image name' if en else '输入镜像名称' }}" required>
     </div>
     <div class="form-group">
-        <label for="value">Frp重定向类型<br>
+        <label for="value">{{ 'Frp Redirect Type' if en else 'Frp重定向类型' }}<br>
             <small class="form-text text-muted">
-                决定frp如何重定向流量的重定向类型
+                {{ 'Decide the redirect type how frp redirect traffic' if en else '决定frp如何重定向流量的重定向类型' }}
             </small>
         </label>
         <select class="form-control" name="redirect_type">
-            <option value="http" selected>HTTP</option>
-            <option value="direct">Direct</option>
+            <option value="direct" selected>Direct</option>
+            <option value="http">HTTP</option>
         </select>
     </div>
     <div class="form-group">
-        <label for="value">Frp重定向端口<br>
+        <label for="value">{{ 'Frp Redirect Port' if en else 'Frp重定向端口' }}<br>
             <small class="form-text text-muted">
-                决定 frp 应将流量重定向到实例中的哪个端口
+                {{ 'Decide which port in the instance that frp should redirect traffic for' if en else '决定 frp 应将流量重定向到实例中的哪个端口' }}
             </small>
         </label>
-        <input type="number" class="form-control" name="redirect_port" placeholder="输入你想开启的端口"
+        <input type="number" class="form-control" name="redirect_port" placeholder="{{ 'Enter the port you want to open' if en else '输入你想开启的端口' }}"
                required>
     </div>
     <div class="form-group">
-        <label for="value">Docker容器内存限制<br>
+        <label for="value">{{ 'Docker Container Memory Limit' if en else 'Docker容器内存限制' }}<br>
             <small class="form-text text-muted">
-                内存使用限制
+                {{ 'The memory usage limit' if en else '内存使用限制' }}
             </small>
         </label>
-        <input type="text" class="form-control" name="memory_limit" placeholder="输入内存使用限制" value="128m"
+        <input type="text" class="form-control" name="memory_limit" placeholder="{{ 'Enter the memory limit' if en else '输入内存使用限制' }}" value="128m"
                required>
     </div>
     <div class="form-group">
-        <label for="value">Docker容器处理器限制<br>
+        <label for="value">{{ 'Docker Container CPU Limit' if en else 'Docker容器处理器限制' }}<br>
             <small class="form-text text-muted">
-                处理器占用率限制
+                {{ 'The CPU usage limit' if en else '处理器占用率限制' }}
             </small>
         </label>
-        <input type="number" class="form-control" name="cpu_limit" placeholder="输入处理器限制" value="0.5"
+        <input type="number" class="form-control" name="cpu_limit" placeholder="{{ 'Enter the cpu limit' if en else '输入处理器限制' }}" value="0.5"
                required>
     </div>
     <div class="form-group">
-        <label for="value">初始分值<br>
+        <label for="value">{{ 'Initial Value' if en else '初始分值' }}<br>
             <small class="form-text text-muted">
-                这是题目最初的分值。
+                {{ 'This is how many points the challenge was worth initially.' if en else '这是题目最初的分值。' }}
             </small>
         </label>
-        <input type="number" class="form-control" name="value" placeholder="输入分值" required>
+        <input type="number" class="form-control" name="value" placeholder="{{ 'Enter value' if en else '输入分值' }}" required>
     </div>
 
     <div class="form-group">
-        <label for="value">衰减极限<br>
+        <label for="value">{{ 'Decay Limit' if en else '衰减极限' }}<br>
             <small class="form-text text-muted">
-                题目分值达到最小值之前解出的数量
+                {{ 'The amount of solves before the challenge reaches its minimum value' if en else '题目分值达到最小值之前解出的数量' }}
             </small>
         </label>
-        <input type="number" class="form-control" name="decay" placeholder="输入衰减极限" required>
+        <input type="number" class="form-control" name="decay" placeholder="{{ 'Enter decay limit' if en else '输入衰减极限' }}" required>
     </div>
 
     <div class="form-group">
-        <label for="value">最小分值<br>
+        <label for="value">{{ 'Minimum Value' if en else '最小分值' }}<br>
             <small class="form-text text-muted">
-                这是题目的最低分值
+                {{ 'This is the lowest that the challenge can be worth' if en else '这是题目的最低分值' }}
             </small>
         </label>
-        <input type="number" class="form-control" name="minimum" placeholder="输入最小分值" required>
+        <input type="number" class="form-control" name="minimum" placeholder="{{ 'Enter minimum value' if en else '输入最小分值' }}" required>
     </div>
 
     <div class="form-group">
-        <label for="value">分值类型<br>
+        <label for="value">{{ 'Score Type' if en else '分值类型' }}<br>
             <small class="form-text text-muted">
-                是否使用动态分数
+                {{ 'Decide it use dynamic score or not' if en else '是否使用动态分数' }}
             </small>
         </label>
 
         <select class="form-control" name="dynamic_score">
-            <option value="0" selected>静态分数</option>
-            <option value="1">动态分数</option>
+            <option value="0" selected>{{ 'Static Score' if en else '静态分数' }}</option>
+            <option value="1">{{ 'Dynamic Score' if en else '动态分数' }}</option>
         </select>
     </div>
 {% endblock %}

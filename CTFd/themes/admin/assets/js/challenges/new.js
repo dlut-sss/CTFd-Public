@@ -2,6 +2,17 @@ import CTFd from "core/CTFd";
 import nunjucks from "nunjucks";
 import $ from "jquery";
 
+function language(en,zh) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === "Scr1wCTFdLanguage") {
+      return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+    }
+  }
+  return zh;
+}
+
 window.challenge = new Object();
 
 function loadChalTemplate(challenge) {

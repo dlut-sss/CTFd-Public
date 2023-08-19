@@ -53,9 +53,13 @@ def private():
     errors = get_errors()
 
     user = get_current_user()
-
-    if config.is_scoreboard_frozen():
-        infos.append("计分板已被冻结")
+    language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+    if language == "zh":
+        if config.is_scoreboard_frozen():
+            infos.append("计分板已被冻结")
+    else:
+        if config.is_scoreboard_frozen():
+            infos.append("Scoreboard has been frozen")
 
     return render_template(
         "users/private.html",
@@ -74,8 +78,13 @@ def public(user_id):
     errors = get_errors()
     user = Users.query.filter_by(id=user_id, banned=False, hidden=False).first_or_404()
 
-    if config.is_scoreboard_frozen():
-        infos.append("计分板已被冻结")
+    language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+    if language == "zh":
+        if config.is_scoreboard_frozen():
+            infos.append("计分板已被冻结")
+    else:
+        if config.is_scoreboard_frozen():
+            infos.append("Scoreboard has been frozen")
 
     return render_template(
         "users/public.html", user=user, account=user.account, infos=infos, errors=errors

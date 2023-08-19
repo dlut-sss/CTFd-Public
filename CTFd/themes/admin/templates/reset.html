@@ -4,103 +4,205 @@
 {% endblock %}
 
 {% block content %}
-	<div class="jumbotron">
-		<div class="container">
-			<h1>Reset</h1>
-		</div>
-	</div>
-	<div class="container">
-		<div class="row">
-			<div class="col-md-6 offset-md-3">
-				{% with form = Forms.config.ResetInstanceForm() %}
-				<form method="POST" id="reset-ctf-form">
-					<div class="alert alert-danger" role="alert">
-						<p>
-                            重置 CTFd 实例允许您批量删除数据。
-						</p>
+{% if en %}
+<div class="jumbotron">
+    <div class="container">
+        <h1><b>Reset</b></h1>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            {% with form = Forms.config.ResetInstanceForm() %}
+            <form method="POST" id="reset-ctf-form">
+                <div class="alert alert-danger" role="alert">
+                    <p>
+                        Resetting your CTFd instance allows you to bulk delete data to prepare it for other events,
+                        other classes, or to otherwise get it to a clean state.
+                    </p>
 
-						<p>
-                            重置您的 CTFd 实例将<strong>永久</strong>删除所有数据 .
-						</p>
+                    <p>
+                        Resetting your CTFd instance will delete the selected data <strong>PERMANENTLY</strong>.
+                    </p>
 
-						<p>
-                            重置之前请仔细考虑，因为不会进行自动备份，并且所有选定的数据都将丢失。
-						</p>
+                    <p>
+                        Think carefully before resetting because no automated backups are made and all selected data will be lost.
+                    </p>
 
-						<span>
+                    <span>
+							<strong>
+								Create backups of all data you need by <a href="{{ url_for('admin.config', _anchor='backup') }}">creating a CTFd Export</a>
+							</strong>
+						</span>
+                </div>
+
+                <hr>
+
+                <div class="form-group pb-2">
+                    <div class="form-check">
+                        {{ form.accounts(class="form-check-input", autocomplete="off") }}
+                        <label class="form-check-label" for="accounts">accounts</label>
+                    </div>
+                    <span class="text-muted">
+							Deletes all user and team accounts and their associated information<br>
+							<small>(Users, Teams, Submissions, Tracking)</small>
+						</span>
+                </div>
+
+                <div class="form-group pb-2">
+                    <div class="form-check">
+                        {{ form.submissions(class="form-check-input", autocomplete="off") }}
+                        <label class="form-check-label" for="submissions">submissions</label>
+                    </div>
+                    <span class="text-muted">
+							Deletes all records that accounts gained points or took an action<br>
+							<small>(Submissions, Awards, Unlocks, Tracking)</small>
+						</span>
+                </div>
+
+                <div class="form-group pb-2">
+                    <div class="form-check">
+                        {{ form.challenges(class="form-check-input", autocomplete="off") }}
+                        <label class="form-check-label" for="challenges">challenges</label>
+                    </div>
+                    <span class="text-muted">
+							Deletes all challenges and associated data<br>
+							<small>(Challenges, Flags, Hints, Tags, Challenge Files)</small>
+						</span>
+                </div>
+
+                <div class="form-group pb-2">
+                    <div class="form-check">
+                        {{ form.pages(class="form-check-input", autocomplete="off") }}
+                        <label class="form-check-label" for="pages">pages</label>
+                    </div>
+                    <span class="text-muted">
+							Deletes all pages and their associated files<br>
+							<small>(Pages, Page Files)</small>
+						</span>
+                </div>
+
+                <div class="form-group pb-2">
+                    <div class="form-check">
+                        {{ form.notifications(class="form-check-input", autocomplete="off") }}
+                        <label class="form-check-label" for="notifications">notifications</label>
+                    </div>
+                    <span class="text-muted">
+							Deletes all notifications<br>
+							<small>(Notifications)</small>
+						</span>
+                </div>
+
+                <br>
+
+                {{ form.nonce() }}
+
+                {{ form.submit(class="btn btn-warning btn-lg btn-block") }}
+            </form>
+            {% endwith %}
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="jumbotron">
+    <div class="container">
+        <h1><b>重置</b></h1>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            {% with form = Forms.config.ResetInstanceForm() %}
+            <form method="POST" id="reset-ctf-form">
+                <div class="alert alert-danger" role="alert">
+                    <p>
+                        重置 CTFd 实例允许您批量删除数据。
+                    </p>
+
+                    <p>
+                        重置您的 CTFd 实例将<strong>永久</strong>删除所有数据 .
+                    </p>
+
+                    <p>
+                        重置之前请仔细考虑，因为不会进行自动备份，并且所有选定的数据都将丢失。
+                    </p>
+
+                    <span>
 							<strong>
 								创建您需要的所有数据的备份-> <a href="{{ url_for('admin.config', _anchor='backup') }}">创建 CTFd 导出</a>
 							</strong>
 						</span>
-					</div>
+                </div>
 
-					<hr>
+                <hr>
 
-					<div class="form-group pb-2">
-						<div class="form-check">
-							{{ form.accounts(class="form-check-input", autocomplete="off") }}
-							{{ form.accounts.label(class="form-check-label") }}
-						</div>
-						<span class="text-muted">
+                <div class="form-group pb-2">
+                    <div class="form-check">
+                        {{ form.accounts(class="form-check-input", autocomplete="off") }}
+                        {{ form.accounts.label(class="form-check-label") }}
+                    </div>
+                    <span class="text-muted">
 							删除所有用户和团队帐户及其关联信息<br>
 							<small>(Users, Teams, Submissions, Tracking)</small>
 						</span>
-					</div>
+                </div>
 
-					<div class="form-group pb-2">
-						<div class="form-check">
-							{{ form.submissions(class="form-check-input", autocomplete="off") }}
-							{{ form.submissions.label(class="form-check-label") }}
-						</div>
-						<span class="text-muted">
+                <div class="form-group pb-2">
+                    <div class="form-check">
+                        {{ form.submissions(class="form-check-input", autocomplete="off") }}
+                        {{ form.submissions.label(class="form-check-label") }}
+                    </div>
+                    <span class="text-muted">
 							删除账户获得积分或采取行动的所有记录<br>
 							<small>(Submissions, Awards, Unlocks, Tracking)</small>
 						</span>
-					</div>
+                </div>
 
-					<div class="form-group pb-2">
-						<div class="form-check">
-							{{ form.challenges(class="form-check-input", autocomplete="off") }}
-							{{ form.challenges.label(class="form-check-label") }}
-						</div>
-						<span class="text-muted">
+                <div class="form-group pb-2">
+                    <div class="form-check">
+                        {{ form.challenges(class="form-check-input", autocomplete="off") }}
+                        {{ form.challenges.label(class="form-check-label") }}
+                    </div>
+                    <span class="text-muted">
 							删除所有题目和相关数据<br>
 							<small>(Challenges, Flags, Hints, Tags, Challenge Files)</small>
 						</span>
-					</div>
+                </div>
 
-					<div class="form-group pb-2">
-						<div class="form-check">
-							{{ form.pages(class="form-check-input", autocomplete="off") }}
-							{{ form.pages.label(class="form-check-label") }}
-						</div>
-						<span class="text-muted">
+                <div class="form-group pb-2">
+                    <div class="form-check">
+                        {{ form.pages(class="form-check-input", autocomplete="off") }}
+                        {{ form.pages.label(class="form-check-label") }}
+                    </div>
+                    <span class="text-muted">
 							删除所有页面及其关联文件<br>
 							<small>(Pages, Page Files)</small>
 						</span>
-					</div>
+                </div>
 
-					<div class="form-group pb-2">
-						<div class="form-check">
-							{{ form.notifications(class="form-check-input", autocomplete="off") }}
-							{{ form.notifications.label(class="form-check-label") }}
-						</div>
-						<span class="text-muted">
+                <div class="form-group pb-2">
+                    <div class="form-check">
+                        {{ form.notifications(class="form-check-input", autocomplete="off") }}
+                        {{ form.notifications.label(class="form-check-label") }}
+                    </div>
+                    <span class="text-muted">
 							删除所有通知<br>
 							<small>(Notifications)</small>
 						</span>
-					</div>
+                </div>
 
-					<br>
+                <br>
 
-					{{ form.nonce() }}
+                {{ form.nonce() }}
 
-					{{ form.submit(class="btn btn-warning btn-lg btn-block") }}
-				</form>
-				{% endwith %}
-			</div>
-		</div>
-	</div>
+                {{ form.submit(class="btn btn-warning btn-lg btn-block") }}
+            </form>
+            {% endwith %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
 {% endblock %}
 
 {% block scripts %}

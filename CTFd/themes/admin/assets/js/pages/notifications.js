@@ -6,6 +6,17 @@ import { ezAlert } from "core/ezq";
 import Vue from "vue/dist/vue.esm.browser";
 import Notification from "../components/notifications/Notification.vue";
 
+function language(en,zh) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === "Scr1wCTFdLanguage") {
+      return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+    }
+  }
+  return zh;
+}
+
 const notificationCard = Vue.extend(Notification);
 
 function submit(event) {
@@ -26,9 +37,9 @@ function submit(event) {
     }, 1000);
     if (!response.success) {
       ezAlert({
-        title: "Error",
-        body: "Could not send notification. Please try again.",
-        button: "OK"
+        title: language("Error","错误"),
+        body: language("Could not send notification. Please try again.","无法发送通知。请再试一次。"),
+        button: language("OK","好的")
       });
     }
 
@@ -51,7 +62,7 @@ function deleteNotification(event) {
   const $elem = $(this);
   const id = $elem.data("notif-id");
 
-  if (confirm("您确定要删除此通知吗？")) {
+  if (confirm(language("Are you sure you want to delete this notification?","您确定要删除此通知吗？"))) {
     CTFd.api.delete_notification({ notificationId: id }).then(response => {
       if (response.success) {
         $elem.parent().remove();

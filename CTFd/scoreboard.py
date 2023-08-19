@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request
 
 from CTFd.utils import config
 from CTFd.utils.config.visibility import scores_visible
@@ -18,12 +18,19 @@ scoreboard = Blueprint("scoreboard", __name__)
 @check_score_visibility
 def listing():
     infos = get_infos()
+    language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+    if language == "zh":
+        if config.is_scoreboard_frozen():
+            infos.append("计分板已被冻结")
 
-    if config.is_scoreboard_frozen():
-        infos.append("计分板已被冻结")
+        if is_admin() is True and scores_visible() is False:
+            infos.append("用户目前无法看到分数")
+    else:
+        if config.is_scoreboard_frozen():
+            infos.append("Scoreboard has been frozen")
 
-    if is_admin() is True and scores_visible() is False:
-        infos.append("用户目前无法看到分数")
+        if is_admin() is True and scores_visible() is False:
+            infos.append("Scores are not currently visible to users")
 
     standings = get_standings()
     return render_template("scoreboard.html", standings=standings, infos=infos)

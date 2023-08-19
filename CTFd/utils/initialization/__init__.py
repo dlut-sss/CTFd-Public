@@ -125,10 +125,14 @@ def init_logs(app):
     logger_submissions = logging.getLogger("submissions")
     logger_logins = logging.getLogger("logins")
     logger_registrations = logging.getLogger("registrations")
+    logger_request = logging.getLogger("request")
+    logger_bot = logging.getLogger("bot")
 
     logger_submissions.setLevel(logging.INFO)
     logger_logins.setLevel(logging.INFO)
     logger_registrations.setLevel(logging.INFO)
+    logger_request.setLevel(logging.INFO)
+    logger_bot.setLevel(logging.INFO)
 
     log_dir = app.config["LOG_FOLDER"]
     if not os.path.exists(log_dir):
@@ -138,6 +142,8 @@ def init_logs(app):
         "submissions": os.path.join(log_dir, "submissions.log"),
         "logins": os.path.join(log_dir, "logins.log"),
         "registrations": os.path.join(log_dir, "registrations.log"),
+        "request": os.path.join(log_dir, "request.log"),
+        "bot": os.path.join(log_dir, "bot.log"),
     }
 
     try:
@@ -154,10 +160,18 @@ def init_logs(app):
         registration_log = logging.handlers.RotatingFileHandler(
             logs["registrations"], maxBytes=10485760, backupCount=5
         )
+        request_log = logging.handlers.RotatingFileHandler(
+            logs["request"], maxBytes=10485760, backupCount=5
+        )
+        bot_log = logging.handlers.RotatingFileHandler(
+            logs["bot"], maxBytes=10485760, backupCount=5
+        )
 
         logger_submissions.addHandler(submission_log)
         logger_logins.addHandler(login_log)
         logger_registrations.addHandler(registration_log)
+        logger_request.addHandler(request_log)
+        logger_bot.addHandler(bot_log)
     except IOError:
         pass
 
@@ -166,10 +180,14 @@ def init_logs(app):
     logger_submissions.addHandler(stdout)
     logger_logins.addHandler(stdout)
     logger_registrations.addHandler(stdout)
+    logger_request.addHandler(stdout)
+    logger_bot.addHandler(stdout)
 
     logger_submissions.propagate = 0
     logger_logins.propagate = 0
     logger_registrations.propagate = 0
+    logger_request.propagate = 0
+    logger_bot.propagate = 0
 
 
 def init_events(app):
@@ -186,7 +204,7 @@ def init_request_processors(app):
     @app.url_defaults
     def inject_theme(endpoint, values):
         if "theme" not in values and app.url_map.is_endpoint_expecting(
-            endpoint, "theme"
+                endpoint, "theme"
         ):
             values["theme"] = ctf_theme()
 
@@ -196,15 +214,15 @@ def init_request_processors(app):
             if request.endpoint == "admin.import_ctf":
                 return
             else:
-                return "正在导入", 403
+                return "当前正在进行导入", 403
         if is_setup() is False:
             if request.endpoint in (
-                "views.setup",
-                "views.integrations",
-                "views.themes",
-                "views.files",
-                "views.healthcheck",
-                "views.robots",
+                    "views.setup",
+                    "views.integrations",
+                    "views.themes",
+                    "views.files",
+                    "views.healthcheck",
+                    "views.robots",
             ):
                 return
             else:
@@ -219,7 +237,7 @@ def init_request_processors(app):
             if request.endpoint == "admin.import_ctf":
                 return
             else:
-                return "Import currently in progress", 403
+                return "当前正在进行导入", 403
 
         if authed():
             user_ips = get_current_user_recent_ips()
@@ -256,10 +274,12 @@ def init_request_processors(app):
             user = get_current_user_attrs()
             team = get_current_team_attrs()
 
+            language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+
             if user and user.banned:
                 return (
                     render_template(
-                        "errors/403.html", error="You have been banned from this CTF"
+                        "errors/403.html", error=("You have been banned from this CTF" if language == "en" else "你已被封禁")
                     ),
                     403,
                 )
@@ -268,7 +288,7 @@ def init_request_processors(app):
                 return (
                     render_template(
                         "errors/403.html",
-                        error="Your team has been banned from this CTF",
+                        error=("Your team has been banned from this CTF" if language == "en" else "你的队伍已被封禁"),
                     ),
                     403,
                 )
@@ -276,6 +296,7 @@ def init_request_processors(app):
     @app.before_request
     def tokens():
         token = request.headers.get("Authorization")
+        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
         if token and request.content_type == "application/json":
             try:
                 token_type, token = token.split(" ", 1)
@@ -283,7 +304,7 @@ def init_request_processors(app):
             except UserNotFoundException:
                 abort(401)
             except UserTokenExpiredException:
-                abort(401, description="Your access token has expired")
+                abort(401, description=("Your access token has expired" if language == "en" else "你的访问密匙已经过期"))
             except Exception:
                 abort(401)
             else:

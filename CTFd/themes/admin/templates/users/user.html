@@ -8,8 +8,8 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h2 class="modal-action text-center w-100">编辑用户</h2>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<h2 class="modal-action text-center w-100">{{ 'Edit User' if en else '编辑用户' }}</h2>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute;top: 0;right: 0;padding: 30px;">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
@@ -24,8 +24,8 @@
 	<div class="modal-dialog modal-xl">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h2 class="modal-action text-center w-100">用户数据</h2>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<h2 class="modal-action text-center w-100">{{ 'User Statistics' if en else '用户数据' }}</h2>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute;top: 0;right: 0;padding: 30px;">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
@@ -40,8 +40,8 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h2 class="modal-action text-center w-100">奖励用户</h2>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<h2 class="modal-action text-center w-100">{{ 'Award User' if en else '奖励用户' }}</h2>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute;top: 0;right: 0;padding: 30px;">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
@@ -56,8 +56,8 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h2 class="modal-action text-center w-100">给用户发邮件</h2>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<h2 class="modal-action text-center w-100">{{ 'Email User' if en else '给用户发邮件' }}</h2>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute;top: 0;right: 0;padding: 30px;">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
@@ -72,8 +72,8 @@
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h2 class="modal-action text-center w-100">IP 地址</h2>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<h2 class="modal-action text-center w-100">{{ 'IP Addresses' if en else 'IP 地址记录' }}</h2>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute;top: 0;right: 0;padding: 30px;">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
@@ -89,16 +89,16 @@
 		<h1 id="team-id" class="text-center p-0 m-0">{{ user.name }}</h1>
 		<div class="mb-2">
 			{% if user.type == 'admin' %}
-				<span class="badge badge-primary">管理员</span>
+				<span class="badge badge-primary">{{ 'admin' if en else '管理员' }}</span>
 			{% endif %}
 			{% if user.verified %}
-				<span class="badge badge-success">已认证</span>
+				<span class="badge badge-success">{{ 'verified' if en else '已认证' }}</span>
 			{% endif %}
 			{% if user.hidden %}
-				<span class="badge badge-danger">已隐藏</span>
+				<span class="badge badge-danger">{{ 'hidden' if en else '已隐藏' }}</span>
 			{% endif %}
 			{% if user.banned %}
-				<span class="badge badge-danger">已封禁</span>
+				<span class="badge badge-danger">{{ 'banned' if en else '已封禁' }}</span>
 			{% endif %}
 		</div>
 
@@ -140,37 +140,35 @@
 
 		<h3 id="team-place" class="text-center">
 			{% if place %}
-				{{ place }}
-				<small>place</small>
+				<small>{{ place }}</small>
 			{% endif %}
 		</h3>
 		<h3 id="team-score" class="text-center">
 			{% if score %}
-				{{ score }}
-				<small>points</small>
+				<small>{{ score }}{{ ' points' if en else '分' }}</small>
 			{% endif %}
 		</h3>
 		<hr class="w-50">
 		<div class="pt-3">
 			<a class="edit-user text-dark">
-				<i class="btn-fa fas fa-user-edit fa-2x px-2" data-toggle="tooltip" data-placement="top" title="编辑用户"></i>
+				<i class="btn-fa fas fa-user-edit fa-2x px-2" data-toggle="tooltip" data-placement="top" title="{{ 'Edit User' if en else '编辑用户' }}"></i>
 			</a>
 			<a class="statistics-user text-dark">
-				<i class="btn-fa fas fa-chart-pie fa-2x px-2" data-toggle="tooltip" data-placement="top" title="用户数据"></i>
+				<i class="btn-fa fas fa-chart-pie fa-2x px-2" data-toggle="tooltip" data-placement="top" title="{{ 'User Statistics' if en else '用户数据' }}"></i>
 			</a>
 			<a class="award-user text-dark">
-				<i class="btn-fa fas fa-trophy fa-2x px-2" data-toggle="tooltip" data-placement="top" title="奖励用户"></i>
+				<i class="btn-fa fas fa-trophy fa-2x px-2" data-toggle="tooltip" data-placement="top" title="{{ 'Award User' if en else '奖励用户' }}"></i>
 			</a>
 			<a class="email-user text-dark">
-				<i class="btn-fa fas fa-envelope fa-2x px-2" data-toggle="tooltip" data-placement="top" title="给用户发邮件"></i>
+				<i class="btn-fa fas fa-envelope fa-2x px-2" data-toggle="tooltip" data-placement="top" title="{{ 'Email User' if en else '给用户发邮件' }}"></i>
 			</a>
 			<a class="delete-user text-dark">
-				<i class="btn-fa fas fa-trash-alt fa-2x px-2" data-toggle="tooltip" data-placement="top" title="删除用户"></i>
+				<i class="btn-fa fas fa-trash-alt fa-2x px-2" data-toggle="tooltip" data-placement="top" title="{{ 'Delete User' if en else '删除用户' }}"></i>
 			</a>
 		</div>
 		<div class="pt-3">
 			<a class="addresses-user text-dark">
-				<i class="btn-fa fas fa-network-wired fa-2x px-2" data-toggle="tooltip" data-placement="top" title="IP 地址"></i>
+				<i class="btn-fa fas fa-network-wired fa-2x px-2" data-toggle="tooltip" data-placement="top" title="{{ 'IP Addresses' if en else 'IP 地址记录' }}"></i>
 			</a>
 			{% if user.website %}
 			<a href="{{ user.website }}" target="_blank" class="text-decoration-none text-dark" rel="noopener">
@@ -185,21 +183,21 @@
 <div class="container">
 	<nav class="nav nav-tabs nav-fill pt-5" id="myTab" role="tablist">
 		<a class="nav-item nav-link active" id="nav-solves-tab" data-toggle="tab" href="#nav-solves" role="tab"
-		   aria-controls="nav-solves" aria-selected="true">解答成功</a>
+		   aria-controls="nav-solves" aria-selected="true">{{ 'Solves' if en else '解答成功' }}</a>
 
 		<a class="nav-item nav-link" id="nav-wrong-tab" data-toggle="tab" href="#nav-wrong" role="tab"
-		   aria-controls="nav-wrong" aria-selected="false">解答失败</a>
+		   aria-controls="nav-wrong" aria-selected="false">{{ 'Fails' if en else '解答失败' }}</a>
 
 		<a class="nav-item nav-link" id="nav-awards-tab" data-toggle="tab" href="#nav-awards" role="tab"
-		   aria-controls="nav-awards" aria-selected="false">获得奖项</a>
+		   aria-controls="nav-awards" aria-selected="false">{{ 'Awards' if en else '获得奖项' }}</a>
 
 		<a class="nav-item nav-link" id="nav-missing-tab" data-toggle="tab" href="#nav-missing" role="tab"
-		   aria-controls="nav-missing" aria-selected="false">尚未解答</a>
+		   aria-controls="nav-missing" aria-selected="false">{{ 'Missing' if en else '尚未解答' }}</a>
 	</nav>
 
 	<div class="tab-content min-vh-25 pb-5" id="nav-tabContent">
 		<div class="tab-pane fade show active" id="nav-solves" role="tabpanel" aria-labelledby="nav-solves-tab">
-			<h3 class="text-center pt-5 d-block">解答成功</h3>
+			<h3 class="text-center pt-5 d-block">{{ 'Solves' if en else '解答成功' }}</h3>
 			<div class="row">
 				<div class="col-md-12">
 					<div class="float-right pb-3">
@@ -221,11 +219,12 @@
 									<input type="checkbox" class="form-check-input" autocomplete="off" data-checkbox-all>&nbsp;
 								</div>
 							</th>
-							<th class="sort-col text-center"><b>题目</b></th>
-							<th class="sort-col text-center"><b>提交内容</b></th>
-							<th class="sort-col text-center"><b>类别</b></th>
-							<th class="sort-col text-center"><b>得分</b></th>
-							<th class="sort-col text-center"><b>时间</b></th>
+							<th class="sort-col text-center"><b>{{ 'Challenge' if en else '题目' }}</b></th>
+							<th class="sort-col text-center"><b>{{ 'Submitted' if en else '提交内容' }}</b></th>
+							<th class="sort-col text-center"><b>{{ 'Category' if en else '类别' }}</b></th>
+							<th class="sort-col text-center"><b>{{ 'Subcategory' if en else '子类别' }}</b></th>
+							<th class="sort-col text-center"><b>{{ 'Value' if en else '分值' }}</b></th>
+							<th class="sort-col text-center" style="width: 240px;"><b>{{ 'Time' if en else '时间' }}</b></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -246,6 +245,7 @@
 							</td>
 							<td class="flag" id="{{ solve.id }}"><pre style="word-wrap: break-word;word-break: break-word;">{{ solve.provided }}</pre></td>
 							<td class="text-center">{{ solve.challenge.category }}</td>
+							<td class="text-center">{{ solve.challenge.subcategory }}</td>
 							<td class="text-center">{{ solve.challenge.value }}</td>
 							<td class="text-center solve-time">
 								<span data-time="{{ solve.date | isoformat }}"></span>
@@ -259,7 +259,7 @@
 		</div>
 
 		<div class="tab-pane fade" id="nav-wrong" role="tabpanel" aria-labelledby="nav-wrong-tab">
-			<h3 class="text-center pt-5 d-block">解答失败</h3>
+			<h3 class="text-center pt-5 d-block">{{ 'Fails' if en else '解答失败' }}</h3>
 			<div class="row">
 				<div class="col-md-12">
 					<div class="float-right pb-3">
@@ -281,9 +281,9 @@
 										<input type="checkbox" class="form-check-input" autocomplete="off" data-checkbox-all>&nbsp;
 									</div>
 								</th>
-								<th class="sort-col text-center"><b>题目</b></th>
-								<th class="sort-col text-center"><b>提交内容</b></th>
-								<th class="sort-col text-center"><b>时间</b></th>
+								<th class="sort-col text-center"><b>{{ 'Challenge' if en else '题目' }}</b></th>
+								<th class="sort-col text-center"><b>{{ 'Submitted' if en else '提交内容' }}</b></th>
+								<th class="sort-col text-center" style="width: 240px;"><b>{{ 'Time' if en else '时间' }}</b></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -317,7 +317,7 @@
 		</div>
 
 		<div class="tab-pane fade" id="nav-awards" role="tabpanel" aria-labelledby="nav-awards-tab">
-			<h3 class="text-center pt-5 d-block">获得奖项</h3>
+			<h3 class="text-center pt-5 d-block">{{ 'Awards' if en else '获得奖项' }}</h3>
 			<div class="row">
 				<div class="col-md-12">
 					<div class="float-right pb-3">
@@ -339,12 +339,12 @@
 										<input type="checkbox" class="form-check-input" autocomplete="off" data-checkbox-all>&nbsp;
 									</div>
 								</th>
-								<th class="sort-col text-center"><b>名称</b></th>
-								<th class="sort-col text-center"><b>描述</b></th>
-								<th class="sort-col text-center"><b>时间</b></th>
-								<th class="sort-col text-center"><b>价值</b></th>
-								<th class="sort-col text-center"><b>类别</b></th>
-								<th class="sort-col text-center"><b>图标</b></th>
+								<th class="sort-col text-center"><b>{{ 'Name' if en else '名称' }}</b></th>
+								<th class="sort-col text-center"><b>{{ 'Description' if en else '描述' }}</b></th>
+								<th class="sort-col text-center"><b>{{ 'Date' if en else '时间' }}</b></th>
+								<th class="sort-col text-center"><b>{{ 'Value' if en else '分值' }}</b></th>
+								<th class="sort-col text-center"><b>{{ 'Category' if en else '类别' }}</b></th>
+								<th class="sort-col text-center"><b>{{ 'Icon' if en else '图标' }}</b></th>
 							</tr>
 						</thead>
 						<tbody id="awards-body">
@@ -356,7 +356,7 @@
 									</div>
 								</td>
 								<td class="text-center chal" id="{{ award.id }}">{{ award.name }}</td>
-								<td class=""><pre>{{ award.description }}</pre></td>
+								<td class=""><pre style="word-wrap: break-word;word-break: break-word;">{{ award.description }}</pre></td>
 								<td class="text-center solve-time">
 									<span data-time="{{ award.date | isoformat }}"></span>
 								</td>
@@ -372,7 +372,7 @@
 		</div>
 
 		<div class="tab-pane fade" id="nav-missing" role="tabpanel" aria-labelledby="nav-missing-tab">
-			<h3 class="text-center pt-5 d-block">尚未解答</h3>
+			<h3 class="text-center pt-5 d-block">{{ 'Missing' if en else '尚未解答' }}</h3>
 			<div class="row">
 				<div class="col-md-12">
 					<div class="float-right pb-3">
@@ -394,9 +394,10 @@
 									<input type="checkbox" class="form-check-input" autocomplete="off" data-checkbox-all>&nbsp;
 								</div>
 							</th>
-							<th class="sort-col text-center"><b>题目</b></th>
-							<th class="sort-col text-center"><b>类别</b></th>
-							<th class="sort-col text-center"><b>价值</b></th>
+							<th class="sort-col text-center"><b>{{ 'Challenge' if en else '题目' }}</b></th>
+							<th class="sort-col text-center"><b>{{ 'Category' if en else '类别' }}</b></th>
+							<th class="sort-col text-center"><b>{{ 'Subcategory' if en else '子类别' }}</b></th>
+							<th class="sort-col text-center"><b>{{ 'Value' if en else '分值' }}</b></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -414,6 +415,7 @@
 								</a>
 							</td>
 							<td class="text-center">{{ challenge.category }}</td>
+							<td class="text-center">{{ challenge.subcategory }}</td>
 							<td class="text-center">{{ challenge.value }}</td>
 						</tr>
 					{% endfor %}

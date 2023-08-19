@@ -1,6 +1,6 @@
 import warnings
 
-from flask import current_app
+from flask import current_app, request
 from requests import session, RequestException
 
 from CTFd.models import db
@@ -82,21 +82,29 @@ class FrpRouter(BaseRouter):
             ) from None
 
     def access(self, container: WhaleContainer):
+        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
         if container.challenge.redirect_type == 'direct':
             return f'{get_config("whale:frp_direct_ip_address", "127.0.0.1")}:{container.port}'
         elif container.challenge.redirect_type == 'http':
             host = get_config("whale:frp_http_domain_suffix", "")
             port = get_config("whale:frp_http_port", "80")
             host += f':{port}' if port != 80 else ''
-            return f'<a target="_blank" href="http://{container.http_subdomain}.{host}/">题目链接</a>'
+            if language == "zh":
+                return f'<a target="_blank" href="http://{container.http_subdomain}.{host}/">题目链接</a>'
+            else:
+                return f'<a target="_blank" href="http://{container.http_subdomain}.{host}/">Instance Link</a>'
         return ''
 
     def register(self, container: WhaleContainer):
+        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
         if container.challenge.redirect_type == 'direct':
             if not container.port:
                 port = CacheProvider(app=current_app).get_available_port()
                 if not port:
-                    return False, 'No available ports. Please wait for a few minutes.'
+                    if language == "zh":
+                        return False, 'No available ports. Please wait for a few minutes.'
+                    else:
+                        return False, '没有可用的端口。 请稍等几分钟。'
                 container.port = port
                 db.session.commit()
         elif container.challenge.redirect_type == 'http':
@@ -106,25 +114,38 @@ class FrpRouter(BaseRouter):
         return True, 'success'
 
     def unregister(self, container: WhaleContainer):
+        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
         if container.challenge.redirect_type == 'direct':
             try:
                 redis_util = CacheProvider(app=current_app)
                 redis_util.add_available_port(container.port)
             except Exception as e:
                 logging.log(
-                    'whale', 'Error deleting port from cache',
-                    name=container.user.name,
-                    challenge_id=container.challenge_id,
+                    'whale', '[CTFd Whale] 从缓存中删除端口时出错'
                 )
-                return False, 'Error deleting port from cache'
+                if language == "zh":
+                    return False, '从缓存中删除端口时出错'
+                else:
+                    return False, 'Error deleting port from cache'
         self.reload()
         return True, 'success'
 
     def check_availability(self):
+        language = "zh"
+        try:
+            language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        except:
+            pass
         try:
             resp = self.ses.get(f'{self.url}/api/status')
         except RequestException as e:
-            return False, 'Unable to access frpc admin api'
+            if language == "zh":
+                return False, '无法访问 frpc 管理 api'
+            else:
+                return False, 'Unable to access frpc admin api'
         if resp.status_code == 401:
-            return False, 'frpc admin api unauthorized'
+            if language == "zh":
+                return False, 'frpc admin api 认证失败'
+            else:
+                return False, 'frpc admin api unauthorized'
         return True, 'Available'

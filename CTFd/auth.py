@@ -35,6 +35,7 @@ auth = Blueprint("auth", __name__)
 @auth.route("/confirm/<data>", methods=["POST", "GET"])
 @ratelimit(method="POST", limit=10, interval=60)
 def confirm(data=None):
+    language = request.cookies.get("Scr1wCTFdLanguage", "zh")
     if not get_config("verify_emails"):
         # If the CTF doesn't care about confirming email addresses then redierct to challenges
         return redirect(url_for("challenges.listing"))
@@ -44,13 +45,23 @@ def confirm(data=None):
         try:
             user_email = unserialize(data, max_age=1800)
         except (BadTimeSignature, SignatureExpired):
-            return render_template(
-                "confirm.html", errors=["您的确认链接已过期"]
-            )
+            if language == "zh":
+                return render_template(
+                    "confirm.html", errors=["您的确认链接已过期"]
+                )
+            else:
+                return render_template(
+                    "confirm.html", errors=["Your confirmation link has expired"]
+                )
         except (BadSignature, TypeError, base64.binascii.Error):
-            return render_template(
-                "confirm.html", errors=["您的确认令牌无效"]
-            )
+            if language == "zh":
+                return render_template(
+                    "confirm.html", errors=["您的确认令牌无效"]
+                )
+            else:
+                return render_template(
+                    "confirm.html", errors=["Your confirmation token is invalid"]
+                )
 
         user = Users.query.filter_by(email=user_email).first_or_404()
         if user.verified:
@@ -59,7 +70,7 @@ def confirm(data=None):
         user.verified = True
         log(
             "registrations",
-            format="[{date}] {ip} - successful confirmation for {name}",
+            format="[{date}] {name} 在 {ip} 成功验证了账号邮箱信息 ",
             name=user.name,
         )
         db.session.commit()
@@ -84,12 +95,17 @@ def confirm(data=None):
             email.verify_email_address(user.email)
             log(
                 "registrations",
-                format="[{date}] {ip} - {name} initiated a confirmation email resend",
+                format="[{date}] {name} 在 {ip} 请求重新发送确认邮件",
                 name=user.name,
             )
-            return render_template(
-                "confirm.html", infos=[f"Confirmation email sent to {user.email}!"]
-            )
+            if language == "zh":
+                return render_template(
+                    "confirm.html", infos=[f"验证邮件已发送至{user.email}!"]
+                )
+            else:
+                return render_template(
+                    "confirm.html", infos=[f"Confirmation email sent to {user.email}!"]
+                )
         elif request.method == "GET":
             # User has been directed to the confirm page
             return render_template("confirm.html")
@@ -99,27 +115,48 @@ def confirm(data=None):
 @auth.route("/reset_password/<data>", methods=["POST", "GET"])
 @ratelimit(method="POST", limit=10, interval=60)
 def reset_password(data=None):
+    language = request.cookies.get("Scr1wCTFdLanguage", "zh")
     if config.can_send_mail() is False:
-        return render_template(
-            "reset_password.html",
-            errors=[
-                markup(
-                    "此 CTF 未配置为发送电子邮件。<br>请联系组织者重置您的密码。"
-                )
-            ],
-        )
+        if language == "zh":
+            return render_template(
+                "reset_password.html",
+                errors=[
+                    markup(
+                        "此 CTF 未配置为发送电子邮件。<br>请联系组织者重置您的密码。"
+                    )
+                ],
+            )
+        else:
+            return render_template(
+                "reset_password.html",
+                errors=[
+                    markup(
+                        "This CTF is not configured to send email.<br> Please contact an organizer to have your password reset."
+                    )
+                ],
+            )
 
     if data is not None:
         try:
             email_address = unserialize(data, max_age=1800)
         except (BadTimeSignature, SignatureExpired):
-            return render_template(
-                "reset_password.html", errors=["您的链接已过期"]
-            )
+            if language == "zh":
+                return render_template(
+                    "reset_password.html", errors=["您的链接已过期"]
+                )
+            else:
+                return render_template(
+                    "reset_password.html", errors=["Your link has expired"]
+                )
         except (BadSignature, TypeError, base64.binascii.Error):
-            return render_template(
-                "reset_password.html", errors=["您的重置令牌无效"]
-            )
+            if language == "zh":
+                return render_template(
+                    "reset_password.html", errors=["您的重置令牌无效"]
+                )
+            else:
+                return render_template(
+                    "reset_password.html", errors=["Your reset token is invalid"]
+                )
 
         if request.method == "GET":
             return render_template("reset_password.html", mode="set")
@@ -127,18 +164,31 @@ def reset_password(data=None):
             password = request.form.get("password", "").strip()
             user = Users.query.filter_by(email=email_address).first_or_404()
             if user.oauth_id:
-                return render_template(
-                    "reset_password.html",
-                    infos=[
-                        "您的帐户是通过身份验证提供商注册的，没有关联的密码。 请通过您的身份验证提供商登录。"
-                    ],
-                )
+                if language == "zh":
+                    return render_template(
+                        "reset_password.html",
+                        infos=[
+                            "您的帐户是通过身份验证提供商注册的，没有关联的密码。 请通过您的身份验证提供商登录。"
+                        ],
+                    )
+                else:
+                    return render_template(
+                        "reset_password.html",
+                        infos=[
+                            "Your account was registered via an authentication provider and does not have an associated password. Please login via your authentication provider."
+                        ],
+                    )
 
             pass_short = len(password) == 0
             if pass_short:
-                return render_template(
-                    "reset_password.html", errors=["请选择更长的密码"]
-                )
+                if language == "zh":
+                    return render_template(
+                        "reset_password.html", errors=["请选择更长的密码"]
+                    )
+                else:
+                    return render_template(
+                        "reset_password.html", errors=["Please pick a longer password"]
+                    )
 
             user.password = password
             db.session.commit()
@@ -159,29 +209,52 @@ def reset_password(data=None):
         get_errors()
 
         if not user:
+            if language == "zh":
+                return render_template(
+                    "reset_password.html",
+                    infos=[
+                        "如果该帐户存在，您将收到一封电子邮件，请检查您的收件箱"
+                    ],
+                )
+            else:
+                return render_template(
+                    "reset_password.html",
+                    infos=[
+                        "If that account exists you will receive an email, please check your inbox"
+                    ],
+                )
+
+        if user.oauth_id:
+            if language == "zh":
+                return render_template(
+                    "reset_password.html",
+                    infos=[
+                        "与此帐户关联的电子邮件地址是通过身份验证提供商注册的，没有关联的密码。 请通过您的身份验证提供商登录。"
+                    ],
+                )
+            else:
+                return render_template(
+                    "reset_password.html",
+                    infos=[
+                        "The email address associated with this account was registered via an authentication provider and does not have an associated password. Please login via your authentication provider."
+                    ],
+                )
+
+        email.forgot_password(email_address)
+        if language == "zh":
             return render_template(
                 "reset_password.html",
                 infos=[
                     "如果该帐户存在，您将收到一封电子邮件，请检查您的收件箱"
                 ],
             )
-
-        if user.oauth_id:
+        else:
             return render_template(
                 "reset_password.html",
                 infos=[
-                    "与此帐户关联的电子邮件地址是通过身份验证提供商注册的，没有关联的密码。 请通过您的身份验证提供商登录。"
+                    "If that account exists you will receive an email, please check your inbox"
                 ],
             )
-
-        email.forgot_password(email_address)
-
-        return render_template(
-            "reset_password.html",
-            infos=[
-                "如果该帐户存在，您将收到一封电子邮件，请检查您的收件箱"
-            ],
-        )
     return render_template("reset_password.html")
 
 
@@ -189,6 +262,7 @@ def reset_password(data=None):
 @check_registration_visibility
 @ratelimit(method="POST", limit=10, interval=5)
 def register():
+    language = request.cookies.get("Scr1wCTFdLanguage", "zh")
     errors = get_errors()
     if current_user.authed():
         return redirect(url_for("challenges.listing"))
@@ -198,7 +272,11 @@ def register():
         email_address = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "").strip()
         sname = request.form.get("sname", "").strip()
-        sid = request.form.get("sid", "").strip()
+
+        sid = ""
+        register_uid = get_config("register_uid")
+        if register_uid:
+            sid = request.form.get("sid", "").strip()
 
         website = request.form.get("website")
         affiliation = request.form.get("affiliation")
@@ -212,9 +290,10 @@ def register():
             .filter_by(email=email_address)
             .first()
         )
-        sname = Users.query.add_columns("sname",
-                                        "id").filter_by(sname=sname).first()
-        sid = Users.query.add_columns("sid", "id").filter_by(sid=sid).first()
+
+        if register_uid:
+            sid = Users.query.add_columns("sid", "id").filter_by(sid=sid).first()
+
         pass_short = len(password) == 0
         pass_long = len(password) > 128
         vaild_number = validators.validate_sid(
@@ -227,7 +306,10 @@ def register():
                     registration_code.lower()
                     != str(get_config("registration_code", default="")).lower()
             ):
-                errors.append("注册码错误")
+                if language == "zh":
+                    errors.append("注册码错误")
+                else:
+                    errors.append("The registration code you entered was incorrect")
 
         # Process additional user fields
         fields = {}
@@ -238,7 +320,10 @@ def register():
         for field_id, field in fields.items():
             value = request.form.get(f"fields[{field_id}]", "").strip()
             if field.required is True and (value is None or value == ""):
-                errors.append("请提供所有必填字段")
+                if language == "zh":
+                    errors.append("请提供所有必填字段")
+                else:
+                    errors.append("Please provide all required fields")
                 break
 
             # Handle special casing of existing profile fields
@@ -263,8 +348,24 @@ def register():
         else:
             valid_country = True
 
-        if not vaild_number:
-            errors.append("请输入有效的学号")
+        register_uid_empty = get_config("register_uid_empty")
+
+        if language == "zh":
+            if not vaild_number:
+                if register_uid:
+                    if not register_uid_empty:
+                        errors.append("请输入有效的学号")
+                    else:
+                        if not request.form.get("sid", "").strip() == "":
+                            errors.append("请输入有效的学号")
+        else:
+            if not vaild_number:
+                if register_uid:
+                    if not register_uid_empty:
+                        errors.append("Please enter a valid student number")
+                    else:
+                        if not request.form.get("sid", "").strip() == "":
+                            errors.append("Please enter a valid student number")
 
         if website:
             valid_website = validators.validate_url(website)
@@ -276,31 +377,71 @@ def register():
         else:
             valid_affiliation = True
 
-        if not valid_email:
-            errors.append("邮箱名无效")
-        if email.check_email_is_whitelisted(email_address) is False:
-            errors.append("您的电子邮件地址不是来自允许的域")
-        if names:
-            errors.append("名字已经被占用了，换一个吧")
-        if team_name_email_check is True:
-            errors.append("你的用户名不能是邮箱名")
-        if emails:
-            errors.append("此邮箱已经存在帐号了！")
-        if sid:
-            errors.append("此学号已经存在帐号了！")
-        if pass_short:
-            errors.append("密码太短了")
-        if pass_long:
-            errors.append("密码太长了")
-        if name_len:
-            errors.append("名字太短了")
-        if valid_website is False:
-            errors.append(
-                "网站必须是以 http 或 https 开头的正确 URL")
-        if valid_country is False:
-            errors.append("国家无效")
-        if valid_affiliation is False:
-            errors.append("签名过长")
+        if language == "zh":
+            if not valid_email:
+                errors.append("邮箱名无效")
+            if email.check_email_is_whitelisted(email_address) is False:
+                errors.append("您的电子邮件地址不是来自允许的域")
+            if names:
+                errors.append("名字已经被占用了，换一个吧")
+            if team_name_email_check is True:
+                errors.append("你的用户名不能是邮箱名")
+            if emails:
+                errors.append("此邮箱已经存在帐号了！")
+
+            if register_uid:
+                if sid:
+                    if request.form.get("sid", "").strip() == "":
+                        if not register_uid_empty:
+                            errors.append("学号不能为空！")
+                    else:
+                        errors.append("此学号已经存在帐号了！")
+
+            if pass_short:
+                errors.append("密码太短了")
+            if pass_long:
+                errors.append("密码太长了")
+            if name_len:
+                errors.append("名字太短了")
+            if valid_website is False:
+                errors.append(
+                    "网站必须是以 http 或 https 开头的正确 URL")
+            if valid_country is False:
+                errors.append("国家无效")
+            if valid_affiliation is False:
+                errors.append("签名过长")
+        else:
+            if not valid_email:
+                errors.append("Please enter a valid email address")
+            if email.check_email_is_whitelisted(email_address) is False:
+                errors.append("Your email address is not from an allowed domain")
+            if names:
+                errors.append("That user name is already taken")
+            if team_name_email_check is True:
+                errors.append("Your user name cannot be an email address")
+            if emails:
+                errors.append("That email has already been used")
+
+            if register_uid:
+                if sid:
+                    if request.form.get("sid", "").strip() == "":
+                        if not register_uid_empty:
+                            errors.append("Student number cannot be empty!")
+                    else:
+                        errors.append("Same student number already in use!")
+
+            if pass_short:
+                errors.append("Pick a longer password")
+            if pass_long:
+                errors.append("Pick a shorter password")
+            if name_len:
+                errors.append("Pick a longer user name")
+            if valid_website is False:
+                errors.append("Websites must be a proper URL starting with http or https")
+            if valid_country is False:
+                errors.append("Invalid country")
+            if valid_affiliation is False:
+                errors.append("Please provide a shorter affiliation")
 
         if len(errors) > 0:
             return render_template(
@@ -348,7 +489,7 @@ def register():
                 ):  # Confirming users is enabled and we can send email.
                     log(
                         "registrations",
-                        format="[{date}] {ip} - {name} registered (UNCONFIRMED) with {email}",
+                        format="[{date}] {name} 在 {ip} 使用 {email} 注册了一个尚未确认邮箱的账户",
                         name=user.name,
                         email=user.email,
                     )
@@ -363,7 +504,7 @@ def register():
 
         log(
             "registrations",
-            format="[{date}] {ip} - {name} registered with {email}",
+            format="[{date}] {name} 在 {ip} 使用邮箱 {email} 注册了一个账户",
             name=user.name,
             email=user.email,
         )
@@ -380,6 +521,7 @@ def register():
 @auth.route("/login", methods=["POST", "GET"])
 @ratelimit(method="POST", limit=10, interval=5)
 def login():
+    language = request.cookies.get("Scr1wCTFdLanguage", "zh")
     errors = get_errors()
     if request.method == "POST":
         name = request.form["name"]
@@ -392,17 +534,23 @@ def login():
 
         if user:
             if user.password is None:
-                errors.append(
-                    "您的帐户已通过第三方身份验证提供商注册。"
-                    "请尝试使用配置的身份验证提供程序登录。"
-                )
+                if language == "zh":
+                    errors.append(
+                        "您的帐户已通过第三方身份验证提供商注册。"
+                        "请尝试使用配置的身份验证提供程序登录。"
+                    )
+                else:
+                    errors.append(
+                        "Your account was registered with a 3rd party authentication provider. "
+                        "Please try logging in with a configured authentication provider."
+                    )
                 return render_template("login.html", errors=errors)
 
             if user and verify_password(request.form["password"], user.password):
                 session.regenerate()
 
                 login_user(user)
-                log("logins", "[{date}] {ip} - {name} logged in", name=user.name)
+                log("logins", "[{date}] {name} 在 {ip} 登陆", name=user.name)
 
                 db.session.close()
                 if request.args.get("next") and validators.is_safe_url(
@@ -415,16 +563,24 @@ def login():
                 # This user exists but the password is wrong
                 log(
                     "logins",
-                    "[{date}] {ip} - submitted invalid password for {name}",
+                    "[{date}] {ip} 在尝试登陆 {name} 时提交了错误的密码",
                     name=user.name,
                 )
-                errors.append("账户名或密码错误")
+                if language == "zh":
+                    errors.append("账户名或密码错误")
+                else:
+                    errors.append("Your username or password is incorrect")
+
                 db.session.close()
                 return render_template("login.html", errors=errors)
         else:
             # This user just doesn't exist
-            log("logins", "[{date}] {ip} - submitted invalid account information")
-            errors.append("账户名或密码错误")
+            log("logins", "[{date}] {ip} 尝试登陆一个不存在的账号")
+            if language == "zh":
+                errors.append("账户名或密码错误")
+            else:
+                errors.append("Your username or password is incorrect")
+
             db.session.close()
             return render_template("login.html", errors=errors)
     else:
@@ -441,17 +597,23 @@ def login():
                         if user.sname == user_name:
                             session.regenerate()
                             login_user(user)
-                            log("logins", "[{date}] {ip} - {name} logged in", name=user.name)
+                            log("logins", "[{date}] {name} 在 {ip} 通过sso认证登陆", name=user.name)
                             db.session.close()
                             if request.args.get("next") and validators.is_safe_url(
                                     request.args.get("next")):
                                 return redirect(request.args.get("next"))
                             return redirect(url_for("challenges.listing"))
-                errors.append("账户不存在或对应账户未实名")
+                if language == "zh":
+                    errors.append("账户不存在或对应账户未实名")
+                else:
+                    errors.append("The account does not exist or the corresponding account's real name is not verified")
                 return render_template("login.html", errors=errors)
             except Exception as e:
                 db.session.close()
-                errors.append("身份验证失败")
+                if language == "zh":
+                    errors.append("身份验证失败")
+                else:
+                    errors.append("Authentication failed")
                 print(e)
                 return render_template("login.html", errors=errors)
         else:
@@ -465,7 +627,7 @@ def decrypt_ticket(ticket):
     # 使用base64解码ticket参数
     encrypted_data = base64.b64decode(ticket)
     # 创建AES CBC解密器
-    cipher = Cipher(algorithms.AES(key), modes.CBC(b"iv"), backend=default_backend())  # 替换为你的偏移量
+    cipher = Cipher(algorithms.AES(key), modes.CBC(b"iv"), backend=default_backend())
     decryptor = cipher.decryptor()
     # 解密数据
     decrypted_data = decryptor.update(encrypted_data) + decryptor.finalize()
@@ -478,6 +640,7 @@ def decrypt_ticket(ticket):
 
 @auth.route("/oauth")
 def oauth_login():
+    language = request.cookies.get("Scr1wCTFdLanguage", "zh")
     endpoint = (
             get_app_config("OAUTH_AUTHORIZATION_ENDPOINT")
             or get_config("oauth_authorization_endpoint")
@@ -492,11 +655,18 @@ def oauth_login():
     client_id = get_app_config("OAUTH_CLIENT_ID") or get_config("oauth_client_id")
 
     if client_id is None:
-        error_for(
-            endpoint="auth.login",
-            message="未配置 OAuth 设置。"
-                    "请您的 CTF 管理员配置 MajorLeagueCyber 集成。",
-        )
+        if language == "zh":
+            error_for(
+                endpoint="auth.login",
+                message="未配置 OAuth 设置。"
+                        "请您的 CTF 管理员配置 MLC 集成。",
+            )
+        else:
+            error_for(
+                endpoint="auth.login",
+                message="OAuth Settings not configured. "
+                        "Ask your CTF administrator to configure MajorLeagueCyber integration.",
+            )
         return redirect(url_for("auth.login"))
 
     redirect_url = "{endpoint}?response_type=code&client_id={client_id}&scope={scope}&state={state}".format(
@@ -508,11 +678,16 @@ def oauth_login():
 @auth.route("/redirect", methods=["GET"])
 @ratelimit(method="GET", limit=10, interval=60)
 def oauth_redirect():
+    language = request.cookies.get("Scr1wCTFdLanguage", "zh")
     oauth_code = request.args.get("code")
     state = request.args.get("state")
     if session["nonce"] != state:
-        log("logins", "[{date}] {ip} - OAuth State validation mismatch")
-        error_for(endpoint="auth.login", message="OAuth 状态验证不匹配。")
+        log("logins", "[{date}] {ip} - OAuth 状态验证不匹配")
+        if language == "zh":
+            error_for(endpoint="auth.login", message="OAuth 状态验证不匹配。")
+        else:
+            error_for(endpoint="auth.login", message="OAuth State validation mismatch.")
+
         return redirect(url_for("auth.login"))
 
     if oauth_code:
@@ -566,11 +741,18 @@ def oauth_redirect():
                     db.session.add(user)
                     db.session.commit()
                 else:
-                    log("logins", "[{date}] {ip} - Public registration via MLC blocked")
-                    error_for(
-                        endpoint="auth.login",
-                        message="公共注册被禁用。 请稍后再试。",
-                    )
+                    log("logins", "[{date}] {ip} - 通过 MLC 的公共注册被阻止")
+                    if language == "zh":
+                        error_for(
+                            endpoint="auth.login",
+                            message="公共注册被禁用。 请稍后再试。",
+                        )
+                    else:
+                        error_for(
+                            endpoint="auth.login",
+                            message="Public registration is disabled. Please try again later.",
+                        )
+
                     return redirect(url_for("auth.login"))
 
             if get_config("user_mode") == TEAMS_MODE and user.team_id is None:
@@ -584,10 +766,16 @@ def oauth_redirect():
                         banned=False, hidden=False
                     ).count()
                     if num_teams_limit and num_teams >= num_teams_limit:
-                        abort(
-                            403,
-                            description=f"已达到最大团队数量 ({num_teams_limit})。 请加入现有团队。",
-                        )
+                        if language == "zh":
+                            abort(
+                                403,
+                                description=f"已达到最大团队数量 ({num_teams_limit})。 请加入现有团队。",
+                            )
+                        else:
+                            abort(
+                                403,
+                                description=f"Reached the maximum number of teams ({num_teams_limit}). Please join an existing team.",
+                            )
 
                     team = Teams(name=team_name, oauth_id=team_id, captain_id=user.id)
                     db.session.add(team)
@@ -596,12 +784,19 @@ def oauth_redirect():
 
                 team_size_limit = get_config("team_size", default=0)
                 if team_size_limit and len(team.members) >= team_size_limit:
-                    plural = "" if team_size_limit == 1 else "s"
-                    size_error = "Teams are limited to {limit} member{plural}.".format(
-                        limit=team_size_limit, plural=plural
-                    )
-                    error_for(endpoint="auth.login", message=size_error)
-                    return redirect(url_for("auth.login"))
+                    if language == "zh":
+                        size_error = "队伍上线{limit}人。".format(
+                            limit=team_size_limit
+                        )
+                        error_for(endpoint="auth.login", message=size_error)
+                        return redirect(url_for("auth.login"))
+                    else:
+                        plural = "" if team_size_limit == 1 else "s"
+                        size_error = "Teams are limited to {limit} member{plural}.".format(
+                            limit=team_size_limit, plural=plural
+                        )
+                        error_for(endpoint="auth.login", message=size_error)
+                        return redirect(url_for("auth.login"))
 
                 team.members.append(user)
                 db.session.commit()
@@ -616,14 +811,22 @@ def oauth_redirect():
 
             return redirect(url_for("challenges.listing"))
         else:
-            log("logins", "[{date}] {ip} - OAuth token retrieval failure")
-            error_for(endpoint="auth.login", message="OAuth token retrieval failure.")
+            log("logins", "[{date}] {ip} - OAuth 令牌检索失败。")
+            if language == "zh":
+                error_for(endpoint="auth.login", message="OAuth 令牌检索失败。")
+            else:
+                error_for(endpoint="auth.login", message="OAuth token retrieval failure.")
             return redirect(url_for("auth.login"))
     else:
-        log("logins", "[{date}] {ip} - Received redirect without OAuth code")
-        error_for(
-            endpoint="auth.login", message="收到没有 OAuth 代码的重定向。"
-        )
+        log("logins", "[{date}] {ip} - 收到没有 OAuth 代码的重定向。")
+        if language == "zh":
+            error_for(
+                endpoint="auth.login", message="收到没有 OAuth 代码的重定向。"
+            )
+        else:
+            error_for(
+                endpoint="auth.login", message="Received redirect without OAuth code."
+            )
         return redirect(url_for("auth.login"))
 
 

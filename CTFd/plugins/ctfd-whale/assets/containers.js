@@ -1,5 +1,16 @@
 const $ = CTFd.lib.$;
 
+function language(en,zh) {
+    const cookies = document.cookie.split('; ');
+    for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split('=');
+        if (cookieName === "Scr1wCTFdLanguage") {
+            return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+        }
+    }
+    return zh;
+}
+
 function htmlentities(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
@@ -17,7 +28,7 @@ function copyToClipboard(event, str) {
     document.body.removeChild(el);
 
     $(event.target).tooltip({
-        title: "复制完成!",
+        title: language("Copied!","复制完成!"),
         trigger: "manual"
     });
     $(event.target).tooltip("show");
@@ -62,8 +73,8 @@ $('#containers-renew-button').click(function (e) {
         return $(this).data("user-id");
     });
     CTFd.ui.ezq.ezQuery({
-        title: "延期容器",
-        body: `你确定要给选中的 ${users.length} 个容器延期吗?`,
+        title: language("Renew Container","延期容器"),
+        body: language(`Are you sure to renew ${users.length} container(s)?`,`你确定要给选中的 ${users.length} 个容器延期吗?`),
         success: async function () {
             await Promise.all(users.toArray().map((user) => renew_container(user)));
             location.reload();
@@ -76,8 +87,8 @@ $('#containers-delete-button').click(function (e) {
         return $(this).data("user-id");
     });
     CTFd.ui.ezq.ezQuery({
-        title: "删除容器",
-        body: `你确定要删除选中的 ${users.length} 个容器吗?`,
+        title: language("Destroy Container","关闭容器"),
+        body: language(`Are you sure to Destroy ${users.length} container(s)?`,`你确定要删除选中的 ${users.length} 个容器吗?`),
         success: async function () {
             await Promise.all(users.toArray().map((user) => delete_container(user)));
             location.reload();
@@ -91,10 +102,8 @@ $(".delete-container").click(function (e) {
     let user_id = $(this).attr("user-id");
 
     CTFd.ui.ezq.ezQuery({
-        title: "关闭容器",
-        body: "<span>你确定要关闭 <strong>容器 #{0}</strong>吗?</span>".format(
-            htmlentities(container_id)
-        ),
+        title: language("Destroy Container","关闭容器"),
+        body: language("<span>Are you sure to destroy <strong>container #{0}</strong>?</span>".format(htmlentities(container_id)),"<span>你确定要关闭 <strong>容器 #{0}</strong>吗?</span>".format(htmlentities(container_id))),
         success: async function () {
             await delete_container(user_id);
             location.reload();
@@ -108,10 +117,8 @@ $(".renew-container").click(function (e) {
     let user_id = $(this).attr("user-id");
 
     CTFd.ui.ezq.ezQuery({
-        title: "延期容器",
-        body: "<span>你确定要给 <strong>容器 #{0}</strong>延期吗?</span>".format(
-            htmlentities(container_id)
-        ),
+        title: language("Renew Container","延期容器"),
+        body: language("<span>Are you sure to Renew <strong>container #{0}</strong>?</span>".format(htmlentities(container_id)),"<span>你确定要给 <strong>容器 #{0}</strong>延期吗?</span>".format(htmlentities(container_id))),
         success: async function () {
             await renew_container(user_id);
             location.reload();

@@ -19,9 +19,9 @@
     <table id="flagsboard" class="table table-striped">
       <thead>
         <tr>
-          <td class="text-center"><b>类别</b></td>
-          <td class="text-center"><b>Flag</b></td>
-          <td class="text-center"><b>设置</b></td>
+          <td class="text-center"><b>{{ language("Type","类型") }}</b></td>
+          <td class="text-center"><b>{{ language("Flag","Flag") }}</b></td>
+          <td class="text-center"><b>{{ language("Settings","操作") }}</b></td>
         </tr>
       </thead>
       <tbody>
@@ -55,7 +55,7 @@
         class="btn btn-success d-inline-block float-right"
         @click="addFlag()"
       >
-        创建Flag
+        {{ language("Create Flag","创建Flag") }}
       </button>
     </div>
   </div>
@@ -82,6 +82,16 @@ export default {
     };
   },
   methods: {
+    language: function (en, zh) {
+      const cookies = document.cookie.split('; ');
+      for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split('=');
+        if (cookieName === "Scr1wCTFdLanguage") {
+          return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+        }
+      }
+      return zh;
+    },
     loadFlags: function() {
       CTFd.fetch(`/api/v1/challenges/${this.$props.challenge_id}/flags`, {
         method: "GET",
@@ -126,7 +136,7 @@ export default {
       $(modal).modal();
     },
     deleteFlag: function(flag_id) {
-      if (confirm("你确定要删除这个flag?")) {
+      if (confirm(this.language("Are you sure you'd like to delete this flag?","您确定要删除此Flag吗？"))) {
         CTFd.fetch(`/api/v1/flags/${flag_id}`, {
           method: "DELETE"
         })
