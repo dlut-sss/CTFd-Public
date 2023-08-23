@@ -1,14 +1,19 @@
 .jumbotron {
-  background-color: #343a40;
   color: #fff;
+  background-color: transparent;
+}
+
+table{
+  color: white;
 }
 
 .form-control {
   padding: 0.8em !important;
-  background: #f0f0f0;
-  color: #aaa;
+  background: transparent;
+  color: white;
   /* Behavior changed in Bootstrap v4.1.3. See https://github.com/twbs/bootstrap/issues/27629 */
   height: auto !important;
+  border-radius: 10px!important;
 }
 
 select.form-control {
@@ -50,11 +55,110 @@ select.form-control {
   display: block;
   padding: 0.8em !important;
   border-radius: 0;
-  background: #f0f0f0;
+  background: transparent;
   color: #aaa;
   font-weight: 400;
-  font-family: "Avenir Next", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Unifont", Arial, sans-serif;
   -webkit-appearance: none;
   /* Behavior changed in Bootstrap v4.1.3. See https://github.com/twbs/bootstrap/issues/27629 */
   height: auto !important;
+}
+
+.challenge-input{
+  border: 1px dashed #ced4da;
+}
+
+.challenge-desc {
+  overflow-wrap: anywhere;
+
+  img {
+    max-width: 100%;
+  }
+}
+
+.btn{
+  border-radius: 5px!important;
+}
+.btn-primary {
+  border-radius: 5px!important;
+}
+.btn-primary:hover {
+  border-radius: 5px!important;
+}
+.btn-outline-secondary:hover {
+  border-radius: 5px!important;
+}
+.btn-info {
+  border-radius: 5px!important;
+}
+.btn-dark {
+  border-radius: 5px!important;
+}
+.btn-dark:hover {
+  border-radius: 5px!important;
+}
+.challenge-input {
+  border-radius: 5px!important;
+}
+.form-control {
+  border-radius: 5px!important;
+}
+.card {
+  color:black;
+  border-radius: 10px!important;
+}
+
+.card a{
+  color: blue;
+}
+.card a{
+  color: red;
+}
+
+.challenge-button-content{
+  border-radius: 10px;
+}
+.modal-content{
+  border-radius: 10px !important;
+}
+a:hover {
+  color: #ff0e66;
+}
+.alert a{
+  color:blue;
+}
+
+.alert a:hover{
+  color:red;
+}
+
+.modal-content h5{
+  color: white;
+}
+
+.toast{
+  color: black;
+}
+
+.challenge-nav-link {
+  font-family: Hack,ui-monospace;
+}
+
+h1, h2 {
+  font-family: 'Press Start 2P', cursive;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-shadow: 0 3px 0 rgba(255, 105, 246, .8)
+}
+
+.form-control{
+  color: white;
+}
+
+.form-control:focus{
+  color: white;
+}
+
+.modal-body .close{
+  color: white;
 }

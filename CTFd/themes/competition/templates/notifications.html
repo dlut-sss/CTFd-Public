@@ -1,14 +1,22 @@
 {% extends "base.html" %}
 
+{% block stylesheets %}
+<style>
+    main a {
+        color: black;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 	<div class="jumbotron">
 		<div class="container">
-			<h1><b>平台通知</b></h1>
+			<h1><b>{{ 'Notifications' if en else '平台通知' }}</b></h1>
 		</div>
 	</div>
 	<div class="container">
 		{% if not notifications %}
-		<h2 class="text-center">还没有通知</h2>
+		<h2 class="text-center">{{ 'There are no notifications yet' if en else '还没有发布任何通知' }}</h2>
 		{% endif %}
 		{% for notification in notifications %}
 		<div class="card bg-light mb-4">

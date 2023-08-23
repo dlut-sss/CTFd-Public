@@ -18,7 +18,9 @@ export default (url, options) => {
   }
   options.credentials = "same-origin";
   options.headers["Accept"] = "application/json";
-  options.headers["Content-Type"] = "application/json";
+  if (!options.headers.hasOwnProperty("Content-Type")) {
+    options.headers["Content-Type"] = "application/json";
+  }
   options.headers["CSRF-Token"] = config.csrfNonce;
 
   return fetch(url, options);

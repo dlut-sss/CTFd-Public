@@ -4,7 +4,7 @@ import traceback
 from flask import request
 
 from CTFd.utils import get_config
-from CTFd.utils.logging import log
+from CTFd.utils.logging import log_simple as log
 from .db import DBContainer, db
 from .docker import DockerUtils
 from .routers import Router
@@ -13,7 +13,11 @@ from .routers import Router
 class ControlUtil:
     @staticmethod
     def try_add_container(user_id, challenge_id):
-        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        language = "zh"
+        try:
+            language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        except:
+            pass
         container = DBContainer.create_container_record(user_id, challenge_id)
         try:
             log(
@@ -66,7 +70,11 @@ class ControlUtil:
 
     @staticmethod
     def try_remove_container(user_id):
-        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        language = "zh"
+        try:
+            language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        except:
+            pass
         container = DBContainer.get_current_containers(user_id=user_id)
         if not container:
             if language == "zh":
@@ -120,7 +128,11 @@ class ControlUtil:
 
     @staticmethod
     def try_renew_container(user_id):
-        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        language = "zh"
+        try:
+            language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        except:
+            pass
         container = DBContainer.get_current_containers(user_id)
         if not container:
             if language == "zh":

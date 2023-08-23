@@ -1,13 +1,33 @@
 import $ from "jquery";
 import dayjs from "dayjs";
+import 'dayjs/locale/zh-cn';
+import 'dayjs/locale/en';
 import MarkdownIt from "markdown-it";
-
 import "./patch";
 import fetch from "./fetch";
 import config from "./config";
 import { API } from "./api";
 import ezq from "./ezq";
 import { getScript, htmlEntities, createHtmlNode } from "./utils";
+
+function getCookieForLanguage(name) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === name) {
+      return decodeURIComponent(cookieValue);
+    }
+  }
+  return null;
+}
+
+if (getCookieForLanguage("Scr1wCTFdLanguage") === "en")
+{
+  dayjs.locale('en')
+}else
+{
+  dayjs.locale('zh-cn')
+}
 
 const api = new API("/");
 const user = {};

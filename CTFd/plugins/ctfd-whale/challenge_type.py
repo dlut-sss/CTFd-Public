@@ -68,7 +68,11 @@ class DynamicValueDockerChallenge(BaseChallenge):
     def attempt(cls, challenge, request):
         data = request.form or request.get_json()
         submission = data["submission"].strip()
-        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        language = "zh"
+        try:
+            language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        except:
+            pass
         flags = Flags.query.filter_by(challenge_id=challenge.id).all()
 
         if len(flags) > 0:

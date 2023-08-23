@@ -193,12 +193,6 @@ export function colorHash(str) {
   return `hsl(${h}, ${s}%, ${l}%)`;
 }
 
-export function htmlEntities(string) {
-  return $("<div/>")
-    .text(string)
-    .html();
-}
-
 export function cumulativeSum(arr) {
   let result = arr.concat();
   for (let i = 0; i < arr.length; i++) {
@@ -250,6 +244,17 @@ export function clear_notification_counter() {
   $(".badge-notification").empty();
 }
 
+function getCookieForLanguage(name) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === name) {
+      return decodeURIComponent(cookieValue);
+    }
+  }
+  return null;
+}
+
 export function copyToClipboard(event, selector) {
   // Select element
   $(selector).select();
@@ -259,7 +264,7 @@ export function copyToClipboard(event, selector) {
 
   // Show tooltip to user
   $(event.target).tooltip({
-    title: "复制完成！",
+    title: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Copied!" : "复制成功！"),
     trigger: "manual"
   });
   $(event.target).tooltip("show");
@@ -302,4 +307,29 @@ export function makeSortableTables() {
       .eq(index)
       .text();
   }
+}
+
+export function getScript(src) {
+  const p = new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    document.body.appendChild(script);
+    script.onload = resolve;
+    script.onerror = reject;
+    script.async = true;
+    script.src = src;
+  });
+
+  return p;
+}
+
+export function createHtmlNode(html) {
+  const template = document.createElement("template");
+  template.innerHTML = html.trim();
+  return template.content.firstChild;
+}
+
+export function htmlEntities(string) {
+  return $("<div/>")
+    .text(string)
+    .html();
 }

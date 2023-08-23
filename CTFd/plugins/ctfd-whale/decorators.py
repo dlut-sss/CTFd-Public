@@ -12,7 +12,11 @@ from .utils.cache import CacheProvider
 def challenge_visible(func):
     @functools.wraps(func)
     def _challenge_visible(*args, **kwargs):
-        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        language = "zh"
+        try:
+            language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        except:
+            pass
         challenge_id = request.args.get('challenge_id')
         if is_admin():
             if not Challenges.query.filter(
@@ -39,7 +43,11 @@ def challenge_visible(func):
 def frequency_limited(func):
     @functools.wraps(func)
     def _frequency_limited(*args, **kwargs):
-        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        language = "zh"
+        try:
+            language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        except:
+            pass
         if is_admin():
             return func(*args, **kwargs)
         redis_util = CacheProvider(app=current_app, user_id=get_current_user().id)

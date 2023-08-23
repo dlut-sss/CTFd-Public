@@ -18,6 +18,7 @@
 {% endblock %}
 
 {% block content %}
+{% if en %}
 	<div class="jumbotron">
 		<div class="container">
 			<h1>Setup</h1>
@@ -31,40 +32,44 @@
 			<form method="post" accept-charset="utf-8" autocomplete="off" role="form" class="form-horizontal" id="setup-form" enctype="multipart/form-data">
 				<ul class="nav nav-pills nav-fill mb-4">
 					<li class="nav-item">
-						<a class="nav-link active" data-toggle="pill" href="#general">全局</a>
+						<a class="nav-link active" data-toggle="pill" href="#general">General</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" data-toggle="pill" href="#mode">模式</a>
+						<a class="nav-link" data-toggle="pill" href="#mode">Mode</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" data-toggle="pill" href="#administration">管理</a>
+						<a class="nav-link" data-toggle="pill" href="#administration">Administration</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" data-toggle="pill" href="#style">风格</a>
+						<a class="nav-link" data-toggle="pill" href="#style">Style</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" data-toggle="pill" href="#datetime">日期和时间</a>
+						<a class="nav-link" data-toggle="pill" href="#datetime">Date &amp; Time</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" data-toggle="pill" href="#integrations">整合</a>
+						<a class="nav-link" data-toggle="pill" href="#integrations">Integrations</a>
 					</li>
 				</ul>
 
 				<div class="tab-content">
 					<div class="tab-pane fade show active" id="general" role="tabpanel">
 						<div class="form-group">
-							<b>{{ form.ctf_name.label }}</b>
+							<b><label for="ctf_name">CTF Name</label></b>
 							{{ form.ctf_name(class="form-control") }}
 							<small class="form-text text-muted">
-								{{ form.ctf_name.description }}
+                                <small class="form-text text-muted">
+                                    Your CTF name
+                                </small>
 							</small>
 						</div>
 
 						<div class="form-group">
-							<b>{{ form.ctf_description.label }}</b>
+							<b><label for="ctf_description">CTF Description</label></b>
 							{{ form.ctf_description(class="form-control", rows="5") }}
 							<small class="form-text text-muted">
-								{{ form.ctf_description.description }}
+                                <small class="form-text text-muted">
+                                    CTF Description
+                                </small>
 							</small>
 						</div>
 
@@ -76,10 +81,10 @@
 					</div>
 					<div class="tab-pane fade" id="mode" role="tabpanel">
 						<div class="form-group">
-							<b>{{ form.user_mode.label }}</b>
-							<small class="form-text text-muted">
-								{{ form.user_mode.description }}
-							</small>
+							<b><label for="user_mode">User Mode</label></b>
+                            <small class="form-text text-muted">
+                                Controls whether users join together in teams to play (Team Mode) or play as themselves (User Mode)
+                            </small>
 
 							<div class="row pt-3">
 							{% for radio in form.user_mode %}
@@ -91,7 +96,11 @@
 												<div class="form-check">
 													<input class="form-check-input card-radio-clone" type="radio" style="visibility: hidden;" checked>
 													<span class="form-check-label text-center">
-														<h5>{{ radio.label }}</h5>
+													{% if radio.data == "teams" %}
+														<h5>Team Mode</h5>
+													{% elif radio.data == "users" %}
+														<h5>User Mode</h5>
+													{% endif %}
 													</span>
 													{% if radio.data == "teams" %}
 													<ul class="p-0 small">
@@ -127,30 +136,30 @@
 					</div>
 					<div class="tab-pane fade" id="administration" role="tabpanel">
 						<div class="form-group">
-							<b>{{ form.name.label }}</b>
+							<b><label for="name">Admin Username</label></b>
 							{{ form.name(class="form-control") }}
 							<small class="form-text text-muted">
-								{{ form.name.description }}
+                                Your username for the administration account
 							</small>
 						</div>
 						<div class="form-group">
-							<b>{{ form.email.label }}</b>
+							<b><label for="email">Admin Email</label></b>
 							{{ form.email(class="form-control") }}
 							<small class="form-text text-muted">
-								{{ form.email.description }}
+                                Your email address for the administration account
 							</small>
 						</div>
 						<div class="form-group">
-							<b>{{ form.password.label }}</b>
+							<b><label for="password">Admin Password</label></b>
 							{{ form.password(class="form-control") }}
 							<small class="form-text text-muted">
-								{{ form.password.description }}
+                                Your password for the administration account
 							</small>
 						</div>
 
 						<div class="form-check">
 							<label class="form-check-label">
-								<input class="form-check-input" type="checkbox" value="" id="newsletter-checkbox" checked>
+								<input class="form-check-input" type="checkbox" value="" id="newsletter-checkbox">
 								Subscribe email address to the CTFd LLC Newsletter for news and updates
 							</label>
 						</div>
@@ -163,35 +172,35 @@
 					</div>
 					<div class="tab-pane fade" id="style" role="tabpanel">
 						<div class="form-group">
-							<b>{{ form.ctf_logo.label }}</b>
+							<b><label for="ctf_logo">Logo</label></b>
 							{{ form.ctf_logo(class="form-control-file", accept="image/*") }}
 							<small class="form-text text-muted">
-								{{ form.ctf_logo.description }}
+                                Logo to use for the website instead of a CTF name. Used as the home page button. Optional.
 							</small>
 						</div>
 						<div class="form-group">
-							<b>{{ form.ctf_banner.label }}</b>
+							<b><label for="ctf_banner">Banner</label></b>
 							{{ form.ctf_banner(class="form-control-file", accept="image/*") }}
 							<small class="form-text text-muted">
-								{{ form.ctf_banner.description }}
+                                Banner to use for the homepage. Optional.
 							</small>
 						</div>
 						<div class="form-group">
-							<b>{{ form.ctf_small_icon.label }}</b>
+							<b><label for="ctf_small_icon">Small Icon</label></b>
 							{{ form.ctf_small_icon(class="form-control-file", accept=".png") }}
 							<small class="form-text text-muted">
-								{{ form.ctf_small_icon.description }}
+                                favicon used in user's browsers. Only PNGs accepted. Must be 32x32px. Optional.
 							</small>
 						</div>
 						<div class="form-group">
-							<b>{{ form.ctf_theme.label }}</b>
+							<b><label for="ctf_theme">Theme</label></b>
 							{{ form.ctf_theme(class="form-control custom-select") }}
 							<small class="form-text text-muted">
-								{{ form.ctf_theme.description }}
+                                CTFd Theme to use. Can be changed later.
 							</small>
 						</div>
 						<div class="form-group">
-							<b>{{ form.theme_color.label }}</b>
+							<b><label for="theme_color">Theme Color</label></b>
 							<br>
 							<div class="d-inline-block">
 								{{ form.theme_color(id="config-color-input") }}
@@ -203,7 +212,7 @@
 								</div>
 							</div>
 							<small class="form-text text-muted">
-								{{ form.theme_color.description }}
+                                Color used by theme to control aesthetics. Requires theme support. Optional.
 							</small>
 						</div>
 						<div class="text-right">
@@ -214,7 +223,7 @@
 					</div>
 					<div class="tab-pane fade" id="datetime" role="tabpanel">
 						<div class="form-group">
-							<b>{{ form.start.label }}</b>
+							<b><label for="start">Start Time</label></b>
 							<div class="row">
 								<div class="col-md-4">
 									<label>Date</label>
@@ -230,12 +239,12 @@
 								</div>
 							</div>
 							<small class="form-text text-muted">
-								{{ form.start.description }}
+                                Time when your CTF is scheduled to start. Optional.
 							</small>
 						</div>
 
 						<div class="form-group">
-							<b>{{ form.end.label }}</b>
+							<b><label for="end">End Time</label></b>
 							<div class="row">
 								<div class="col-md-4">
 									<label>Date</label>
@@ -251,7 +260,7 @@
 								</div>
 							</div>
 							<small class="form-text text-muted">
-								{{ form.end.description }}
+                                Time when your CTF is scheduled to end. Optional.
 							</small>
 						</div>
 
@@ -294,7 +303,243 @@
 			{% endwith %}
 		</div>
 	</div>
+{% else %}
+<div class="jumbotron">
+    <div class="container">
+        <h1><b>初始化平台</b></h1>
+    </div>
+</div>
+<div class="container">
+    <div class="col-md-8 offset-md-2">
+        {% include "components/errors.html" %}
 
+        {% with form = Forms.setup.SetupForm() %}
+        <form method="post" accept-charset="utf-8" autocomplete="off" role="form" class="form-horizontal" id="setup-form" enctype="multipart/form-data">
+            <ul class="nav nav-pills nav-fill mb-4">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="pill" href="#general">全局设置</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="pill" href="#administration">平台管理</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="pill" href="#style">主题风格</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="pill" href="#datetime">日期和时间</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="pill" href="#integrations">第三方整合</a>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="general" role="tabpanel">
+                    <div class="form-group">
+                        <b>{{ form.ctf_name.label }}</b>
+                        {{ form.ctf_name(class="form-control") }}
+                        <small class="form-text text-muted">
+                            {{ form.ctf_name.description }}
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <b>{{ form.ctf_description.label }}</b>
+                        {{ form.ctf_description(class="form-control", rows="5") }}
+                        <small class="form-text text-muted">
+                            {{ form.ctf_description.description }}
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <b>{{ form.user_mode.label }}</b>
+                        {% for radio in form.user_mode %}
+                        <div class="form-check ml-3">
+                            {{ radio(class="form-check-input") }}
+                            {{ radio.label }}
+                        </div>
+                        {% endfor %}
+                        <small class="form-text text-muted">
+                            {{ form.user_mode.description }}
+                        </small>
+                    </div>
+
+                    <div class="text-right">
+                        <button type="button" class="btn btn-primary btn-outlined tab-next" data-href="#administration">
+                            下一步
+                        </button>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="administration" role="tabpanel">
+                    <div class="form-group">
+                        <b>{{ form.name.label }}</b>
+                        {{ form.name(class="form-control") }}
+                        <small class="form-text text-muted">
+                            {{ form.name.description }}
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <b>{{ form.email.label }}</b>
+                        {{ form.email(class="form-control") }}
+                        <small class="form-text text-muted">
+                            {{ form.email.description }}
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <b>{{ form.password.label }}</b>
+                        {{ form.password(class="form-control") }}
+                        <small class="form-text text-muted">
+                            {{ form.password.description }}
+                        </small>
+                    </div>
+
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input class="form-check-input" type="checkbox" value="" id="newsletter-checkbox">
+                            订阅 CTFd LLC 时事通讯的电子邮件地址以获取新闻和更新
+                        </label>
+                    </div>
+
+                    <div class="text-right">
+                        <button type="button" class="btn btn-primary btn-outlined tab-next" data-href="#style">
+                            下一步
+                        </button>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="style" role="tabpanel">
+                    <div class="form-group">
+                        <b>{{ form.ctf_logo.label }}</b>
+                        {{ form.ctf_logo(class="form-control-file", accept="image/*") }}
+                        <small class="form-text text-muted">
+                            {{ form.ctf_logo.description }}
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <b>{{ form.ctf_banner.label }}</b>
+                        {{ form.ctf_banner(class="form-control-file", accept="image/*") }}
+                        <small class="form-text text-muted">
+                            {{ form.ctf_banner.description }}
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <b>{{ form.ctf_small_icon.label }}</b>
+                        {{ form.ctf_small_icon(class="form-control-file", accept=".png") }}
+                        <small class="form-text text-muted">
+                            {{ form.ctf_small_icon.description }}
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <b>{{ form.ctf_theme.label }}</b>
+                        {{ form.ctf_theme(class="form-control custom-select") }}
+                        <small class="form-text text-muted">
+                            {{ form.ctf_theme.description }}
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <b>{{ form.theme_color.label }}</b>
+                        <br>
+                        <div class="d-inline-block">
+                            {{ form.theme_color(id="config-color-input") }}
+                            <div class="btn-group">
+                                <input type="color" id="config-color-picker" class="pr-1" style="width: 100px; height: 30px;" value="">
+                            </div>
+                            <div class="btn-group">
+                                <button type="button" id="config-color-reset">Reset</button>
+                            </div>
+                        </div>
+                        <small class="form-text text-muted">
+                            {{ form.theme_color.description }}
+                        </small>
+                    </div>
+                    <div class="text-right">
+                        <button type="button" class="btn btn-primary btn-outlined tab-next" data-href="#datetime">
+                            下一步
+                        </button>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="datetime" role="tabpanel">
+                    <div class="form-group">
+                        <b>{{ form.start.label }}</b>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>日期</label>
+                                <input class="form-control" id="start-date" type="date" placeholder="yyyy-mm-dd" data-preview="#start"/>
+                            </div>
+                            <div class="col-md-4">
+                                <label>时间</label>
+                                <input class="form-control" id="start-time" type="time" placeholder="hh:mm" data-preview="#start"/>
+                            </div>
+                            <div class="col-md-4">
+                                <label>UTC 预览</label>
+                                {{ form.start(class="form-control", id="start-preview", readonly=True) }}
+                            </div>
+                        </div>
+                        <small class="form-text text-muted">
+                            {{ form.start.description }}
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <b>{{ form.end.label }}</b>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>日期</label>
+                                <input class="form-control" id="end-date" type="date" placeholder="yyyy-mm-dd" data-preview="#end"/>
+                            </div>
+                            <div class="col-md-4">
+                                <label>时间</label>
+                                <input class="form-control" id="end-time" type="time" placeholder="hh:mm" data-preview="#end"/>
+                            </div>
+                            <div class="col-md-4">
+                                <label>UTC 预览</label>
+                                {{ form.start(class="form-control", id="end-preview", readonly=True) }}
+                            </div>
+                        </div>
+                        <small class="form-text text-muted">
+                            {{ form.end.description }}
+                        </small>
+                    </div>
+
+                    <div class="text-right">
+                        <button type="button" class="btn btn-primary btn-outlined tab-next" data-href="#integrations">
+                            下一步
+                        </button>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="integrations" role="tabpanel">
+                    <div class="form-group">
+                        <h4>MajorLeagueCyber 整合</h4>
+                        <p>
+                            MajorLeagueCyber (MLC) 是由 CTFd 开发人员编写和维护的网络安全活动跟踪器。
+                            设置 MLC 集成以：
+                        <ul>
+                            <li>在 MLC 网站和邮件列表上显示您的活动</li>
+                            <li>分享和跟踪参与者统计数据</li>
+                            <li>在团队 Slack 或 Discord 群组中提供实时更新</li>
+                            <li>归档题目、团队参与记录和更多其他功能</li>
+                        </ul>
+                        </p>
+                        <button type="button" id="integration-mlc" class="btn btn-primary btn-block">
+                            设置
+                        </button>
+                    </div>
+
+                    <br>
+                    <hr>
+                    <br>
+
+                    <div class="submit-row text-right">
+                        {{ form.submit(class="btn btn-md btn-primary btn-outlined") }}
+                    </div>
+                </div>
+            </div>
+
+            {{ form.nonce() }}
+        </form>
+        {% endwith %}
+    </div>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}

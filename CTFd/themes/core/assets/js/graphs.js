@@ -1,7 +1,18 @@
 import $ from "jquery";
 import echarts from "echarts/dist/echarts-en.common";
-import dayjs from "dayjs";
+import dayjs from "dayjs"; import 'dayjs/locale/zh-cn';import 'dayjs/locale/en';
 import { cumulativeSum, colorHash } from "./utils";
+
+function getCookieForLanguage(name) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === name) {
+      return decodeURIComponent(cookieValue);
+    }
+  }
+  return null;
+}
 
 const graph_configs = {
   score_graph: {
@@ -9,7 +20,7 @@ const graph_configs = {
       let option = {
         title: {
           left: "center",
-          text: "得分曲线"
+          text: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Score over Time" : "得分曲线")
         },
         tooltip: {
           trigger: "axis",
@@ -112,7 +123,7 @@ const graph_configs = {
       let option = {
         title: {
           left: "center",
-          text: " 类别细分"
+          text: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Category Breakdown" : "类别细分")
         },
         tooltip: {
           trigger: "item"
@@ -132,7 +143,7 @@ const graph_configs = {
         },
         series: [
           {
-            name: " 类别细分",
+            name: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Category Breakdown" : "类别细分"),
             type: "pie",
             radius: ["30%", "50%"],
             avoidLabelOverlap: false,
@@ -219,7 +230,7 @@ const graph_configs = {
       let option = {
         title: {
           left: "center",
-          text: "解出比例"
+          text: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Solve Percentages" : "解出比例")
         },
         tooltip: {
           trigger: "item"
@@ -238,7 +249,7 @@ const graph_configs = {
         },
         series: [
           {
-            name: "解出比例",
+            name: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Solve Percentages" : "提交比例"),
             type: "pie",
             radius: ["30%", "50%"],
             avoidLabelOverlap: false,
@@ -282,12 +293,12 @@ const graph_configs = {
             data: [
               {
                 value: fails_count,
-                name: "错误提交",
+                name: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Fails" : "错误提交"),
                 itemStyle: { color: "rgb(207, 38, 0)" }
               },
               {
                 value: solves_count,
-                name: "正确提交",
+                name: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Solves" : "正确提交"),
                 itemStyle: { color: "rgb(0, 209, 64)" }
               }
             ]

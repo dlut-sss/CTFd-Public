@@ -1,109 +1,35 @@
 {% extends "base.html" %}
 
 {% block stylesheets %}
-<link rel="stylesheet" href="{{ url_for('views.themes', path='css/challenge-board.css') }}">
+	<link rel="stylesheet" href="{{ url_for('views.themes', path='css/challenge-board.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="jumbotron">
-    <div class="container">
-        <h1><b>题目列表</b></h1>
-    </div>
+<div class="jumbotron" style="margin-bottom: 0px;">
+	<div class="container">
+		<h1><b>{{ 'Challenges' if en else '题目列表' }}</b></h1>
+	</div>
 </div>
 
 <div class="modal fade" id="challenge-window" tabindex="-1" role="dialog">
 </div>
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            {% include "components/errors.html" %}
-        </div>
-    </div>
-
-    <div class="row" id="timer" hidden>
-        <div class="col-md-12">
-            <div>
-                <div class="alert alert-info alert-dismissable text-center" role="alert">
-                    <span id="timer-text"></span>
-                </div>
+<div class="container" style="max-width:90%;margin-top:-40px;">
+	<div class="row">
+		<div class="col-md-12">
+			{% include "components/errors.html" %}
+		</div>
+	</div>
+    <div id="main_container" style="display: flex;gap: 10px;" >
+        <div style="width:200px;flex: none;" id="pages-board-container">
+            <div class="nav flex-column nav-pills category-bar" id="pages-board">
             </div>
         </div>
-    </div>
-
-    <script>
-        var start = "{{Configs.start}}";
-        var end = "{{Configs.end}}";
-        var name = "{{Configs.ctf_name}}";
-        setInterval(function () {
-            var current = Date.now();
-            current = Math.floor(current / 1000);
-            if (current < parseInt(start)) {
-                var timeRemaining = parseInt(start) - current;
-                var days = Math.floor(timeRemaining / (24 * 60 * 60)); // 计算剩余天数
-                var hours = Math.floor((timeRemaining % (24 * 60 * 60)) / (60 * 60)); // 计算剩余小时数
-                var minutes = Math.floor((timeRemaining % (60 * 60)) / 60); // 计算剩余分钟数
-                var seconds = timeRemaining % 60; // 计算剩余秒数
-                var formattedTime = "";
-                if (days > 0) {
-                    formattedTime += days + "天";
-                }
-                if (hours > 0) {
-                    formattedTime += hours + "小时";
-                }
-                if (minutes > 0) {
-                    formattedTime += minutes + "分钟";
-                }
-                if (seconds > 0) {
-                    formattedTime += seconds + "秒";
-                }
-                document.getElementById("timer").hidden = false;
-                document.getElementById("timer-text").innerText = name + "还有 " + formattedTime + " 开始";
-            } else if (current === parseInt(start)) {
-                document.getElementById("timer").hidden = false;
-                document.getElementById("timer-text").innerText = name + "开始了！";
-                var e = new Object;
-                e.title = name + "开始了！";
-                e.body = name+"开始了！快去答题吧！";
-                e.button = "好的";
-                CTFd.ui.ezq.ezAlert(e)
-            } else if (current < parseInt(end)) {
-                var timeRemaining = parseInt(end) - current;
-                var days = Math.floor(timeRemaining / (24 * 60 * 60)); // 计算剩余天数
-                var hours = Math.floor((timeRemaining % (24 * 60 * 60)) / (60 * 60)); // 计算剩余小时数
-                var minutes = Math.floor((timeRemaining % (60 * 60)) / 60); // 计算剩余分钟数
-                var seconds = timeRemaining % 60; // 计算剩余秒数
-                var formattedTime = "";
-                if (days > 0) {
-                    formattedTime += days + "天";
-                }
-                if (hours > 0) {
-                    formattedTime += hours + "小时";
-                }
-                if (minutes > 0) {
-                    formattedTime += minutes + "分钟";
-                }
-                if (seconds > 0) {
-                    formattedTime += seconds + "秒";
-                }
-                document.getElementById("timer").hidden = false;
-                document.getElementById("timer-text").innerText = name + "还有 " + formattedTime + " 结束";
-            } else if (current === parseInt(end)) {
-                document.getElementById("timer").hidden = false;
-                document.getElementById("timer-text").innerText = name + "已经结束了喵";
-                var e = new Object;
-                e.title = name + "结束了！";
-                e.body = "时间到了哦！";
-                e.button = "好的";
-                CTFd.ui.ezq.ezAlert(e)
-            }
-        }, 1000)
-    </script>
-
-    <div id='challenges-board'>
-        <div class="min-vh-50 d-flex align-items-center">
-            <div class="text-center w-100">
-                <i class="fas fa-circle-notch fa-spin fa-3x fa-fw spinner"></i>
+        <div id='challenges-board' style="padding-right:0;flex: 1;">
+            <div class="min-vh-50 d-flex align-items-center">
+                <div class="text-center w-100">
+                    <i class="fas fa-circle-notch fa-spin fa-3x fa-fw spinner"></i>
+                </div>
             </div>
         </div>
     </div>
@@ -114,5 +40,5 @@
 {% endblock %}
 
 {% block entrypoint %}
-<script defer src="{{ url_for('views.themes', path='js/pages/challenges.js') }}"></script>
+	<script defer src="{{ url_for('views.themes', path='js/pages/challenges.js') }}"></script>
 {% endblock %}

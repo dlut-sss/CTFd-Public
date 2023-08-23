@@ -244,6 +244,17 @@ export function clear_notification_counter() {
   $(".badge-notification").empty();
 }
 
+function getCookieForLanguage(name) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === name) {
+      return decodeURIComponent(cookieValue);
+    }
+  }
+  return null;
+}
+
 export function copyToClipboard(event, selector) {
   // Select element
   $(selector).select();
@@ -253,7 +264,7 @@ export function copyToClipboard(event, selector) {
 
   // Show tooltip to user
   $(event.target).tooltip({
-    title: "复制完成！",
+    title: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Copied!" : "复制成功！"),
     trigger: "manual"
   });
   $(event.target).tooltip("show");

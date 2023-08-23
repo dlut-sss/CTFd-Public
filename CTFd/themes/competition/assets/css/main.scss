@@ -10,7 +10,34 @@
 html,
 body,
 .container {
-  font-family: "Lato", "LatoOffline", sans-serif;
+  font-family: "Unifont", sans-serif;
+  color: white;
+}
+
+body{
+  background: repeating-linear-gradient(to bottom, #0d0028, #0d0028 4px, #060114 4px, #060114 8px);
+}
+
+.navbar{
+  background: #30207c;
+}
+
+a{
+  background-color: transparent;
+  color: white;
+}
+
+.card,.nav-link{
+  background-color: transparent;
+}
+
+.category-bar{
+  margin-top: 60px;
+  top: 80px;
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+  width:200px;
+  position: sticky;
+  z-index: 1020;
 }
 
 h1,
@@ -21,7 +48,6 @@ h2 {
 }
 
 a {
-  color: #337ab7;
   text-decoration: none;
 }
 
@@ -60,21 +86,21 @@ blockquote {
   background-color: transparent;
   border-color: #a3d39c;
   box-shadow: 0 0 0 0.1rem #a3d39c;
-  transition: background-color 0.3s, border-color 0.3s;
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
 
 .input-filled-valid {
   background-color: transparent !important;
   border-color: #a3d39c;
   box-shadow: 0 0 0 0.1rem #a3d39c;
-  transition: background-color 0.3s, border-color 0.3s;
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
 
 .input-filled-invalid {
   background-color: transparent !important;
   border-color: #d46767;
   box-shadow: 0 0 0 0.1rem #d46767;
-  transition: background-color 0.3s, border-color 0.3s;
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
 
 .btn-outlined.btn-theme {

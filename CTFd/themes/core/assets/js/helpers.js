@@ -3,6 +3,17 @@ import jQuery from "jquery";
 import { default as ezq } from "./ezq";
 import { htmlEntities, colorHash, copyToClipboard } from "./utils";
 
+function getCookieForLanguage(name) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === name) {
+      return decodeURIComponent(cookieValue);
+    }
+  }
+  return null;
+}
+
 const utils = {
   htmlEntities: htmlEntities,
   colorHash: colorHash,
@@ -23,7 +34,7 @@ const files = {
 
     var pg = ezq.ezProgressBar({
       width: 0,
-      title: "上传进度"
+      title: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Upload Progress" : "上传进度")
     });
     $.ajax({
       url: CTFd.config.urlRoot + "/api/v1/files",

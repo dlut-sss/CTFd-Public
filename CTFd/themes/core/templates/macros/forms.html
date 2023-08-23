@@ -8,7 +8,7 @@
 
             {% if show_optionals %}
                 {% if field.flags.required is false %}
-                    <small class="float-right text-muted">Optional</small>
+                    <small class="float-right text-muted">{{ 'Optional' if request.cookies.get('Scr1wCTFdLanguage') == 'en' else '可选' }}</small>
                 {% endif %}
             {% endif %}
 
@@ -28,7 +28,7 @@
 
                 {% if show_optionals %}
                     {% if field.flags.required is false %}
-                        <sup class="text-muted">Optional</sup>
+                        <sup class="text-muted">{{ 'Optional' if request.cookies.get('Scr1wCTFdLanguage') == 'en' else '可选' }}</sup>
                     {% endif %}
                 {% endif %}
             </div>

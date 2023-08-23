@@ -1,6 +1,6 @@
 import CTFd from "../CTFd";
 import $ from "jquery";
-import dayjs from "dayjs";
+import dayjs from "dayjs"; import 'dayjs/locale/zh-cn';import 'dayjs/locale/en';
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import nunjucks from "nunjucks";
 import { Howl } from "howler";

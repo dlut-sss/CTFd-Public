@@ -1,8 +1,8 @@
 import "./main";
 import "bootstrap/js/dist/tab";
-import { ezQuery, ezAlert } from "../ezq";
+import {ezQuery, ezAlert, ezToast} from "../ezq";
 import { htmlEntities } from "../utils";
-import dayjs from "dayjs";
+import dayjs from "dayjs"; import 'dayjs/locale/zh-cn';import 'dayjs/locale/en';
 import relativeTime from "dayjs/plugin/relativeTime";
 import $ from "jquery";
 import CTFd from "../CTFd";
@@ -14,15 +14,61 @@ dayjs.extend(relativeTime);
 CTFd._internal.challenge = {};
 let challenges = [];
 let solves = [];
+let pages = [];
+
+function getCookieForLanguage(name) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === name) {
+      return decodeURIComponent(cookieValue);
+    }
+  }
+  return null;
+}
+
+// 判断元素是否在视窗内
+function isElementInViewport(el) {
+  var rect = el.getBoundingClientRect();
+  return (
+      rect.top >= 0 &&
+      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
+  );
+}
+
+function scrollToElementIfNeeded(el) {
+  if (!isElementInViewport(el)) {
+    var windowHeight = window.innerHeight || document.documentElement.clientHeight;
+    var scrollToPosition = el.getBoundingClientRect().top + window.scrollY - (windowHeight / 3);
+    window.scrollTo({
+      top: scrollToPosition,
+      behavior: 'smooth' // 可以设置为 'auto' 或 'smooth'，以控制滚动效果
+    });
+  }
+}
+
+function switchToCategory(chal) {
+  //切换到所在页面
+  const page = chal.category;
+  const pageid = page.replace(/ /g, "-").hashCode();
+  const pagebarid= "#{0}-page-row".format(pageid);
+  $("#pages-board").find(".active").removeClass("active");
+  $("#pages-board").find(pagebarid).addClass("active").trigger("shown.bs.tab")
+
+  const id = chal.name.replace(/ /g, "-").hashCode()
+  scrollToElementIfNeeded($.find("#"+id)[0])
+}
 
 const loadChal = id => {
   const chal = $.grep(challenges, chal => chal.id == id)[0];
 
+  switchToCategory(chal)
+
   if (chal.type === "hidden") {
     ezAlert({
-      title: "Challenge Hidden!",
-      body: "You haven't unlocked this challenge yet!",
-      button: "明白了！"
+      title: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Challenge Hidden!" : "题目已隐藏！"),
+      body: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "You haven't unlocked this challenge yet!" : "你尚未解锁这个题目！"),
+      button: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Got it!" : "好的！")
     });
     return;
   }
@@ -31,11 +77,30 @@ const loadChal = id => {
 };
 
 const loadChalByName = name => {
+  if (name.includes("-page-row")){
+    const pagebar_id= "#{0}".format(name);
+    if ($("#pages-board").find(pagebar_id).length!==0){
+      $("#pages-board").find(".active").removeClass("active");
+      $("#pages-board").find(pagebar_id).addClass("active").trigger("shown.bs.tab");
+      const catid = name.split("-page-row")[0];
+      var element = $('#{0}-row'.format(catid))[0];
+      var paddingTop = 28; // 你想要的上边距值
+      window.scrollTo({
+        top: $(element).offset().top - paddingTop,
+        behavior: 'smooth'
+      });
+      return;
+    }
+  }
+
   let idx = name.lastIndexOf("-");
   let pieces = [name.slice(0, idx), name.slice(idx + 1)];
   let id = pieces[1];
 
   const chal = $.grep(challenges, chal => chal.id == id)[0];
+
+  switchToCategory(chal)
+
   displayChal(chal);
 };
 
@@ -147,7 +212,7 @@ function renderSubmissionResponse(response) {
   result_message.text(result.message);
 
   const next_btn = $(
-    `<div class='col-md-12 pb-3'><button class='btn btn-info w-100'>下一题</button></div>`
+    `<div class='col-md-12 pb-3'><button class='btn btn-info w-100'>`+(getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Next Challenge" : "下一题")+`</button></div>`
   ).click(function() {
     $("#challenge-window").modal("toggle");
     setTimeout(function() {
@@ -195,7 +260,7 @@ function renderSubmissionResponse(response) {
             .split(" ")[0]
         ) +
           1 +
-          " Solves"
+          (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? " Solves" : "人解出")
       );
     }
 
@@ -247,8 +312,10 @@ function markSolves() {
   challenges.map(challenge => {
     if (challenge.solved_by_me) {
       const btn = $(`button[value="${challenge.id}"]`);
-      btn.addClass("solved-challenge");
-      btn.prepend("<i class='fas fa-check corner-button-check'></i>");
+      if (!btn.find('i.fas.fa-check').length) { // Check if the i element with classes 'fas' and 'fa-check' does not exist
+        btn.addClass("solved-challenge");
+        btn.append("<i class='fas fa-check'></i>");
+      }
     }
   });
 }
@@ -256,7 +323,7 @@ function markSolves() {
 function getSolves(id) {
   return CTFd.api.get_challenge_solves({ challengeId: id }).then(response => {
     const data = response.data;
-    $(".challenge-solves").text(parseInt(data.length) + " Solves");
+    $(".challenge-solves").text(parseInt(data.length) + (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? " Solves" : "人解出"));
     const box = $("#challenge-solves-names");
     box.empty();
     for (let i = 0; i < data.length; i++) {
@@ -276,32 +343,107 @@ function getSolves(id) {
   });
 }
 
+function sort_challenges(challenges) {
+  const priorityCategories = ['PWN', 'REVERSE', 'WEB', 'CRYPTO', 'MISC', 'OSINT', 'IOT'];
+
+  // 提取并排序优先列表中的对象
+  const priorityObjects = challenges.filter(obj => priorityCategories.includes(obj.category))
+      .sort((a, b) => priorityCategories.indexOf(a.category.toUpperCase()) - priorityCategories.indexOf(b.category.toUpperCase()));
+
+  // 提取剩余的对象并按照 category 属性排序
+  const remainingObjects = challenges.filter(obj => !priorityCategories.includes(obj.category))
+      .sort((a, b) => {
+        const categoryA = a.category.toUpperCase();
+        const categoryB = b.category.toUpperCase();
+        if (categoryA < categoryB) {
+          return -1;
+        }
+        if (categoryA > categoryB) {
+          return 1;
+        }
+        return 0;
+      });
+
+  // 合并两个排好序的数组
+  return [...priorityObjects, ...remainingObjects];
+}
+
 function loadChals() {
   return CTFd.api.get_challenge_list().then(function(response) {
-    const categories = [];
     const $challenges_board = $("#challenges-board");
+    const $pages_board = $("#pages-board");
     challenges = response.data;
 
-    if (window.BETA_sortChallenges) {
-      challenges = window.BETA_sortChallenges(challenges);
+    try {
+      challenges = sort_challenges(challenges)
+    } catch (error) {
+      console.warn(error)
+    }
+
+    if (challenges.length === 0)
+    {
+      if (getCookieForLanguage("Scr1wCTFdLanguage") === "zh")
+      {
+        ezToast({
+          title: '自动刷新失败',
+          body: '题目数据为空！'
+        });
+      }else
+      {
+        ezToast({
+          title: 'Auto refresh failed',
+          body: 'Challenge data is empty!'
+        });
+      }
+      return;
     }
 
     $challenges_board.empty();
+    $challenges_board.addClass("tab-content")
 
-    for (let i = challenges.length - 1; i >= 0; i--) {
-      if ($.inArray(challenges[i].category, categories) == -1) {
-        const category = challenges[i].category;
-        categories.push(category);
+    //循环获取所有类别，并设置导航栏
+    for (let i = 0; i <= challenges.length - 1; i++) {
+      const chalinfo = challenges[i];
+      if ($.inArray(chalinfo.category, pages) == -1) {
+        const page = chalinfo.category;
+        pages.push(page);
+        const pageid = page.replace(/ /g, "-").hashCode();
+        const pagerow = $(
+            '<a ' +
+            'id="{0}-page-row" class="nav-link challenge-nav-link" '.format(pageid) +
+            'data-toggle="tab" role="tab" href="#{0}-page-row"'.format(pageid) +
+            '>' + page.slice(0, 15) + "</a>"
+        );
+        if (pages.length === 1) pagerow.addClass('active');
+        //第一个默认显示
 
+        pagerow.on('shown.bs.tab', function () {
+          $challenges_board
+              .find(".active")
+              .removeClass("active");
+          //隐藏当前显示的panel
+          $challenges_board
+              .find("#{0}-row".format(pageid))
+              .addClass('active');
+          //显示目标panel
+        });
+
+        $pages_board.append(pagerow);
+      }
+    }
+
+    //不重新遍历数据，用所有pages生成tab
+    for (let i = 0; i <= pages.length - 1; i++) {
+        const category = pages[i];
         const categoryid = category.replace(/ /g, "-").hashCode();
         const categoryrow = $(
           "" +
-            '<div id="{0}-row" class="pt-5">'.format(categoryid) +
+            '<div id="{0}-row" class="pt-5 tab-pane" role="tabpanel">'.format(categoryid) +
             '<div class="category-header col-md-12 mb-3">' +
             "</div>" +
-            '<div class="category-challenges col-md-12">' +
-            '<div class="challenges-row col-md-12"></div>' +
-            "</div>" +
+            '<div class="category-challenges col-md-12" id="{0}-base">'.format(categoryid) +
+            '<div class="challenges-row col-md-12" id="{0}-base-row"></div>'.format(categoryid) +
+            '</div>' +
             "</div>"
         );
         categoryrow
@@ -309,7 +451,6 @@ function loadChals() {
           .append($("<h3>" + category + "</h3>"));
 
         $challenges_board.append(categoryrow);
-      }
     }
 
     for (let i = 0; i <= challenges.length - 1; i++) {
@@ -317,19 +458,19 @@ function loadChals() {
       const chalid = chalinfo.name.replace(/ /g, "-").hashCode();
       const catid = chalinfo.category.replace(/ /g, "-").hashCode();
       const chalwrap = $(
-        "<div id='{0}' class='col-md-3 d-inline-block'></div>".format(chalid)
+        "<div id='{0}' class='col-md-3 d-inline-block challenge-button-container' ></div>".format(chalid)
       );
       let chalbutton;
 
       if (solves.indexOf(chalinfo.id) == -1) {
         chalbutton = $(
-          "<button class='btn btn-dark challenge-button w-100 text-truncate pt-3 pb-3 mb-2' value='{0}'></button>".format(
+          "<button class='btn btn-dark challenge-button w-100 text-truncate pt-3 pb-3 mb-2 challenge-button-content' value='{0}' onmouseover=\"this.style.transform = 'translate(-2px,-2px)';\" onmouseout=\"this.style.transform = 'none';\"></button>".format(
             chalinfo.id
           )
         );
       } else {
         chalbutton = $(
-          "<button class='btn btn-dark challenge-button solved-challenge w-100 text-truncate pt-3 pb-3 mb-2' value='{0}'><i class='fas fa-check corner-button-check'></i></button>".format(
+          "<button class='btn btn-dark challenge-button solved-challenge w-100 text-truncate pt-3 pb-3 mb-2 challenge-button-content' value='{0}' onmouseover=\"this.style.transform = 'translate(-2px,-2px)';\" onmouseout=\"this.style.transform = 'none';\"><i class='fas fa-check'></i></button>".format(
             chalinfo.id
           )
         );
@@ -347,13 +488,17 @@ function loadChals() {
       chalwrap.append(chalbutton);
 
       $("#" + catid + "-row")
-        .find(".category-challenges > .challenges-row")
-        .append(chalwrap);
+          .find(".category-challenges")
+          .find("#"+catid+"-base-row")
+          .append(chalwrap);
+
     }
 
     $(".challenge-button").click(function(_event) {
       loadChal(this.value);
     });
+    //维持刷新数据时页面状态
+    $pages_board.find(".active").trigger("shown.bs.tab")
   });
 }
 
@@ -401,16 +546,16 @@ setInterval(update, 300000); // Update every 5 minutes.
 
 const displayHint = data => {
   ezAlert({
-    title: "Hint",
+    title: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Hint" : "提示"),
     body: data.html,
-    button: "明白了！"
+    button: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Got it!" : "好的！")
   });
 };
 
 const displayUnlock = id => {
   ezQuery({
-    title: "解锁提示？",
-    body: "你确定要解锁这个提示？",
+    title: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Unlock Hint?" : "解锁提示？"),
+    body: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Are you sure you want to open this hint?" : "您确定要解锁此提示吗？"),
     success: () => {
       const params = {
         target: id,
@@ -426,9 +571,9 @@ const displayUnlock = id => {
         }
 
         ezAlert({
-          title: "Error",
+          title: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Error" : "错误"),
           body: response.errors.score,
-          button: "明白了！"
+          button: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Got it!" : "好的！")
         });
       });
     }

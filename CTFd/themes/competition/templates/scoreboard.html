@@ -3,7 +3,7 @@
 {% block content %}
 <div class="jumbotron">
 	<div class="container">
-		<h1><b>计分板</b></h1>
+        <h1><b>{{ 'Scoreboard' if en else '计分板' }}</b></h1>
 	</div>
 </div>
 <div class="container">
@@ -15,19 +15,33 @@
 		</div>
 	</div>
 
-	{% cache 60, CacheKeys.PUBLIC_SCOREBOARD_TABLE %}
 	{% if standings %}
 	<div id="scoreboard" class="row">
 		<div class="col-md-12">
 			<table class="table table-striped">
 				<thead>
 					<tr>
-						<td scope="col" style="text-align: center;width: 80px;"><b>名次</b></td>
-						<td scope="col"><b>{{ get_mode_as_word(capitalize=True) }}</b></td>
-						<td scope="col"><b>得分</b></td>
+                        {% if en %}
+                        <td scope="col" style="text-align: center;width: 80px;"><b>Place</b></td>
+                        {% if get_config('user_mode') == 'teams' %}
+                        <td scope="col"><b>Team</b></td>
+                        {% else %}
+                        <td scope="col"><b>User</b></td>
+                        {% endif %}
+                        <td scope="col"><b>Score</b></td>
+                        {% else %}
+                        <td scope="col" style="text-align: center;width: 80px;"><b>名次</b></td>
+                        {% if get_config('user_mode') == 'teams' %}
+                        <td scope="col"><b>队伍</b></td>
+                        {% else %}
+                        <td scope="col"><b>用户</b></td>
+                        {% endif %}
+                        <td scope="col"><b>得分</b></td>
+                        {% endif %}
 					</tr>
 				</thead>
 				<tbody>
+                {% cache 60, CacheKeys.PUBLIC_SCOREBOARD_TABLE %}
 				{% for standing in standings %}
 					<tr>
 						<th scope="row" class="text-center">{{ loop.index }}</th>
@@ -38,11 +52,11 @@
 								{% if standing.oauth_id %}
 									{% if Configs.user_mode == 'teams' %}
 									<a href="https://majorleaguecyber.org/t/{{ standing.name }}">
-										<span class="badge badge-primary">官方认证</span>
+										<span class="badge badge-primary">Official</span>
 									</a>
 									{% elif Configs.user_mode == 'users' %}
 									<a href="https://majorleaguecyber.org/u/{{ standing.name }}">
-										<span class="badge badge-primary">官方认证</span>
+										<span class="badge badge-primary">Official</span>
 									</a>
 									{% endif %}
 								{% endif %}
@@ -51,12 +65,12 @@
 						<td>{{ standing.score }}</td>
 					</tr>
 				{% endfor %}
+                {% endcache %}
 				</tbody>
 			</table>
 		</div>
 	</div>
 	{% endif %}
-	{% endcache %}
 </div>
 {% endblock %}
 

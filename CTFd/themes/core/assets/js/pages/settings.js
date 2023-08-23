@@ -4,17 +4,28 @@ import $ from "jquery";
 import CTFd from "../CTFd";
 import { ezAlert, ezQuery } from "../ezq";
 
+function getCookieForLanguage(name) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === name) {
+      return decodeURIComponent(cookieValue);
+    }
+  }
+  return null;
+}
+
 const error_template =
   '<div class="alert alert-danger alert-dismissable" role="alert">\n' +
-  '  <span class="sr-only">错误：</span>\n' +
+  '  <span class="sr-only">'+ (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Error:" : "错误：") +'</span>\n' +
   "  {0}\n" +
   '  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>\n' +
   "</div>";
 
 const success_template =
   '<div class="alert alert-success alert-dismissable submit-row" role="alert">\n' +
-  "  <strong>成功！</strong>\n" +
-  "   Your profile has been updated\n" +
+  "  <strong>"+ (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Success!" : "成功！") +"</strong>\n" +
+  (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "   Your profile has been updated\n" : "   您的个人资料已更新\n") +
   '  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>\n' +
   "</div>";
 
@@ -84,9 +95,9 @@ function tokenGenerate(event) {
           copyToClipboard(event, "#user-token-result");
         });
         ezAlert({
-          title: "API Key Generated",
+          title: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "API Key Generated" : "API Key 生成成功"),
           body: body,
-          button: "明白了！",
+          button: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Got it!" : "好的！"),
           large: true
         });
       }
@@ -99,8 +110,8 @@ function deleteToken(event) {
   const id = $elem.data("token-id");
 
   ezQuery({
-    title: "删除令牌",
-    body: "您确定要删除此令牌吗？",
+    title: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Delete Token" : "删除令牌"),
+    body: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Are you sure you want to delete this token?" : "您确定要删除此令牌吗？"),
     success: function() {
       CTFd.fetch("/api/v1/tokens/" + id, {
         method: "DELETE"

@@ -1,3 +1,8 @@
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+{% set en = true %}
+{% else %}
+{% set en = false %}
+{% endif %}
 <div class="modal-dialog" role="document">
 	<div class="modal-content">
 		<div class="modal-body">
@@ -6,13 +11,17 @@
 			</button>
 			<ul class="nav nav-tabs">
 				<li class="nav-item">
-					<a class="nav-link active" href="#challenge">题目</a>
+					<a class="nav-link active" href="#challenge">{{ 'Challenge' if en else '题目' }}</a>
 				</li>
 				{% block solves %}
 					<li class="nav-item">
 						<a class="nav-link challenge-solves" href="#solves">
 							{% if solves != None %}
-								{{ solves }}人解出
+                            {% if en %}
+                            {{ solves }} {% if solves > 1 %}Solves{% else %}Solves{% endif %}
+                            {% else %}
+                            {{ solves }}人解出
+                            {% endif %}
 							{% endif %}
 						</a>
 					</li>
@@ -37,33 +46,39 @@
 						</div>
 
 						<span class="challenge-desc">{% block description %}{{ challenge.html }}{% endblock %}</span>
+
 						<span class="challenge-connection-info">
-                                                        {% block connection_info %}
-                                                                {% set conn = challenge.connection_info %}
-                                                                {% if not conn %}
-                                                                {% elif conn.startswith("http") %}
-                                                                        {{ conn | urlize(target="_blank") }}
-                                                                {% else %}
-                                                                        <code>{{ conn }}</code>
-                                                                {% endif %}
-                                                        {% endblock %}
-                                                </span>
+							{% block connection_info %}
+								{% set conn = challenge.connection_info %}
+								{% if not conn %}
+								{% elif conn.startswith("http") %}
+									{{ conn | urlize(target="_blank") }}
+								{% else %}
+									<code>{{ conn }}</code>
+								{% endif %}
+							{% endblock %}
+						</span>
+
 						<div class="challenge-hints hint-row row">
 							{% for hint in hints %}
 								<div class='col-md-12 hint-button-wrapper text-center mb-3'>
 									<a class="btn btn-info btn-hint btn-block load-hint" href="javascript:;" data-hint-id="{{ hint.id }}">
 										{% if hint.content %}
 											<small>
-												查看提示
+                                                {{ 'View Hint' if en else '查看提示' }}
 											</small>
 										{% else %}
 											{% if hint.cost %}
 												<small>
-                                                    使用{{hint.cost}}点分数解锁提示
+                                                    {% if en %}
+                                                    Unlock Hint for {{ hint.cost }} points
+                                                    {% else %}
+                                                    花费 {{ hint.cost }} 分解锁提示
+                                                    {% endif %}
 												</small>
 											{% else %}
 												<small>
-                                                    查看提示
+                                                    {{ 'View Hint' if en else '查看提示' }}
 												</small>
 											{% endif %}
 										{% endif %}
@@ -74,8 +89,8 @@
 
 						<div class="row challenge-files text-center pb-3">
 							{% for file in files %}
-								<div class='col-md-12 col-sm-12 col-xs-12 file-button-wrapper d-block'>
-									<a class='btn btn-info btn-file mb-1 d-inline-block px-2 w-100 text-truncate'
+                                <div class='col-md-12 col-sm-12 col-xs-12 file-button-wrapper d-block'>
+                                    <a class='btn btn-info btn-file mb-1 d-inline-block px-2 w-100 text-truncate'
 									   href='{{ file }}'>
 										<i class="fas fa-download"></i>
 										<small>
@@ -97,7 +112,11 @@
 						<div class="row text-center">
 							<div class="col-md-12">
 								<p>
-									{{ attempts }}/{{ max_attempts }} 尝试次数
+                                    {% if en %}
+                                    {{ attempts }}/{{ max_attempts }} attempt{{ max_attempts|pluralize }}
+                                    {% else %}
+                                    尝试次数: {{ attempts }}/{{ max_attempts }}
+                                    {% endif %}
 								</p>
 							</div>
 						</div>
@@ -113,7 +132,7 @@
 							<div class="col-md-3 form-group key-submit">
 								{% block submit %}
 								<button id="challenge-submit" class="challenge-submit" type="submit">
-									提交
+									{{ 'Submit' if en else '提交' }}
 								</button>
 								{% endblock %}
 							</div>
@@ -135,9 +154,9 @@
 								<table class="table table-striped text-center">
 									<thead>
 									<tr>
-										<td><b>昵称</b>
+										<td><b>{{ 'Name' if en else '昵称' }}</b>
 										</td>
-										<td><b>得分</b>
+										<td><b>{{ 'Date' if en else '解出时间' }}</b>
 										</td>
 									</tr>
 									</thead>

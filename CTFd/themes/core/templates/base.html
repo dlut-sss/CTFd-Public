@@ -10,6 +10,24 @@
 	<link rel="stylesheet" href="{{ url_for('views.themes', path='css/core.css') }}">
 	{% block stylesheets %}
 	{% endblock %}
+    <style id="pages_style">
+        .bg-dark {
+            background-color: #006fce !important;
+            background:url('{{ url_for('views.themes', path='img/back_blue.jpg') }}');
+            filter:saturate(130%);
+        }
+        .jumbotron {
+            background: url('{{ url_for('views.themes', path='img/halfbg.png') }}');
+            height: 300px;
+        }
+    </style>
+
+
+    {% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+    {% set en = true %}
+    {% else %}
+    {% set en = false %}
+    {% endif %}
 
 	{{ Plugins.styles }}
 	<script type="text/javascript">
@@ -37,13 +55,13 @@
 		{% endblock %}
 	</main>
 
-	<footer class="footer">
-		<div class="container text-center">
-            <a href="http://210.30.97.133:8001" class="text-secondary">
+    <footer class="footer">
+        <div class="container text-center">
+            <a href="https://space.bilibili.com/690549848" class="text-secondary">
                 <small class="text-muted">Powered by Scr1w</small>
-			</a>
-		</div>
-	</footer>
+            </a>
+        </div>
+    </footer>
 
 	<script defer src="{{ url_for('views.themes', path='js/vendor.bundle.js') }}"></script>
 	<script defer src="{{ url_for('views.themes', path='js/core.js') }}"></script>

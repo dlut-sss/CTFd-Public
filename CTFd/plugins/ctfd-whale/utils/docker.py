@@ -9,7 +9,7 @@ import docker
 from flask import current_app
 
 from CTFd.utils import get_config
-from CTFd.utils.logging import log
+from CTFd.utils.logging import log_simple as log
 
 from .cache import CacheProvider
 from .exceptions import WhaleError

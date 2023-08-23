@@ -1,6 +1,6 @@
 import "./main";
 import $ from "jquery";
-import dayjs from "dayjs";
+import dayjs from "dayjs"; import 'dayjs/locale/zh-cn';import 'dayjs/locale/en';
 import CTFd from "../CTFd";
 
 function switchTab(event) {
@@ -72,6 +72,17 @@ function mlcSetup(_event) {
   );
 }
 
+function getCookieForLanguage(name) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === name) {
+      return decodeURIComponent(cookieValue);
+    }
+  }
+  return null;
+}
+
 $(() => {
   $(".tab-next").click(switchTab);
   $("input").on("keypress", function(e) {
@@ -99,6 +110,42 @@ $(() => {
     $("#config-color-picker").val("");
   });
 
+  $("#ctf_logo").on("change", function() {
+    if (this.files[0].size > 128000) {
+      if (
+        !confirm(
+            (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "This image file is larger than 128KB which may result in increased load times. Are you sure you'd like to use this logo?" : "此图像文件大于 128KB，这可能会导致加载时间增加。您确定要使用此徽标吗？")
+        )
+      ) {
+        this.value = "";
+      }
+    }
+  });
+
+  $("#ctf_banner").on("change", function() {
+    if (this.files[0].size > 512000) {
+      if (
+        !confirm(
+            (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "This image file is larger than 512KB which may result in increased load times. Are you sure you'd like to use this icon?" : "此图像文件大于 512KB，可能会导致加载时间增加。您确定要使用此图标吗？")
+        )
+      ) {
+        this.value = "";
+      }
+    }
+  });
+
+  $("#ctf_small_icon").on("change", function() {
+    if (this.files[0].size > 32000) {
+      if (
+        !confirm(
+            (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "This image file is larger than 32KB which may result in increased load times. Are you sure you'd like to use this icon?" : "此图像文件大于 32KB，可能会导致加载时间增加。您确定要使用此图标吗？")
+        )
+      ) {
+        this.value = "";
+      }
+    }
+  });
+
   window.addEventListener("storage", function(event) {
     if (event.key == "integrations" && event.newValue) {
       let integration = JSON.parse(event.newValue);
@@ -119,13 +166,11 @@ $(() => {
         .val();
 
       $.ajax({
-        type: "POST",
         url:
-          "https://ctfd.us15.list-manage.com/subscribe/post-json?u=6c7fa6feeced52775aec9d015&id=dd1484208e&c=?",
+          "https://newsletters.ctfd.io/lists/ot889gr1sa0e1/subscribe/post-json?c=?",
         data: {
-          EMAIL: email,
-          subscribe: "Subscribe",
-          b_6c7fa6feeced52775aec9d015_dd1484208e: ""
+          email: email,
+          b_38e27f7d496889133d2214208_d7c3ed71f9: ""
         },
         dataType: "jsonp",
         contentType: "application/json; charset=utf-8"

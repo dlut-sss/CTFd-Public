@@ -5,53 +5,57 @@
 
 {% block content %}
 <div class="jumbotron">
-    <div class="container">
-        <h1><b>用户登录</b></h1>
-    </div>
+	<div class="container">
+        <h1><b>{{ 'Login' if en else '用户登录' }}</b></h1>
+	</div>
 </div>
 <div class="container">
-    <div class="row">
-        <div class="col-md-6 offset-md-3">
-            {% include "components/errors.html" %}
+	<div class="row">
+		<div class="col-md-6 offset-md-3">
+			{% include "components/errors.html" %}
 
-            {% if integrations.mlc() %}
-            <a class="btn btn-secondary btn-lg btn-block" href="{{ url_for('auth.oauth_login') }}">
-                Login with Major League Cyber
-            </a>
+			{% if integrations.mlc() %}
+			<a class="btn btn-secondary btn-lg btn-block" href="{{ url_for('auth.oauth_login') }}">
+                {{ 'Login with Major League Cyber' if en else '使用Major League Cyber登陆' }}
+			</a>
 
-            <hr>
-            {% endif %}
+			<hr>
+			{% endif %}
 
-            {% with form = Forms.auth.LoginForm() %}
-            <form method="post" accept-charset="utf-8" autocomplete="off">
-                <div class="form-group">
-                    <b>用户名或邮箱</b>
-                    {{ form.name(class = "form-control", value = name) }}
-                </div>
-                <div class="form-group">
-                    <b>密码</b>
-                    {{ form.password(class = "form-control", value = password) }}
-                </div>
-                <div class="row pt-3">
-                    <div class="col-md-6">
-                        <a class="float-left align-text-to-button" href="{{ url_for('auth.reset_password') }}">
-                            忘记密码？
-                        </a>
-                    </div>
-                    <div class="col-md-6">
+			{% with form = Forms.auth.LoginForm() %}
+			<form method="post" accept-charset="utf-8" autocomplete="off">
+				<div class="form-group">
+					<b>{{ 'Username or Email' if en else form.name.label }}</b>
+					{{ form.name(class="form-control", value=name) }}
+				</div>
+				<div class="form-group">
+					<b>{{ 'Password' if en else form.password.label }}</b>
+					{{ form.password(class="form-control", value=password) }}
+				</div>
+				<div class="row pt-3">
+					<div class="col-md-6">
+						<a class="float-left align-text-to-button" href="{{ url_for('auth.reset_password') }}">
+                            {{ 'Forgot your password?' if en else '忘记密码？' }}
+						</a>
+					</div>
+					<div class="col-md-6">
                         {% if Configs.sso_auth == 1 %}
                         <input class="btn btn-md btn-primary btn-outlined float-right"
                                style="width:70.5px;margin-left: 10px;margin-bottom: 10px;" id="sso" value="sso"
                                name="_sso" type="button" onclick="ssologin()">
                         {% endif %}
-                        {{ form.submit(class = "btn btn-md btn-primary btn-outlined float-right") }}
-                    </div>
-                </div>
-                {{ form.nonce() }}
-            </form>
-            {% endwith %}
-        </div>
-    </div>
+                        {% if en %}
+						{{ form.submit(class="btn btn-md btn-primary btn-outlined float-right",value="login") }}
+                        {% else %}
+                        {{ form.submit(class="btn btn-md btn-primary btn-outlined float-right",value="登陆") }}
+                        {% endif %}
+					</div>
+				</div>
+				{{ form.nonce() }}
+			</form>
+			{% endwith %}
+		</div>
+	</div>
 </div>
 {% if Configs.sso_auth == 1 %}
 <script>

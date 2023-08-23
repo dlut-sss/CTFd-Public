@@ -1,6 +1,6 @@
 import "./main";
 import $ from "jquery";
-import dayjs from "dayjs";
+import dayjs from "dayjs"; import 'dayjs/locale/zh-cn';import 'dayjs/locale/en';
 import CTFd from "../CTFd";
 
 function switchTab(event) {
@@ -72,6 +72,17 @@ function mlcSetup(_event) {
   );
 }
 
+function getCookieForLanguage(name) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === name) {
+      return decodeURIComponent(cookieValue);
+    }
+  }
+  return null;
+}
+
 $(() => {
   $(".tab-next").click(switchTab);
   $("input").on("keypress", function(e) {
@@ -103,7 +114,7 @@ $(() => {
     if (this.files[0].size > 128000) {
       if (
         !confirm(
-          "This image file is larger than 128KB which may result in increased load times. Are you sure you'd like to use this logo?"
+            (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "This image file is larger than 128KB which may result in increased load times. Are you sure you'd like to use this logo?" : "此图像文件大于 128KB，这可能会导致加载时间增加。您确定要使用此徽标吗？")
         )
       ) {
         this.value = "";
@@ -115,7 +126,7 @@ $(() => {
     if (this.files[0].size > 512000) {
       if (
         !confirm(
-          "This image file is larger than 512KB which may result in increased load times. Are you sure you'd like to use this icon?"
+            (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "This image file is larger than 512KB which may result in increased load times. Are you sure you'd like to use this icon?" : "此图像文件大于 512KB，可能会导致加载时间增加。您确定要使用此图标吗？")
         )
       ) {
         this.value = "";
@@ -127,7 +138,7 @@ $(() => {
     if (this.files[0].size > 32000) {
       if (
         !confirm(
-          "This image file is larger than 32KB which may result in increased load times. Are you sure you'd like to use this icon?"
+            (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "This image file is larger than 32KB which may result in increased load times. Are you sure you'd like to use this icon?" : "此图像文件大于 32KB，可能会导致加载时间增加。您确定要使用此图标吗？")
         )
       ) {
         this.value = "";

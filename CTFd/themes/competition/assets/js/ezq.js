@@ -2,6 +2,17 @@ import "bootstrap/js/dist/modal";
 import $ from "jquery";
 import hljs from "highlight.js";
 
+function getCookieForLanguage(name) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === name) {
+      return decodeURIComponent(cookieValue);
+    }
+  }
+  return null;
+}
+
 const modalTpl =
   '<div class="modal fade" tabindex="-1" role="dialog">' +
   '  <div class="modal-dialog" role="document">' +
@@ -39,14 +50,14 @@ const progressTpl =
 
 const errorTpl =
   '<div class="alert alert-danger alert-dismissable" role="alert">\n' +
-  '  <span class="sr-only">错误：</span>\n' +
+  '  <span class="sr-only">'+ (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Error:" : "错误：") +'</span>\n' +
   "  {0}\n" +
   '  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>\n' +
   "</div>";
 
 const successTpl =
   '<div class="alert alert-success alert-dismissable submit-row" role="alert">\n' +
-  "  <strong>成功！</strong>\n" +
+  "  <strong>"+ (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Success!" : "成功！") +"</strong>\n" +
   "  {0}\n" +
   '  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>\n' +
   "</div>";
@@ -54,9 +65,9 @@ const successTpl =
 const buttonTpl =
   '<button type="button" class="btn btn-primary" data-dismiss="modal">{0}</button>';
 const noTpl =
-  '<button type="button" class="btn btn-danger" data-dismiss="modal">否</button>';
+  '<button type="button" class="btn btn-danger" data-dismiss="modal">'+(getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "No" : "否")+'</button>';
 const yesTpl =
-  '<button type="button" class="btn btn-primary" data-dismiss="modal">是</button>';
+  '<button type="button" class="btn btn-primary" data-dismiss="modal">'+(getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Yes" : "是")+'</button>';
 
 export function ezAlert(args) {
   const modal = modalTpl.format(args.title);

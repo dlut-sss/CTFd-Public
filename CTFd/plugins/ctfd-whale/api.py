@@ -19,7 +19,11 @@ user_namespace = Namespace("ctfd-whale-user")
 @admin_namespace.errorhandler
 @user_namespace.errorhandler
 def handle_default(err):
-    language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+    language = "zh"
+    try:
+        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+    except:
+        pass
     if language == "zh":
         return {
                    'success': False,
@@ -76,7 +80,11 @@ class UserContainers(Resource):
     @authed_only
     @challenge_visible
     def get():
-        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        language = "zh"
+        try:
+            language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        except:
+            pass
         user_id = current_user.get_current_user().id
         challenge_id = request.args.get('challenge_id')
         container = DBContainer.get_current_containers(user_id=user_id)
@@ -102,7 +110,11 @@ class UserContainers(Resource):
     @challenge_visible
     @frequency_limited
     def post():
-        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        language = "zh"
+        try:
+            language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        except:
+            pass
         user_id = current_user.get_current_user().id
         ControlUtil.try_remove_container(user_id)
 
@@ -127,7 +139,11 @@ class UserContainers(Resource):
     @challenge_visible
     @frequency_limited
     def patch():
-        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        language = "zh"
+        try:
+            language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        except:
+            pass
         user_id = current_user.get_current_user().id
         challenge_id = request.args.get('challenge_id')
         docker_max_renew_count = int(get_config("whale:docker_max_renew_count", 5))

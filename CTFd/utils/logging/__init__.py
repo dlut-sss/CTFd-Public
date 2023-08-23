@@ -17,3 +17,13 @@ def log(logger, format, **kwargs):
     props.update(kwargs)
     msg = format.format(**props)
     logger.info(msg)
+
+
+def log_simple(logger, format, **kwargs):
+    logger = logging.getLogger(logger)
+    props = {
+        "date": current_backend_time().strftime("%Y/%m/%d %X"),
+    }
+    props.update(kwargs)
+    msg = format.format(**props)
+    logger.info(msg)

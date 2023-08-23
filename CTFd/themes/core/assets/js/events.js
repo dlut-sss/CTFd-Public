@@ -47,6 +47,17 @@ export default root => {
     }
   }
 
+  function getCookieForLanguage(name) {
+    const cookies = document.cookie.split('; ');
+    for (const cookie of cookies) {
+      const [cookieName, cookieValue] = cookie.split('=');
+      if (cookieName === name) {
+        return decodeURIComponent(cookieValue);
+      }
+    }
+    return null;
+  }
+
   function render(data) {
     switch (data.type) {
       case "toast": {
@@ -65,7 +76,7 @@ export default root => {
             ezAlert({
               title: data.title,
               body: data.html,
-              button: "明白了！",
+              button: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Got it!" : "好的！"),
               success: function() {
                 clicked = true;
                 dec_notification_counter();
@@ -85,7 +96,7 @@ export default root => {
         ezAlert({
           title: data.title,
           body: data.html,
-          button: "明白了！",
+          button: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Got it!" : "好的！"),
           success: function() {
             dec_notification_counter();
           }

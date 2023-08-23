@@ -82,7 +82,11 @@ class FrpRouter(BaseRouter):
             ) from None
 
     def access(self, container: WhaleContainer):
-        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        language = "zh"
+        try:
+            language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        except:
+            pass
         if container.challenge.redirect_type == 'direct':
             return f'{get_config("whale:frp_direct_ip_address", "127.0.0.1")}:{container.port}'
         elif container.challenge.redirect_type == 'http':
@@ -96,7 +100,11 @@ class FrpRouter(BaseRouter):
         return ''
 
     def register(self, container: WhaleContainer):
-        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        language = "zh"
+        try:
+            language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        except:
+            pass
         if container.challenge.redirect_type == 'direct':
             if not container.port:
                 port = CacheProvider(app=current_app).get_available_port()
@@ -114,13 +122,17 @@ class FrpRouter(BaseRouter):
         return True, 'success'
 
     def unregister(self, container: WhaleContainer):
-        language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        language = "zh"
+        try:
+            language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        except:
+            pass
         if container.challenge.redirect_type == 'direct':
             try:
                 redis_util = CacheProvider(app=current_app)
                 redis_util.add_available_port(container.port)
             except Exception as e:
-                logging.log(
+                logging.log_simple(
                     'whale', '[CTFd Whale] 从缓存中删除端口时出错'
                 )
                 if language == "zh":

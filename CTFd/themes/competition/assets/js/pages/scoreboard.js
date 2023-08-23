@@ -2,7 +2,7 @@ import "./main";
 import $ from "jquery";
 import CTFd from "../CTFd";
 import echarts from "echarts/dist/echarts-en.common";
-import dayjs from "dayjs";
+import dayjs from "dayjs"; import 'dayjs/locale/zh-cn';import 'dayjs/locale/en';
 import { htmlEntities, cumulativeSum, colorHash } from "../utils";
 
 const graph = $("#score-graph");
@@ -35,6 +35,17 @@ const updateScores = () => {
   });
 };
 
+function getCookieForLanguage(name) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === name) {
+      return decodeURIComponent(cookieValue);
+    }
+  }
+  return null;
+}
+
 const buildGraphData = () => {
   return CTFd.api.get_scoreboard_detail({ count: 10 }).then(response => {
     const places = response.data;
@@ -47,7 +58,7 @@ const buildGraphData = () => {
     const option = {
       title: {
         left: "center",
-        text: "前十名" + (CTFd.config.userMode === "teams" ? "队伍" : "用户")
+        text: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? ("Top 10 " + (CTFd.config.userMode === "teams" ? "Teams" : "Users")) : ("前十名" + (CTFd.config.userMode === "teams" ? "队伍" : "用户")))
       },
       tooltip: {
         trigger: "axis",
@@ -142,7 +153,7 @@ const createGraph = () => {
     if (option === false) {
       // Replace spinner
       graph.html(
-        '<h3 class="opacity-50 text-center w-100 justify-content-center align-self-center">No solves yet</h3>'
+        '<h3 class="opacity-50 text-center w-100 justify-content-center align-self-center">'+(getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "No solves yet" : "尚未解出题目")+'</h3>'
       );
       return;
     }
@@ -175,3 +186,5 @@ $(() => {
   setInterval(update, 300000); // Update scores every 5 minutes
   createGraph();
 });
+
+window.updateScoreboard = update;

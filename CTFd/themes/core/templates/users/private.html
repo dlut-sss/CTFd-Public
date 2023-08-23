@@ -46,16 +46,16 @@
 			{% endfor %}
 
 			<div>
-				<h2 class="text-center">
-					{% if account.place %}
-						{{ account.place }} <small>place</small>
-					{% endif %}
-				</h2>
-				<h2 class="text-center">
-					{% if account.place %}
-						{{ account.score }} <small>points</small>
-					{% endif %}
-				</h2>
+                <h2 class="text-center">
+                    {% if account.place %}
+                    <small>{{ account.place }}</small>
+                    {% endif %}
+                </h2>
+                <h2 class="text-center">
+                    {% if account.place %}
+                     <small>{{ account.score }}{{ ' points' if en else '分' }}</small>
+                    {% endif %}
+                </h2>
 			</div>
 
 			<div class="pt-3">
@@ -103,7 +103,7 @@
 
 			<div class="row">
 				<div class="col-md-12">
-					<h3>Awards</h3>
+					<h3>{{ 'Awards' if en else '奖项' }}</h3>
 				</div>
 				{% for award in awards %}
 					<div class="col-md-3 col-sm-6">
@@ -123,14 +123,15 @@
 
 			<div class="row">
 				<div class="col-md-12">
-					<h3>Solves</h3>
+					<h3>{{ 'Solves' if en else '解出题目' }}</h3>
 					<table class="table table-striped">
 						<thead>
 						<tr>
-							<td><b>Challenge</b></td>
-							<td class="d-none d-md-block d-lg-block"><b>Category</b></td>
-							<td><b>Value</b></td>
-							<td><b>Time</b></td>
+							<td><b>{{ 'Challenge' if en else '题目' }}</b></td>
+							<td><b>{{ 'Category' if en else '类别' }}</b></td>
+                            <td><b>{{ 'Subcategory' if en else '子类别' }}</b></td>
+							<td><b>{{ 'Value' if en else '分值' }}</b></td>
+							<td style="width: 240px;"><b>{{ 'Time' if en else '时间' }}</b></td>
 						</tr>
 						</thead>
 						<tbody>
@@ -141,7 +142,8 @@
 										{{ solve.challenge.name }}
 									</a>
 								</td>
-								<td class="d-none d-md-block d-lg-block">{{ solve.challenge.category }}</td>
+								<td>{{ solve.challenge.category }}</td>
+                                <td>{{ solve.challenge.subcategory }}</td>
 								<td>{{ solve.challenge.value }}</td>
 								<td class="solve-time">
 									<span data-time="{{ solve.date | isoformat }}"></span>
@@ -155,7 +157,7 @@
 		{% else %}
 			<div class="row min-vh-25">
 				<h3 class="opacity-50 text-center w-100 justify-content-center align-self-center">
-					No solves yet
+					{{ 'No solves yet' if en else '尚未解出题目' }}
 				</h3>
 			</div>
 		{% endif %}

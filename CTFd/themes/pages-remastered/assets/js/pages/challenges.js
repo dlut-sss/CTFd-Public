@@ -1,13 +1,16 @@
 import "./main";
 import "bootstrap/js/dist/tab";
-import { ezQuery, ezAlert } from "../ezq";
-import { htmlEntities } from "../utils";
-import dayjs from "dayjs"; import 'dayjs/locale/zh-cn';import 'dayjs/locale/en';
+import {ezAlert, ezQuery} from "../ezq";
+import {htmlEntities} from "../utils";
+import dayjs from "dayjs";
+import 'dayjs/locale/zh-cn';
+import 'dayjs/locale/en';
 import relativeTime from "dayjs/plugin/relativeTime";
 import $ from "jquery";
 import CTFd from "../CTFd";
 import config from "../config";
 import hljs from "highlight.js";
+import {ezToast} from "core/ezq";
 
 dayjs.extend(relativeTime);
 
@@ -27,6 +30,26 @@ function getCookieForLanguage(name) {
   return null;
 }
 
+// 判断元素是否在视窗内
+function isElementInViewport(el) {
+  var rect = el.getBoundingClientRect();
+  return (
+      rect.top >= 0 &&
+      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
+  );
+}
+
+function scrollToElementIfNeeded(el) {
+  if (!isElementInViewport(el)) {
+    var windowHeight = window.innerHeight || document.documentElement.clientHeight;
+    var scrollToPosition = el.getBoundingClientRect().top + window.scrollY - (windowHeight / 3);
+    window.scrollTo({
+      top: scrollToPosition,
+      behavior: 'smooth' // 可以设置为 'auto' 或 'smooth'，以控制滚动效果
+    });
+  }
+}
+
 function switchToCategory(chal) {
   //切换到所在页面
   const page = chal.category;
@@ -34,6 +57,9 @@ function switchToCategory(chal) {
   const pagebarid= "#{0}-page-row".format(pageid);
   $("#pages-board").find(".active").removeClass("active");
   $("#pages-board").find(pagebarid).addClass("active").trigger("shown.bs.tab")
+
+  const id = chal.name.replace(/ /g, "-").hashCode()
+  scrollToElementIfNeeded($.find("#"+id)[0])
 }
 
 const loadChal = id => {
@@ -54,10 +80,25 @@ const loadChal = id => {
 };
 
 const loadChalByName = name => {
+  if (name.includes("-page-row")){
+    const pagebar_id= "#{0}".format(name);
+    if ($("#pages-board").find(pagebar_id).length!==0){
+      $("#pages-board").find(".active").removeClass("active");
+      $("#pages-board").find(pagebar_id).addClass("active").trigger("shown.bs.tab");
+      const catid = name.split("-page-row")[0];
+      var element = $('#{0}-row'.format(catid))[0];
+      var paddingTop = 28; // 你想要的上边距值
+      window.scrollTo({
+        top: $(element).offset().top - paddingTop,
+        behavior: 'smooth'
+      });
+      return;
+    }
+  }
+
   let idx = name.lastIndexOf("-");
   let pieces = [name.slice(0, idx), name.slice(idx + 1)];
   let id = pieces[1];
-
   const chal = $.grep(challenges, chal => chal.id == id)[0];
 
   switchToCategory(chal)
@@ -304,21 +345,66 @@ function getSolves(id) {
   });
 }
 
+function sort_challenges(challenges) {
+  const priorityCategories = ['PWN', 'REVERSE', 'WEB', 'CRYPTO', 'MISC', 'OSINT', 'IOT'];
+
+  // 提取并排序优先列表中的对象
+  const priorityObjects = challenges.filter(obj => priorityCategories.includes(obj.category))
+      .sort((a, b) => priorityCategories.indexOf(a.category.toUpperCase()) - priorityCategories.indexOf(b.category.toUpperCase()));
+
+  // 提取剩余的对象并按照 category 属性排序
+  const remainingObjects = challenges.filter(obj => !priorityCategories.includes(obj.category))
+      .sort((a, b) => {
+        const categoryA = a.category.toUpperCase();
+        const categoryB = b.category.toUpperCase();
+        if (categoryA < categoryB) {
+          return -1;
+        }
+        if (categoryA > categoryB) {
+          return 1;
+        }
+        return 0;
+      });
+
+  // 合并两个排好序的数组
+  return [...priorityObjects, ...remainingObjects];
+}
+
 function loadChals() {
   return CTFd.api.get_challenge_list().then(function(response) {
     const $challenges_board = $("#challenges-board");
     const $pages_board = $("#pages-board");
     challenges = response.data;
 
-    // if (window.BETA_sortChallenges) {
-    //   challenges = window.BETA_sortChallenges(challenges);
-    // }
+    try {
+      challenges = sort_challenges(challenges)
+    } catch (error) {
+      console.warn(error)
+    }
+
+    if (challenges.length === 0)
+    {
+      if (getCookieForLanguage("Scr1wCTFdLanguage") === "zh")
+      {
+        ezToast({
+          title: '自动刷新失败',
+          body: '题目数据为空！'
+        });
+      }else
+      {
+        ezToast({
+          title: 'Auto refresh failed',
+          body: 'Challenge data is empty!'
+        });
+      }
+      return;
+    }
 
     $challenges_board.empty();
-    $challenges_board.addClass("tab-content")
+    $challenges_board.addClass("tab-content");
 
     //循环获取所有类别，并设置导航栏
-    for (let i = challenges.length - 1; i >= 0; i--) {
+    for (let i = 0; i <= challenges.length - 1; i++) {
       const chalinfo = challenges[i];
       if ($.inArray(chalinfo.category, pages) == -1) {
         const page = chalinfo.category;
@@ -326,7 +412,7 @@ function loadChals() {
         const pageid = page.replace(/ /g, "-").hashCode();
         const pagerow = $(
             '<a ' +
-            'id="{0}-page-row" class="nav-link" '.format(pageid) +
+            'id="{0}-page-row" class="nav-link challenge-nav-link" '.format(pageid) +
             'data-toggle="tab" role="tab" href="#{0}-page-row"'.format(pageid) +
             '>' + page.slice(0, 15) + "</a>"
         );
@@ -349,7 +435,7 @@ function loadChals() {
     }
 
     //不重新遍历数据，用所有pages生成tab
-    for (let i = pages.length - 1; i >= 0; i--) {
+    for (let i = 0; i <= pages.length - 1; i++) {
         const category = pages[i];
         const categoryid = category.replace(/ /g, "-").hashCode();
         const categoryrow = $(

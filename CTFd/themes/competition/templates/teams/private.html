@@ -8,7 +8,7 @@
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h2 class="modal-action text-center w-100"><b>编辑队伍</b></h2>
+					<h2 class="modal-action text-center w-100">Edit Team</h2>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
@@ -79,7 +79,7 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h2 class="modal-action text-center w-100"><b>选择队长</b></h2>
+					<h2 class="modal-action text-center w-100">Choose Captain</h2>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
@@ -109,7 +109,7 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h2 class="modal-action text-center w-100">邀请用户</h2>
+					<h2 class="modal-action text-center w-100">Invite Users</h2>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
@@ -128,10 +128,10 @@
 								</div>
 							</div>
 							<small class="form-text text-muted">
-                                与您的团队成员分享此链接，以便他们加入您的团队
+								Share this link with your team members for them to join your team
 							</small>
 							<small class="form-text text-muted">
-                                邀请链接可以重复使用，并在 1 天后过期
+								Invite links can be re-used and expire after 1 day
 							</small>
 						</div>
 					</form>
@@ -146,7 +146,7 @@
 			<h1 id="team-id" team-id="{{ team.id }}">{{ team.name }}</h1>
 			{% if team.oauth_id %}
 				<a href="https://majorleaguecyber.org/t/{{ team.name }}">
-					<h3><span class="badge badge-primary">官方认证</span></h3>
+					<h3><span class="badge badge-primary">Official</span></h3>
 				</a>
 			{% endif %}
 			{% if team.affiliation %}
@@ -174,14 +174,14 @@
 				{% if scores_visible() %}
 					{% if place %}
 						{{ place }}
-						<small>名次</small>
+						<small>place</small>
 					{% endif %}
 				{% endif %}
 			</h2>
 			<h2 id="team-score" class="text-center">
 				{% if score %}
 					{{ score }}
-					<small>分数</small>
+					<small>points</small>
 				{% endif %}
 			</h2>
 			<div class="pt-3">
@@ -190,43 +190,43 @@
 						<i class="btn-fa fas fa-cogs fa-2x px-2"
 						   data-toggle="tooltip"
 						   data-placement="top"
-						   title="编辑队伍"></i>
+						   title="Edit Team"></i>
 
 						<a class="edit-captain">
 							<i class="btn-fa fas fa-user-tag fa-2x px-2" data-toggle="tooltip" data-placement="top"
-							   title="选择队长"></i>
+							   title="Choose Captain"></i>
 						</a>
 
 						<a class="invite-members">
 							<i class="btn-fa fas fa-ticket-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
-							   title="邀请用户"></i>
+							   title="Invite Users"></i>
 						</a>
 						<a class="disband-team">
 							<i class="btn-fa fas fa-trash-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
-								title="解散队伍"></i>
+								title="Disband Team"></i>
 						</a>
 					{% else %}
 						<i class="btn-fa fas fa-cogs fa-2x px-2 fa-disabled"
 						   data-toggle="tooltip"
 						   data-placement="top"
-						   title="只有队长可以编辑队伍信息"></i>
+						   title="Only team captains can edit team information"></i>
 						<a class="edit-captain">
 							<i class="btn-fa fas fa-user-tag fa-2x px-2 fa-disabled"
 							   data-toggle="tooltip"
 							   data-placement="top"
-							   title="只有队长才能选择新队长"></i>
+							   title="Only team captains can choose a new captain"></i>
 						</a>
 						<a class="invite-members">
 							<i class="btn-fa fas fa-ticket-alt fa-2x px-2"
 								data-toggle="tooltip"
 								data-placement="top"
-								title="只有队长才能生成邀请链接"></i>
+								title="Only team captains can generate invite links"></i>
 						</a>
 						<a class="disband-team">
 							<i class="btn-fa fas fa-trash-alt fa-2x px-2 fa-disabled"
 								data-toggle="tooltip"
 								data-placement="top"
-								title="只有队长可以解散队伍"></i>
+								title="Only team captains can disband the team"></i>
 						</a>
 					{% endif %}
 				</a>
@@ -246,12 +246,12 @@
 
 		<div class="row min-vh-25">
 			<div class="col-md-12">
-				<h3>队伍成员</h3>
+				<h3>Members</h3>
 				<table class="table table-striped">
 					<thead>
 					<tr>
-						<td><b>用户名</b></td>
-						<td><b>分数</b></td>
+						<td><b>User Name</b></td>
+						<td><b>Score</b></td>
 					</tr>
 					</thead>
 					<tbody>
@@ -262,7 +262,7 @@
 									{{ member.name }}
 								</a>
 								{% if team.captain_id == member.id %}
-									<span class="badge badge-primary ml-2">队长</span>
+									<span class="badge badge-primary ml-2">Captain</span>
 								{% endif %}
 							</td>
 							<td>{{ member.score }}</td>
@@ -274,15 +274,15 @@
 		</div>
 
 		{% if solves or awards %}
-			<div class="row  challenge-charts-box">
-				<div class="col-md-6 d-none d-md-block d-lg-block challenge-charts">
+			<div class="row">
+				<div class="col-md-6 d-none d-md-block d-lg-block">
 					<div id="keys-pie-graph" class="d-flex align-items-center">
 						<div class="text-center w-100">
 							<i class="fas fa-circle-notch fa-spin fa-3x fa-fw spinner"></i>
 						</div>
 					</div>
 				</div>
-				<div class="col-md-6 d-none d-md-block d-lg-block challenge-charts">
+				<div class="col-md-6 d-none d-md-block d-lg-block">
 					<div id="categories-pie-graph" class="d-flex align-items-center">
 						<div class="text-center w-100">
 							<i class="fas fa-circle-notch fa-spin fa-3x fa-fw spinner"></i>
@@ -290,7 +290,7 @@
 					</div>
 				</div>
 				<br class="clearfix">
-				<div class="col-md-12 d-none d-md-block d-lg-block challenge-charts">
+				<div class="col-md-12 d-none d-md-block d-lg-block">
 					<div id="score-graph" class="w-100 d-flex align-items-center">
 						<div class="text-center w-100">
 							<i class="fas fa-circle-notch fa-spin fa-3x fa-fw spinner"></i>
@@ -304,7 +304,7 @@
 			{% if awards %}
 				<div class="row">
 					<div class="col-md-12">
-						<h3>奖项</h3>
+						<h3>Awards</h3>
 					</div>
 					{% for award in awards %}
 						<div class="col-md-3 col-sm-6">
@@ -325,14 +325,14 @@
 
 			<div class="row">
 				<div class="col-md-12">
-					<h3>解出题目</h3>
+					<h3>Solves</h3>
 					<table class="table table-striped">
 						<thead>
 						<tr>
-							<td><b>题目</b></td>
-							<td class="d-none d-md-block d-lg-block"><b>类别</b></td>
-							<td><b>分值</b></td>
-							<td><b>时间</b></td>
+							<td><b>Challenge</b></td>
+							<td class="d-none d-md-block d-lg-block"><b>Category</b></td>
+							<td><b>Value</b></td>
+							<td><b>Time</b></td>
 						</tr>
 						</thead>
 						<tbody>
@@ -357,7 +357,7 @@
 		{% else %}
 			<div class="row min-vh-25">
 				<h3 class="opacity-50 text-center w-100 justify-content-center align-self-center">
-					尚未解出题目
+					No solves yet
 				</h3>
 			</div>
 		{% endif %}

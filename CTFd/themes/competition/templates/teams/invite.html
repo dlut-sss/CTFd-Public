@@ -6,7 +6,7 @@
 {% block content %}
 	<div class="jumbotron">
 		<div class="container">
-			<h1><b>加入队伍</b></h1>
+			<h1>Join Team</h1>
 		</div>
 	</div>
 	<div class="container">
@@ -15,14 +15,14 @@
 				{% include "components/errors.html" %}
 
 				<p class="text-center">
-					欢迎加入 <strong>{{ team.name }}</strong>!
+					Welcome to <strong>{{ team.name }}</strong>!
 				</p>
 
 				<p class="text-center">
-                    点击下方按钮即可加入团队！
+					Click the button below to join the team!
 					<br>
 					<small class="text-muted">
-                        或者，如果您想创建自己的团队，请<a href="{{ url_for('teams.new') }}">单击此处</a>。
+						Or <a href="{{ url_for('teams.new') }}">click here</a> if you'd prefer to create your own team.
 					</small>
 				</p>
 
