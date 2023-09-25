@@ -6,7 +6,7 @@
 {% block content %}
 	<div class="jumbotron">
 		<div class="container">
-			<h1>Join Team</h1>
+            <h1><b>{{ 'Join Team' if en else '加入队伍' }}</b></h1>
 		</div>
 	</div>
 	<div class="container">
@@ -17,16 +17,28 @@
 				{% with form = Forms.teams.TeamJoinForm() %}
 				<form method="POST">
 					<div class="form-group">
-						{{ form.name.label }}
+                        {% if en %}
+                        <label for="name">name</label>
+                        {% else %}
+                        {{ form.name.label }}
+                        {% endif %}
 						{{ form.name(class="form-control") }}
 					</div>
 					<div class="form-group">
-						{{ form.password.label }}
+                        {% if en %}
+                        <label for="password">password</label>
+                        {% else %}
+                        {{ form.password.label }}
+                        {% endif %}
 						{{ form.password(class="form-control") }}
 					</div>
 					<div class="row pt-3">
 						<div class="col-md-12">
-							{{ form.submit(class="btn btn-success float-right") }}
+                            {% if en %}
+                            {{ form.submit(class="btn btn-success float-right",value="Submit") }}
+                            {% else %}
+                            {{ form.submit(class="btn btn-success float-right") }}
+                            {% endif %}
 						</div>
 					</div>
 					{{ form.nonce() }}

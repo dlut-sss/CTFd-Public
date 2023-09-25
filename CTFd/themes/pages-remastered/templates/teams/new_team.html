@@ -6,7 +6,7 @@
 {% block content %}
 	<div class="jumbotron">
 		<div class="container">
-			<h1>Create Team</h1>
+            <h1><b>{{ 'Create Team' if en else '创建队伍' }}</b></h1>
 		</div>
 	</div>
 	<div class="container">
@@ -18,11 +18,22 @@
 				{% from "macros/forms.html" import render_extra_fields %}
 				<form method="POST">
 					<div class="form-group">
-						<b>{{ form.name.label }}</b>
+						<b>
+                            {% if en %}
+                            <label for="name">name</label>
+                            {% else %}
+                            {{ form.name.label }}
+                            {% endif %}
+                        </b>
 						{{ form.name(class="form-control") }}
 					</div>
 					<div class="form-group">
-						<b>{{ form.password.label }}</b>
+						<b>{% if en %}
+                            <label for="password">password</label>
+                            {% else %}
+                            {{ form.password.label }}
+                            {% endif %}
+                        </b>
 						{{ form.password(class="form-control") }}
 					</div>
 
@@ -30,8 +41,16 @@
 
 					<div class="row pt-3">
 						<div class="col-md-12">
-							<p>After creating your team, share the team name and password with your teammates so they can join your team.</p>
-							{{ form.submit(class="btn btn-success float-right") }}
+                            {% if en %}
+                            <p>After creating your team, share the team name and password with your teammates so they can join your team.</p>
+                            {% else %}
+                            <p>创建团队后，与您的队友分享团队名称和密码，以便他们可以加入您的团队。</p>
+                            {% endif %}
+                            {% if en %}
+                            {{ form.submit(class="btn btn-success float-right",value="Submit") }}
+                            {% else %}
+                            {{ form.submit(class="btn btn-success float-right") }}
+                            {% endif %}
 						</div>
 					</div>
 					{{ form.nonce() }}

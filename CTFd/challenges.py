@@ -17,7 +17,6 @@ challenges = Blueprint("challenges", __name__)
 
 @challenges.route("/challenges", methods=["GET"])
 @require_complete_profile
-@during_ctf_time_only
 @require_verified_emails
 @check_challenge_visibility
 def listing():

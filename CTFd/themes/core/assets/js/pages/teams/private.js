@@ -6,6 +6,18 @@ import $ from "jquery";
 import { copyToClipboard } from "../../utils";
 import { ezBadge, ezQuery, ezAlert } from "../../ezq";
 
+function language(en,zh) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === "Scr1wCTFdLanguage") {
+      return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+    }
+  }
+  return zh;
+}
+
+
 $(() => {
   if (window.team_captain) {
     $(".edit-team").click(function() {
@@ -46,8 +58,8 @@ $(() => {
 
     $(".disband-team").click(function() {
       ezQuery({
-        title: "Disband Team",
-        body: "Are you sure you want to disband your team?",
+        title: language("Disband Team","解散队伍"),
+        body: language("Are you sure you want to disband your team?","你确定要解散你的队伍吗"),
         success: function() {
           CTFd.fetch("/api/v1/teams/me", {
             method: "DELETE"
@@ -60,9 +72,9 @@ $(() => {
                 window.location.reload();
               } else {
                 ezAlert({
-                  title: "Error",
+                  title: language("Error","错误"),
                   body: response.errors[""].join(" "),
-                  button: "Got it!"
+                  button: language("Got it!","好的")
                 });
               }
             });
@@ -106,7 +118,7 @@ $(() => {
           if (!object.success) {
             const error_template =
               '<div class="alert alert-danger alert-dismissable" role="alert">\n' +
-              '  <span class="sr-only">Error:</span>\n' +
+              '  <span class="sr-only">'+language("Error:","错误：")+'</span>\n' +
               "  {0}\n" +
               '  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>\n' +
               "</div>";

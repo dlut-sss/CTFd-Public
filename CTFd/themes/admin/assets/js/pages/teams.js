@@ -3,6 +3,17 @@ import CTFd from "core/CTFd";
 import $ from "jquery";
 import { ezAlert, ezQuery } from "core/ezq";
 
+function language(en,zh) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === "Scr1wCTFdLanguage") {
+      return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+    }
+  }
+  return zh;
+}
+
 function deleteSelectedTeams(_event) {
   let teamIDs = $("input[data-team-id]:checked").map(function() {
     return $(this).data("team-id");
@@ -10,8 +21,8 @@ function deleteSelectedTeams(_event) {
   let target = teamIDs.length === 1 ? "team" : "teams";
 
   ezQuery({
-    title: "Delete Teams",
-    body: `Are you sure you want to delete ${teamIDs.length} ${target}?`,
+    title: language("Delete Teams","删除队伍"),
+    body: language(`Are you sure you want to delete ${teamIDs.length} ${target}?`,`你确定要删除${teamIDs.length}个队伍吗？`),
     success: function() {
       const reqs = [];
       for (var teamID of teamIDs) {
@@ -34,8 +45,8 @@ function bulkEditTeams(_event) {
   });
 
   ezAlert({
-    title: "Edit Teams",
-    body: $(`
+    title: language("Edit Teams","编辑队伍"),
+    body: language($(`
     <form id="teams-bulk-edit">
       <div class="form-group">
         <label>Banned</label>
@@ -54,8 +65,27 @@ function bulkEditTeams(_event) {
         </select>
       </div>
     </form>
-    `),
-    button: "Submit",
+    `),$(`
+    <form id="teams-bulk-edit">
+      <div class="form-group">
+        <label>封禁状态</label>
+        <select name="banned" data-initial="">
+          <option value="">--</option>
+          <option value="true">已封禁</option>
+          <option value="false">未封禁</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>显示状态</label>
+        <select name="hidden" data-initial="">
+          <option value="">--</option>
+          <option value="true">已隐藏</option>
+          <option value="false">未隐藏</option>
+        </select>
+      </div>
+    </form>
+    `)),
+    button: language("Submit","确定"),
     success: function() {
       let data = $("#teams-bulk-edit").serializeJSON(true);
       const reqs = [];

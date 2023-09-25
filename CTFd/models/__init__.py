@@ -1,5 +1,6 @@
 import datetime
 from collections import defaultdict
+from decimal import Decimal
 
 from flask_marshmallow import Marshmallow
 from flask_sqlalchemy import SQLAlchemy
@@ -7,6 +8,7 @@ from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import column_property, validates
 
+from CTFd import utils
 from CTFd.cache import cache
 
 db = SQLAlchemy()
@@ -463,38 +465,110 @@ class Users(db.Model):
             awards = awards.filter(Awards.date < dt)
         return awards.all()
 
+    def get_score_by_challenge_id(self, challenges, challenge_id):
+        for challenge in challenges:
+            if challenge.id == challenge_id:
+                return challenge.value
+        return None
+
     @cache.memoize()
     def get_score(self, admin=False):
-        score = db.func.sum(Challenges.value).label("score")
-        user = (
-            db.session.query(Solves.user_id, score)
-            .join(Users, Solves.user_id == Users.id)
-            .join(Challenges, Solves.challenge_id == Challenges.id)
-            .filter(Users.id == self.id)
-        )
+        from CTFd.utils import get_config
+        from CTFd.utils.dates import unix_time_to_utc
+        from CTFd.utils.modes import USERS_MODE
+        if get_config("matrix:switch"):
+            # 获取所有题目数据并获取数目
+            challenges = Challenges.query.filter(*[]).order_by(Challenges.id.asc()).all()
+            # 获取所有分数数据和解题数据，并过滤无效数据
+            solves = db.session.query(Solves.date.label('date'), Solves.challenge_id.label('challenge_id'),
+                                      Solves.user_id.label('user_id')).all()
+            award_score = db.func.sum(Awards.value).label("award_score")
+            award = db.session.query(award_score).filter_by(user_id=self.id)
+            if not admin:
+                freeze = utils.get_config('freeze')
+                if freeze:
+                    freeze = unix_time_to_utc(freeze)
+                    solves = solves.filter(Solves.date < freeze)
+                    award = award.filter(Awards.date < freeze)
+            # 创建一个字典来存储每个challenge_id的前三条数据
+            top_solves = defaultdict(list)
+            # 将solves数据按照challenge_id和date排序
+            sorted_solves = sorted(solves, key=lambda x: (x.challenge_id, x.date))
+            # 遍历排序后的solves数据
+            for solve in sorted_solves:
+                challenge_id = solve.challenge_id
+                # 检查是否已经存储了三条数据，如果是，跳过
+                if len(top_solves[challenge_id]) >= 3:
+                    continue
+                # 否则将数据添加到对应的challenge_id中
+                top_solves[challenge_id].append({
+                    'date': solve.date,
+                    'user_id': solve.user_id
+                })
+            user_solves = [solve for solve in solves if solve[2] == self.id]
+            total_score = 0
+            for solve in user_solves:
+                challenge_id = solve[1]
+                rank = 4
+                for index, top_solve in enumerate(top_solves[challenge_id]):
+                    if top_solve['user_id'] == self.id:
+                        rank = index + 1
+                # 按血加分
+                score = self.get_score_by_challenge_id(challenges, challenge_id)
+                if rank == 1:
+                    score *= Decimal('1.1')
+                elif rank == 2:
+                    score *= Decimal('1.05')
+                elif rank == 3:
+                    score *= Decimal('1.03')
 
-        award_score = db.func.sum(Awards.value).label("award_score")
-        award = db.session.query(award_score).filter_by(user_id=self.id)
+                total_score += score
 
-        if not admin:
-            freeze = Configs.query.filter_by(key="freeze").first()
-            if freeze and freeze.value:
-                freeze = int(freeze.value)
-                freeze = datetime.datetime.utcfromtimestamp(freeze)
-                user = user.filter(Solves.date < freeze)
-                award = award.filter(Awards.date < freeze)
+            # 新生加分
+            mode = get_config("user_mode")
+            if mode == USERS_MODE:
+                if get_config("matrix:score_switch"):
+                    if self.sid:
+                        if str(self.sid[:4]) in str(get_config("matrix:score_grade")):
+                            total_score += get_config("matrix:score_num")
 
-        user = user.group_by(Solves.user_id).first()
-        award = award.first()
+            # 奖项加分
+            award = award.first()
+            if award:
+                total_score += int(award.award_score or 0)
 
-        if user and award:
-            return int(user.score or 0) + int(award.award_score or 0)
-        elif user:
-            return int(user.score or 0)
-        elif award:
-            return int(award.award_score or 0)
+            return total_score
         else:
-            return 0
+            score = db.func.sum(Challenges.value).label("score")
+            user = (
+                db.session.query(Solves.user_id, score)
+                .join(Users, Solves.user_id == Users.id)
+                .join(Challenges, Solves.challenge_id == Challenges.id)
+                .filter(Users.id == self.id)
+            )
+
+            award_score = db.func.sum(Awards.value).label("award_score")
+            award = db.session.query(award_score).filter_by(user_id=self.id)
+
+            if not admin:
+                freeze = Configs.query.filter_by(key="freeze").first()
+                if freeze and freeze.value:
+                    freeze = int(freeze.value)
+                    freeze = datetime.datetime.utcfromtimestamp(freeze)
+                    user = user.filter(Solves.date < freeze)
+                    award = award.filter(Awards.date < freeze)
+
+            user = user.group_by(Solves.user_id).first()
+            award = award.first()
+
+            if user and award:
+                return int(user.score or 0) + int(award.award_score or 0)
+            elif user:
+                return int(user.score or 0)
+            elif award:
+                return int(award.award_score or 0)
+            else:
+                return 0
 
     @cache.memoize()
     def get_place(self, admin=False, numeric=False):

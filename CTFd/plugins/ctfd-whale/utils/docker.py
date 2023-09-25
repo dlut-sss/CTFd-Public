@@ -123,10 +123,11 @@ class DockerUtils:
                         )
                         return
             except Exception as e:
-                print(e)
+                if "404" not in str(e):
+                    print(e)
                 pass
 
-            if count > 960:
+            if count > 600:
                 log(
                     "whale",
                     "[{date}] [CTFd Whale] 容器{name}创建超时！正在自动释放资源。",
@@ -184,7 +185,6 @@ class DockerUtils:
             try:
                 getimage = client.images.get(image)
             except Exception as e:
-                print(e)
                 client.api.pull(image)
             client.services.create(
                 image=image, name=container_name, networks=[

@@ -58,6 +58,9 @@ class DynamicValueDockerChallenge(BaseChallenge):
                 value = float(value)
             setattr(challenge, attr, value)
 
+        challenge.value = challenge.initial
+        db.session.commit()
+
         if challenge.dynamic_score == 1:
             return DynamicValueChallenge.calculate_value(challenge)
 

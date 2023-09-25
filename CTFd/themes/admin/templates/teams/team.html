@@ -8,8 +8,8 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h2 class="modal-action text-center w-100">Edit Team</h2>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<h2 class="modal-action text-center w-100">{{ 'Edit Team' if en else '编辑队伍' }}</h2>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute;top: 0;right: 0;padding: 30px;">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
@@ -24,8 +24,8 @@
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h2 class="modal-action text-center w-100">Add Team Members</h2>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<h2 class="modal-action text-center w-100">{{ 'Add Team Members' if en else '添加队员' }}</h2>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute;top: 0;right: 0;padding: 30px;">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
@@ -39,8 +39,8 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h2 class="modal-action text-center w-100">Team Invite</h2>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<h2 class="modal-action text-center w-100">{{ 'Team Invite' if en else '邀请队员' }}</h2>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute;top: 0;right: 0;padding: 30px;">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
@@ -48,7 +48,7 @@
 				{% with form = Forms.teams.TeamInviteForm() %}
 				<form method="POST">
 					<div class="form-group">
-						<b>{{ form.link.label }}</b>
+						<b>{{ 'Invite Link' if en else '邀请链接' }}</b>
 						<div class="input-group mb-3">
 							{{ form.link(id="team-invite-link", class="form-control") }}
 							<div class="input-group-append">
@@ -58,7 +58,7 @@
 							</div>
 						</div>
 						<small class="form-text text-muted">
-							Share this link for users to join this team
+                            {{ 'Share this link for users to join this team' if en else '分享此链接以便用户加入该团队' }}
 						</small>
 					</div>
 				</form>
@@ -72,8 +72,8 @@
 	<div class="modal-dialog modal-xl">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h2 class="modal-action text-center w-100">Team Statistics</h2>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<h2 class="modal-action text-center w-100">{{ 'Team Statistics' if en else '队伍数据' }}</h2>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute;top: 0;right: 0;padding: 30px;">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
@@ -88,8 +88,8 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h2 class="modal-action text-center w-100">Choose Captain</h2>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<h2 class="modal-action text-center w-100">{{ 'Choose Captain' if en else '选择队长' }}</h2>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute;top: 0;right: 0;padding: 30px;">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
@@ -104,14 +104,14 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h2 class="modal-action text-center w-100">Award Team Member</h2>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<h2 class="modal-action text-center w-100">{{ 'Award Team Member' if en else '奖励成员' }}</h2>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute;top: 0;right: 0;padding: 30px;">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
 			<div class="modal-body clearfix">
 				<div class="form-group">
-					<label for="award-member-input">Member</label>
+					<label for="award-member-input">{{ 'Member' if en else '成员' }}</label>
 					<select class="form-control custom-select" id="award-member-input">
 						<option value=""> -- </option>
 						{% for member in members %}
@@ -138,8 +138,8 @@
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h2 class="modal-action text-center w-100">IP Addresses</h2>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<h2 class="modal-action text-center w-100">{{ 'IP Addresses' if en else 'IP地址' }}</h2>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute;top: 0;right: 0;padding: 30px;">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
@@ -155,13 +155,13 @@
 		<h1 id="team-id" class="text-center">{{ team.name }}</h1>
 		<div class="mb-2">
 			{% if team.verified %}
-				<span class="badge badge-success">verified</span>
+                <span class="badge badge-success">{{ 'verified' if en else '已认证' }}</span>
 			{% endif %}
 			{% if team.hidden %}
-				<span class="badge badge-danger">hidden</span>
+                <span class="badge badge-danger">{{ 'hidden' if en else '已隐藏' }}</span>
 			{% endif %}
 			{% if team.banned %}
-				<span class="badge badge-danger">banned</span>
+                <span class="badge badge-danger">{{ 'banned' if en else '已封禁' }}</span>
 			{% endif %}
 		</div>
 
@@ -191,52 +191,50 @@
 			</h3>
 		{% endfor %}
 
-		<h2 class="text-center">{{ members | length }} members</h2>
+		<h2 class="text-center">{{ members | length }}{{ ' members' if en else '个成员' }}</h2>
 		<h3 id="team-place" class="text-center">
-			{% if place %}
-				{{ place }}
-				<small>place</small>
-			{% endif %}
+            {% if place %}
+                <small>{{ place }}</small>
+            {% endif %}
 		</h3>
 		<h3 id="team-score" class="text-center">
-			{% if score %}
-				{{ score }}
-				<small>points</small>
-			{% endif %}
+            {% if score %}
+                <small>{{ score }}{{ ' points' if en else '分' }}</small>
+            {% endif %}
 		</h3>
 		<hr class="w-50">
 		<div class="pt-3">
 			<a class="edit-team text-dark">
 				<i class="btn-fa fas fa-pencil-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
-				   title="Edit Team"></i>
+				   title="{{ 'Edit Team' if en else '编辑队伍' }}"></i>
 			</a>
 			<a class="invite-team text-dark">
 				<i class="btn-fa fas fa-ticket-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
-				   title="Team Invite Link"></i>
+				   title="{{ 'Team Invite Link' if en else '团队邀请链接' }}"></i>
 			</a>
 			<a class="members-team text-dark">
 				<i class="btn-fa fas fa-user-plus fa-2x px-2" data-toggle="tooltip" data-placement="top"
-				   title="Add Team Members"></i>
+				   title="{{ 'Add Team Members' if en else '添加团队成员' }}"></i>
 			</a>
 			<a class="edit-captain text-dark">
 				<i class="btn-fa fas fa-user-tag fa-2x px-2" data-toggle="tooltip" data-placement="top"
-				   title="Choose Captain"></i>
+				   title="{{ 'Choose Captain' if en else '选择队长' }}"></i>
 			</a>
 			<a class="award-team text-dark">
-				<i class="btn-fa fas fa-trophy fa-2x px-2" data-toggle="tooltip" data-placement="top" title="Award Team Member"></i>
+				<i class="btn-fa fas fa-trophy fa-2x px-2" data-toggle="tooltip" data-placement="top" title="{{ 'Award Team Member' if en else '奖励团队成员' }}"></i>
 			</a>
 			<a class="delete-team text-dark">
 				<i class="btn-fa fas fa-trash-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
-				   title="Delete Team"></i>
+				   title="{{ 'Delete Team' if en else '删除队伍' }}"></i>
 			</a>
 		</div>
 		<div class="pt-3">
 			<a class="statistics-team text-dark">
 				<i class="btn-fa fas fa-chart-pie fa-2x px-2" data-toggle="tooltip" data-placement="top"
-				   title="Team Statistics"></i>
+				   title="{{ 'Team Statistics' if en else '队伍数据' }}"></i>
 			</a>
 			<a class="addresses-team text-dark">
-				<i class="btn-fa fas fa-network-wired fa-2x px-2" data-toggle="tooltip" data-placement="top" title="IP Addresses"></i>
+				<i class="btn-fa fas fa-network-wired fa-2x px-2" data-toggle="tooltip" data-placement="top" title="{{ 'IP Addresses' if en else 'IP地址' }}"></i>
 			</a>
 			{% if team.website %}
 			<a href="{{ team.website }}" target="_blank" class="text-dark" rel="noopener">
@@ -252,13 +250,13 @@
 	<div class="row min-vh-25 pt-5 pb-5">
 		<div class="col-md-12 table-responsive">
 			<table class="table table-striped">
-				<h3 class="text-center">Team Members</h3>
+				<h3 class="text-center">{{ 'Team Members' if en else '团队成员' }}</h3>
 				<thead>
 				<tr>
 					<td class="text-center"></td>
-					<td class="text-center"><b>User Name</b></td>
-					<td class="text-center"><b>E-Mail</b></td>
-					<td class="text-center"><b>Score</b></td>
+					<td class="text-center"><b>{{ 'Username' if en else '用户昵称' }}</b></td>
+					<td class="text-center"><b>{{ 'E-Mail' if en else '邮箱' }}</b></td>
+					<td class="text-center"><b>{{ 'Score' if en else '得分' }}</b></td>
 					<td class="text-center"></td>
 				</tr>
 				</thead>
@@ -267,7 +265,7 @@
 					<tr>
 						<td class="text-center" data-href="{{ url_for('admin.users_detail', user_id=member.id) }}">
 							{% if team.captain_id == member.id %}
-								<span class="badge badge-primary">Captain</span>
+								<span class="badge badge-primary">{{ 'Captain' if en else '队长' }}</span>
 							{% endif %}
 						</td>
 						<td class="text-left" data-href="{{ url_for('admin.users_detail', user_id=member.id) }}">
@@ -286,7 +284,7 @@
 						<td class="text-center">
 							<span class="delete-member cursor-pointer" member-id="{{ member.id }}"
 								  member-name="{{ member.name }}" data-toggle="tooltip"
-								  data-placement="top" title="Remove {{ member.name }}">
+								  data-placement="top" title="{{ 'Remove ' if en else '移除' }}{{ member.name }}">
 								<i class="fas fa-times"></i>
 							</span>
 						</td>
@@ -299,21 +297,21 @@
 
 	<nav class="nav nav-tabs nav-fill pt-5" id="myTab" role="tablist">
 		<a class="nav-item nav-link active" id="nav-solves-tab" data-toggle="tab" href="#nav-solves" role="tab"
-		   aria-controls="nav-solves" aria-selected="true">Solves</a>
+		   aria-controls="nav-solves" aria-selected="true">{{ 'Solves' if en else '正确提交' }}</a>
 
 		<a class="nav-item nav-link" id="nav-wrong-tab" data-toggle="tab" href="#nav-wrong" role="tab"
-		   aria-controls="nav-wrong" aria-selected="false">Fails</a>
+		   aria-controls="nav-wrong" aria-selected="false">{{ 'Fails' if en else '错误提交' }}</a>
 
 		<a class="nav-item nav-link" id="nav-awards-tab" data-toggle="tab" href="#nav-awards" role="tab"
-		   aria-controls="nav-awards" aria-selected="false">Awards</a>
+		   aria-controls="nav-awards" aria-selected="false">{{ 'Awards' if en else '获得奖项' }}</a>
 
 		<a class="nav-item nav-link" id="nav-missing-tab" data-toggle="tab" href="#nav-missing" role="tab"
-		   aria-controls="nav-missing" aria-selected="false">Missing</a>
+		   aria-controls="nav-missing" aria-selected="false">{{ 'Missing' if en else '尚未解出' }}</a>
 	</nav>
 
 	<div class="tab-content min-vh-50 pb-5" id="nav-tabContent">
 		<div class="tab-pane fade show active" id="nav-solves" role="tabpanel" aria-labelledby="nav-solves-tab">
-			<h3 class="text-center pt-5 d-block">Solves</h3>
+			<h3 class="text-center pt-5 d-block">{{ 'Solves' if en else '正确提交' }}</h3>
 			<div class="row">
 				<div class="col-md-12">
 					<div class="float-right pb-3">
@@ -335,12 +333,13 @@
 										<input type="checkbox" class="form-check-input" autocomplete="off" data-checkbox-all>&nbsp;
 									</div>
 								</th>
-								<th class="sort-col text-center"><b>Challenge</b></th>
-								<th class="sort-col text-center"><b>User</b></th>
-								<th class="sort-col text-center"><b>Submitted</b></th>
-								<th class="sort-col text-center"><b>Category</b></th>
-								<th class="sort-col text-center"><b>Value</b></th>
-								<th class="sort-col text-center"><b>Time</b></th>
+								<th class="sort-col text-center"><b>{{ 'Challenge' if en else '题目名称' }}</b></th>
+								<th class="sort-col text-center"><b>{{ 'User' if en else '用户昵称' }}</b></th>
+								<th class="sort-col text-center"><b>{{ 'Submitted' if en else '提交内容' }}</b></th>
+								<th class="sort-col text-center"><b>{{ 'Category' if en else '类别' }}</b></th>
+								<th class="sort-col text-center"><b>{{ 'Subcategory' if en else '子类别' }}</b></th>
+								<th class="sort-col text-center"><b>{{ 'Value' if en else '分值' }}</b></th>
+								<th class="sort-col text-center"><b>{{ 'Time' if en else '时间' }}</b></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -364,10 +363,11 @@
 										{{ solve.user.name }}
 									</a>
 								</td>
-								<td class="flag" id="{{ solve.id }}"><pre>{{ solve.provided }}</pre></td>
+								<td class="flag" id="{{ solve.id }}"><pre style="word-wrap: break-word;word-break: break-word;">{{ solve.provided }}</pre></td>
 								<td class="text-center">{{ solve.challenge.category }}</td>
+								<td class="text-center">{{ solve.challenge.subcategory }}</td>
 								<td class="text-center">{{ solve.challenge.value }}</td>
-								<td class="text-center solve-time">
+								<td class="text-center solve-time" style="width: 240px;">
 									<span data-time="{{ solve.date | isoformat }}"></span>
 								</td>
 							</tr>
@@ -379,7 +379,7 @@
 		</div>
 
 		<div class="tab-pane fade" id="nav-wrong" role="tabpanel" aria-labelledby="nav-wrong-tab">
-			<h3 class="text-center pt-5 d-block">Fails</h3>
+			<h3 class="text-center pt-5 d-block">{{ 'Fails' if en else '错误提交' }}</h3>
 			<div class="row">
 				<div class="col-md-12">
 					<div class="float-right pb-3">
@@ -401,10 +401,10 @@
 										<input type="checkbox" class="form-check-input" autocomplete="off" data-checkbox-all>&nbsp;
 									</div>
 								</th>
-								<th class="sort-col text-center"><b>Challenge</b></th>
-								<th class="sort-col text-center"><b>User</b></th>
-								<th class="sort-col text-center"><b>Submitted</b></th>
-								<th class="sort-col text-center"><b>Time</b></th>
+								<th class="sort-col text-center"><b>{{ 'Challenge' if en else '题目名称' }}</b></th>
+								<th class="sort-col text-center"><b>{{ 'User' if en else '用户昵称' }}</b></th>
+								<th class="sort-col text-center"><b>{{ 'Submitted' if en else '提交内容' }}</b></th>
+								<th class="sort-col text-center"><b>{{ 'Time' if en else '时间' }}</b></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -428,8 +428,8 @@
 										{{ fail.user.name }}
 									</a>
 								</td>
-								<td class="flag" id="{{ fail.id }}"><pre>{{ fail.provided }}</pre></td>
-								<td class="text-center solve-time">
+								<td class="flag" id="{{ fail.id }}"><pre style="word-wrap: break-word;word-break: break-word;">{{ fail.provided }}</pre></td>
+								<td class="text-center solve-time" style="width: 240px;">
 									<span data-time="{{ fail.date | isoformat }}"></span>
 								</td>
 							</tr>
@@ -441,7 +441,7 @@
 		</div>
 
 		<div class="tab-pane fade" id="nav-awards" role="tabpanel" aria-labelledby="nav-awards-tab">
-			<h3 class="text-center pt-5 d-block">Awards</h3>
+			<h3 class="text-center pt-5 d-block">{{ 'Awards' if en else '获得奖项' }}</h3>
 			<div class="row">
 				<div class="col-md-12">
 					<div class="float-right pb-3">
@@ -463,13 +463,13 @@
 									<input type="checkbox" class="form-check-input" autocomplete="off" data-checkbox-all>&nbsp;
 								</div>
 							</th>
-							<th class="sort-col text-center"><b>Name</b></th>
-							<th class="sort-col text-center"><b>User</b></th>
-							<th class="sort-col text-center"><b>Description</b></th>
-							<th class="sort-col text-center"><b>Date</b></th>
-							<th class="sort-col text-center"><b>Value</b></th>
-							<th class="sort-col text-center"><b>Category</b></th>
-							<th class="sort-col text-center"><b>Icon</b></th>
+							<th class="sort-col text-center"><b>{{ 'Name' if en else '名称' }}</b></th>
+							<th class="sort-col text-center"><b>{{ 'User' if en else '用户' }}</b></th>
+							<th class="sort-col text-center"><b>{{ 'Description' if en else '描述' }}</b></th>
+							<th class="sort-col text-center"><b>{{ 'Date' if en else '时间' }}</b></th>
+							<th class="sort-col text-center"><b>{{ 'Value' if en else '分值' }}</b></th>
+							<th class="sort-col text-center"><b>{{ 'Category' if en else '类别' }}</b></th>
+							<th class="sort-col text-center"><b>{{ 'Icon' if en else '图标' }}</b></th>
 						</tr>
 						</thead>
 						<tbody id="awards-body">
@@ -487,7 +487,7 @@
 									</a>
 								</td>
 								<td class=""><pre>{{ award.description }}</pre></td>
-								<td class="text-center solve-time">
+								<td class="text-center solve-time" style="width: 240px;">
 									<span data-time="{{ award.date | isoformat }}"></span>
 								</td>
 								<td class="text-center">{{ award.value }}</td>
@@ -502,7 +502,7 @@
 		</div>
 
 		<div class="tab-pane fade" id="nav-missing" role="tabpanel" aria-labelledby="nav-missing-tab">
-			<h3 class="text-center pt-5 d-block">Missing</h3>
+			<h3 class="text-center pt-5 d-block">{{ 'Missing' if en else '尚未解出' }}</h3>
 			<div class="row">
 				<div class="col-md-12">
 					<div class="float-right pb-3">
@@ -524,9 +524,10 @@
 									<input type="checkbox" class="form-check-input" autocomplete="off" data-checkbox-all>&nbsp;
 								</div>
 							</th>
-							<th class="sort-col text-center"><b>Challenge</b></th>
-							<th class="sort-col text-center"><b>Category</b></th>
-							<th class="sort-col text-center"><b>Value</b></th>
+							<th class="sort-col text-center"><b>{{ 'Challenge' if en else '题目名称' }}</b></th>
+							<th class="sort-col text-center"><b>{{ 'Category' if en else '类别' }}</b></th>
+							<th class="sort-col text-center"><b>{{ 'Subcategory' if en else '子类别' }}</b></th>
+							<th class="sort-col text-center"><b>{{ 'Value' if en else '分值' }}</b></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -544,6 +545,7 @@
 								</a>
 							</td>
 							<td class="text-center">{{ challenge.category }}</td>
+							<td class="text-center">{{ challenge.subcategory }}</td>
 							<td class="text-center">{{ challenge.value }}</td>
 						</tr>
 					{% endfor %}

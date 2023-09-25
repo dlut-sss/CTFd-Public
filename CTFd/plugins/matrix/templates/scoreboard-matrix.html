@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/css2?family=Rubik" rel="stylesheet">
+<style>
+    th.chalname {
+        height: 80px;
+        width: 40px;
+        min-width: 40px;
+        max-width: 40px;
+        vertical-align: bottom;
+        padding: 0;
+        font-size: 12px;
+        line-height: 0.8;
+    }
+
+    .chalname > div {
+        position: relative;
+        top: 0px;
+        left: 30px;
+        height: 100%;
+        overflow: hidden;
+        /* TODO border */
+        -webkit-transform: skew(-45deg, 0deg);
+        transform: skew(-45deg, 0deg);
+    }
+
+    .chalname span {
+        display: inline-block;
+        position: absolute;
+        bottom: 30px;
+        left: -30px;
+        text-align: left;
+        width: 85px;
+        -webkit-transform: skew(45deg, 0deg) rotate(315deg);
+        transform: skew(45deg, 0deg) rotate(315deg);
+    }
+
+    .table img {
+        display: block;
+        width: 2.15rem;
+        height: auto;
+    }
+
+    .chalmark {
+        font-size: 20px;
+    }
+
+    .matrix {
+        overflow-x: scroll;
+        cursor: grab;
+        cursor: -o-grab;
+        cursor: -moz-grab;
+        cursor: -webkit-grab;
+    }
+
+    .container {
+        max-width: 90%;
+    }
+
+    .table-category-header {
+        border-left: 2px solid white;
+        border-right: 2px solid white;
+    }
+
+    .left-line {
+        border-left: 2px solid white;
+    }
+
+    .right-line {
+        border-right: 2px solid white;
+    }
+</style>
+{% endblock %}
+
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+{% set en = true %}
+{% else %}
+{% set en = false %}
+{% endif %}
+
+{% block content %}
+<div class="jumbotron home">
+    <div class="container">
+        <h1><b>{{ "Scoreboard" if en else "计分板" }}</b></h1>
+    </div>
+</div>
+<div class="container main-container" style="font-family: Rubik">
+    {% include "components/errors.html" %}
+
+    {% if standings %}
+    <div class="matrix dragscroll">
+        <table id="scoreboard" class="table table-striped">
+            <thead>
+            <tr>
+                <th rowspan="3" style="border-top: 0"><b>{{ "Place" if en else "排名" }}</b>
+                </th>
+                {% if get_config('user_mode') == 'teams' %}
+                <th rowspan="3" style="text-align: center;border-top: 0"><b>{{ "Team" if en else "队伍名称" }}</b>
+                </th>
+                {% else %}
+                <th rowspan="3" style="text-align: center;border-top: 0"><b>{{ "Username" if en else "用户昵称" }}</b>
+                </th>
+                {% endif %}
+                <th rowspan="3" class="right-line" style="border-top: 0"><b>{{ "Score" if en else "得分" }}</b>
+                </th>
+                {% for cat in categories %}
+                <th data-halign="center" class="table-category-header" data-align="center"
+                    colspan="{% if loop.last %}{{ cat.count + 2 }}{% else %}{{ cat.count }}{% endif %}"
+                    style="text-align: center;background-color: {{color_hash(cat.category)}};">
+                    <b>{{ cat.category }}</b>
+                </th>
+                {% endfor %}
+                <th data-halign="center" class="table-category-header" data-align="center" colspan="4"
+                    style="text-align: center;background-color: {{color_hash('奖项')}};">
+                    <b>{{ "Award" if en else "奖项" }}</b>
+                </th>
+            </tr>
+            <tr>
+                {% for chal in challenges %}
+                <div>
+                    <th class="chalname" title="{{ chal.category }}">
+                        <div><span>{{ chal.name }}</span></div>
+                    </th>
+                </div>
+                {% endfor %}
+                <div>
+                    <th class="chalname right-line" colspan="2">
+                        <div><span></span></div>
+                    </th>
+                </div>
+                <div>
+                    <th class="right-line"
+                        style="border-bottom: 0;vertical-align: bottom;padding-bottom: 0;horiz-align: center"
+                        colspan="2">
+                        <div><span>{{ "Award" if en else "奖励" }}</span></div>
+                    </th>
+                </div>
+            </tr>
+            <tr>
+                {% for chal in challenges %}
+                <div>
+                    <th width="10%" class="score" title="{{ chal.category }}">
+                        <div><span>{{ chal.value }}</span></div>
+                    </th>
+                </div>
+                {% endfor %}
+                <div>
+                    <th width="10%" class="score right-line" colspan="2">
+                        <div><span></span></div>
+                    </th>
+                </div>
+                <div>
+                    <th width="10%" class="score right-line"
+                        style="border-top: 0;vertical-align: top;padding-top: 0;horiz-align: center" colspan="2">
+                        <div><span>{{ "Score" if en else "分数" }}</span></div>
+                    </th>
+                </div>
+            </tr>
+            </thead>
+            <tbody>
+            {% for team in standings %}
+            <tr>
+                <td class="left-line">{{ loop.index }}</td>
+                <td><a href="{{ request.script_root }}/{{ mode }}/{{ team.id }}" target="_blank">{{ team.name }}</a>
+                </td>
+                <td class="right-line">{{ team.total_score }}</td>
+                {% for chal in challenges %}
+                <td class="chalmark">
+                    {% for solved_challenge in team.challenge_solved %}
+                    {% if solved_challenge.challenge_id == chal.id %}
+                    {% set rank = solved_challenge.rank %}
+                    {% if rank == 1 %}
+                    <img src="/plugins/matrix/static/medal1.png" width="100%" height="100%">
+                    {% elif rank == 2 %}
+                    <img src="/plugins/matrix/static/medal2.png" width="100%" height="100%">
+                    {% elif rank == 3 %}
+                    <img src="/plugins/matrix/static/medal3.png" width="100%" height="100%">
+                    {% else %}
+                    <img src="/plugins/matrix/static/flag.png" width="100%" height="100%">
+                    {% endif %}
+                    {% endif %}
+                    {% endfor %}
+                </td>
+                {% endfor %}
+                <td class="chalmark" colspan="2">
+                </td>
+                <td class="chalmark left-line right-line" colspan="2">
+                    {{ team.award_value }}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ request.script_root }}/plugins/matrix/static/dragscroll.js"></script>
+{% endblock %}

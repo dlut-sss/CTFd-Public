@@ -1,5 +1,6 @@
 import $ from "jquery";
-import echarts from "echarts/dist/echarts-en.common";
+import echarts from "echarts/dist/echarts.common";
+import echarts_en from "echarts/dist/echarts-en.common";
 import dayjs from "dayjs"; import 'dayjs/locale/zh-cn';import 'dayjs/locale/en';
 import { cumulativeSum, colorHash } from "./utils";
 
@@ -321,7 +322,16 @@ export function createGraph(
   account_id
 ) {
   const cfg = graph_configs[graph_type];
-  let chart = echarts.init(document.querySelector(target));
+
+  let chart;
+  if (getCookieForLanguage("Scr1wCTFdLanguage") === "en")
+  {
+    chart = echarts_en.init(document.querySelector(target));
+  }else
+  {
+    chart = echarts.init(document.querySelector(target));
+  }
+
   chart.setOption(cfg.format(type, id, name, account_id, data));
   $(window).on("resize", function() {
     if (chart != null && chart != undefined) {
@@ -340,7 +350,16 @@ export function updateGraph(
   account_id
 ) {
   const cfg = graph_configs[graph_type];
-  let chart = echarts.init(document.querySelector(target));
+
+  let chart;
+  if (getCookieForLanguage("Scr1wCTFdLanguage") === "en")
+  {
+    chart = echarts_en.init(document.querySelector(target));
+  }else
+  {
+    chart = echarts.init(document.querySelector(target));
+  }
+
   chart.setOption(cfg.format(type, id, name, account_id, data));
 }
 

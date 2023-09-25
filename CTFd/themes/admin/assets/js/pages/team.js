@@ -9,6 +9,17 @@ import CommentBox from "../components/comments/CommentBox.vue";
 import UserAddForm from "../components/teams/UserAddForm.vue";
 import { copyToClipboard } from "../../../../core/assets/js/utils";
 
+function language(en,zh) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === "Scr1wCTFdLanguage") {
+      return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+    }
+  }
+  return zh;
+}
+
 function createTeam(event) {
   event.preventDefault();
   const params = $("#team-info-create-form").serializeJSON(true);
@@ -120,12 +131,12 @@ function deleteSelectedSubmissions(event, target) {
     case "solves":
       submissions = $("input[data-submission-type=correct]:checked");
       type = "solve";
-      title = "Solves";
+      title = language("Solves","正确提交");
       break;
     case "fails":
       submissions = $("input[data-submission-type=incorrect]:checked");
       type = "fail";
-      title = "Fails";
+      title = language("Fails","错误提交");
       break;
     default:
       break;
@@ -137,10 +148,12 @@ function deleteSelectedSubmissions(event, target) {
   let target_string = submissionIDs.length === 1 ? type : type + "s";
 
   ezQuery({
-    title: `Delete ${title}`,
-    body: `Are you sure you want to delete ${
-      submissionIDs.length
-    } ${target_string}?`,
+    title: language(`Delete ${title}`,`删除${title}`),
+    body: language(`Are you sure you want to delete ${
+        submissionIDs.length
+    } ${target_string}?`,`你确定要删除${
+        submissionIDs.length
+    }个${title}吗？`),
     success: function() {
       const reqs = [];
       for (var subId of submissionIDs) {
@@ -160,8 +173,8 @@ function deleteSelectedAwards(_event) {
   let target = awardIDs.length === 1 ? "award" : "awards";
 
   ezQuery({
-    title: `Delete Awards`,
-    body: `Are you sure you want to delete ${awardIDs.length} ${target}?`,
+    title: language(`Delete Awards`,"删除奖项"),
+    body: language(`Are you sure you want to delete ${awardIDs.length} ${target}?`,`你确定要删除${awardIDs.length}个奖项吗？`),
     success: function() {
       const reqs = [];
       for (var awardID of awardIDs) {
@@ -192,20 +205,27 @@ function solveSelectedMissingChallenges(event) {
   let target = challengeIDs.length === 1 ? "challenge" : "challenges";
 
   ezQuery({
-    title: `Mark Correct`,
-    body: `Are you sure you want to mark ${
-      challengeIDs.length
-    } ${target} correct for ${htmlEntities(window.TEAM_NAME)}?`,
+    title: language(`Mark Correct`,"标记为正确提交"),
+    body: language(`Are you sure you want to mark ${
+        challengeIDs.length
+    } ${target} correct for ${htmlEntities(window.TEAM_NAME)}?`,`你确定要给${htmlEntities(window.TEAM_NAME)}将${
+        challengeIDs.length
+    }个题目标记为正确提交吗？`),
     success: function() {
       ezAlert({
-        title: `User Attribution`,
-        body: `
+        title: language(`User Attribution`,"选择认定为解出题目的队员"),
+        body: language(`
         Which user on ${htmlEntities(window.TEAM_NAME)} solved these challenges?
         <div class="pb-3" id="query-team-member-solve">
         ${$("#team-member-select").html()}
         </div>
-        `,
-        button: "Mark Correct",
+        `,`
+        ${htmlEntities(window.TEAM_NAME)}的哪个队员解出了这个题目？
+        <div class="pb-3" id="query-team-member-solve">
+        ${$("#team-member-select").html()}
+        </div>
+        `),
+        button: language(`Mark Correct`,"标记为正确提交"),
         success: function() {
           const USER_ID = $("#query-team-member-solve > select").val();
           const reqs = [];
@@ -427,7 +447,7 @@ $(() => {
       $("#user-award-form > #results").append(
         ezBadge({
           type: "error",
-          body: "Please select a team member"
+          body: language("Please select a team member","请选择一名队员")
         })
       );
       return;
@@ -481,10 +501,10 @@ $(() => {
       .parent();
 
     ezQuery({
-      title: "Remove Member",
-      body: "Are you sure you want to remove {0} from {1}? <br><br><strong>All of their challenge solves, attempts, awards, and unlocked hints will also be deleted!</strong>".format(
-        "<strong>" + htmlEntities(member_name) + "</strong>",
-        "<strong>" + htmlEntities(window.TEAM_NAME) + "</strong>"
+      title: language("Remove Member","移除队员"),
+      body: language("Are you sure you want to remove {0} from {1}? <br><br><strong>All of their challenge solves, attempts, awards, and unlocked hints will also be deleted!</strong>","您确定要从{1}中删除{0}吗？<br><br><strong>他们的所有解出的题目、尝试记录、奖励和解锁的提示也将被删除！</strong>").format(
+          "<strong>" + htmlEntities(member_name) + "</strong>",
+          "<strong>" + htmlEntities(window.TEAM_NAME) + "</strong>"
       ),
       success: function() {
         CTFd.fetch("/api/v1/teams/" + window.TEAM_ID + "/members", {
@@ -505,8 +525,8 @@ $(() => {
 
   $(".delete-team").click(function(_e) {
     ezQuery({
-      title: "Delete Team",
-      body: "Are you sure you want to delete {0}".format(
+      title: language("Delete Team","删除队伍"),
+      body: language("Are you sure you want to delete {0}","你确定要删除{0}吗？").format(
         "<strong>" + htmlEntities(window.TEAM_NAME) + "</strong>"
       ),
       success: function() {

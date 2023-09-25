@@ -1,11 +1,11 @@
 <template>
   <div>
     <div class="form-group">
-      <label>Search Users</label>
+      <label>{{ language("Search Users","查找用户") }}</label>
       <input
         type="text"
         class="form-control"
-        placeholder="Search for users"
+        :placeholder="language('Search for users','搜索用户')"
         v-model="searchedName"
         @keyup.down="moveCursor('down')"
         @keyup.up="moveCursor('up')"
@@ -32,7 +32,7 @@
         "
       >
         <span class="text-muted">
-          No users found
+          {{ language("No users found","找不到该用户") }}
         </span>
       </div>
       <ul class="list-group">
@@ -54,7 +54,7 @@
               'text-muted': idx !== selectedResultIdx
             }"
           >
-            already in a team
+            {{ language("already in a team","用户已经在一个队伍里了") }}
           </small>
         </li>
       </ul>
@@ -64,7 +64,7 @@
         class="btn btn-success d-inline-block float-right"
         @click="addUsers()"
       >
-        Add Users
+        {{ language("Add Users","添加用户") }}
       </button>
     </div>
   </div>
@@ -91,6 +91,16 @@ export default {
     };
   },
   methods: {
+    language: function (en, zh) {
+      const cookies = document.cookie.split('; ');
+      for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split('=');
+        if (cookieName === "Scr1wCTFdLanguage") {
+          return (decodeURIComponent(cookieValue) === "en" ? en : zh);
+        }
+      }
+      return zh;
+    },
     searchUsers: function() {
       this.selectedResultIdx = 0;
       if (this.searchedName == "") {

@@ -6,7 +6,7 @@
 
 修复了一些原生CTFd的UI和代码问题（如提示创建和附件名称）
 
-## [开发日志](https://github.com/dlut-sss/CTFd-Public/blob/main/CHANGELOG.md)
+## [开发日志](https://github.com/dlut-sss/CTFd_3.5.3/blob/main/CHANGELOG.md)
 
 ## 配置方法
 
@@ -25,7 +25,12 @@
    ```
    docker-compose version 1.29.2
    ```
-   然后将下载完的本仓库目录重命名为CTFd
+   ### **⚠⚠⚠然后将下载完的本仓库目录重命名为CTFd⚠⚠⚠**
+   ```bash
+   mv CTFd_3.5.3/ CTFd/
+   ```
+   如果说没有进行这步导致创建网络出现错误，请先查找所有ctfd相关的docker网络并进行移除，移除不了的重启后再移除！
+   
 
 2. ### 配置frps
 

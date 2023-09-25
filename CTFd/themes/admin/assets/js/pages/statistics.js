@@ -2,7 +2,8 @@ import "./main";
 import "core/utils";
 import CTFd from "core/CTFd";
 import $ from "jquery";
-import echarts from "echarts/dist/echarts-en.common";
+import echarts from "echarts/dist/echarts.common";
+import echarts_en from "echarts/dist/echarts-en.common";
 import { colorHash } from "core/utils";
 
 function language(en,zh) {
@@ -534,7 +535,15 @@ const createGraphs = () => {
     const $elem = $(key);
     $elem.empty();
 
-    let chart = echarts.init(document.querySelector(key));
+    let chart;
+    if (language("0","1")==="0")
+    {
+      chart = echarts_en.init(document.querySelector(key));
+    }else
+    {
+      chart = echarts.init(document.querySelector(key));
+    }
+
 
     cfg
       .data()
@@ -553,7 +562,17 @@ const createGraphs = () => {
 function updateGraphs() {
   for (let key in graph_configs) {
     const cfg = graph_configs[key];
-    let chart = echarts.init(document.querySelector(key));
+
+
+    let chart;
+    if (language("0","1")==="0")
+    {
+      chart = echarts_en.init(document.querySelector(key));
+    }else
+    {
+      chart = echarts.init(document.querySelector(key));
+    }
+
     cfg
       .data()
       .then(cfg.format)

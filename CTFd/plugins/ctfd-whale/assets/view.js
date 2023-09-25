@@ -99,14 +99,14 @@ function loadInfo() {
                         <h6 class="card-subtitle mb-2 text-muted">
                             Lan Domain: ${response.lan_domain}
                         </h6>
-                        <p id="user-access" class="card-text"></p>
+                        <a id="user-access" class="card-text"></a><br/><br/>
                         <button type="button" class="btn btn-danger card-link" id="whale-button-destroy"
                                 onclick="CTFd._internal.challenge.destroy()">
-                            Destroy this instance
+                            Destroy Container
                         </button>
                         <button type="button" class="btn btn-success card-link" id="whale-button-renew"
                                 onclick="CTFd._internal.challenge.renew()">
-                            Renew this instance
+                            Renew Container
                         </button>
                     </div>
                 </div>`
@@ -212,7 +212,7 @@ CTFd._internal.challenge.destroy = function () {
                 button: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "OK" : "好的")
             });
         } else {
-            $('#whale-button-destroy')[0].innerHTML = (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Destroy this instance" : "关闭实例容器");
+            $('#whale-button-destroy')[0].innerHTML = (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Destroy Container" : "关闭实例容器");
             $('#whale-button-destroy')[0].disabled = false;
             CTFd.ui.ezq.ezAlert({
                 title: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Fail" : "操作失败"),
@@ -259,7 +259,7 @@ CTFd._internal.challenge.renew = function () {
                 button: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "OK" : "好的")
             });
         } else {
-            $('#whale-button-renew')[0].innerHTML = (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Renew this instance" : "延期实例容器");
+            $('#whale-button-renew')[0].innerHTML = (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Renew Container" : "延期实例容器");
             $('#whale-button-renew')[0].disabled = false;
             CTFd.ui.ezq.ezAlert({
                 title: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Fail" : "延期失败"),

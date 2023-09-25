@@ -1,13 +1,18 @@
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+{% set en = true %}
+{% else %}
+{% set en = false %}
+{% endif %}
 <div class="row">
 	<div class="col-md-12 table-responsive">
 		<table class="table table-striped">
 			<thead>
 				<tr>
-					<td class="text-center"><b>User</b></td>
-					<td class="text-center"><b>IP Address</b></td>
-					<td class="text-center"><b>Last Seen</b></td>
-					<td class="text-center"><b>City</b></td>
-					<td class="text-center"><b>Country</b></td>
+					<td class="text-center"><b>{{ 'User' if en else '昵称' }}</b></td>
+					<td class="text-center"><b>{{ 'IP Address' if en else 'IP地址' }}</b></td>
+					<td class="text-center"><b>{{ 'Last Seen' if en else '最后登陆日期' }}</b></td>
+					<td class="text-center"><b>{{ 'City' if en else '所在城市' }}</b></td>
+					<td class="text-center"><b>{{ 'Country or Region' if en else '国家或地区' }}</b></td>
 				</tr>
 			</thead>
 			<tbody>
@@ -43,7 +48,7 @@
 			</tbody>
 		</table>
 		<small class="float-right">
-			<a class="text-muted" href='https://db-ip.com'>IP Geolocation by DB-IP</a>
+			<a class="text-muted" href='https://db-ip.com'>{{ 'IP Geolocation by DB-IP' if en else 'DB-IP提供的ip地理位置服务' }}</a>
 		</small>
 	</div>
 </div>

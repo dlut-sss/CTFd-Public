@@ -17,7 +17,7 @@ from CTFd.plugins import (
 from CTFd.plugins.challenges import CHALLENGE_CLASSES
 from CTFd.utils import get_config, set_config, import_in_progress, current_backend_time
 from CTFd.utils.decorators import admins_only
-from CTFd.utils.logging import log
+from CTFd.utils.logging import log, log_simple
 
 from .api import user_namespace, admin_namespace, AdminContainers
 from .challenge_type import DynamicValueDockerChallenge
@@ -212,12 +212,39 @@ def load(app):
                        'message': '镜像更新出错：<br>' + str(e.__cause__)
                    }, 200
 
+    class ContainerObject:
+        def __init__(self, user_id, uuid):
+            self.user_id = user_id
+            self.uuid = uuid
+
     def auto_clean_container():
         with app.app_context():
             if not import_in_progress():
                 results = DBContainer.get_all_expired_container()
                 for r in results:
                     ControlUtil.try_remove_container(r.user_id)
+
+                existing_whale_services = []
+                for service in DockerUtils.client.services.list():
+                    service_labels = service.attrs['Spec']['Labels']
+                    if 'whale_id' in service_labels:
+                        existing_whale_services.append(service)
+
+                for service in existing_whale_services:
+                    whale_id = service.attrs['Spec']['Labels']['whale_id']
+                    user_id = whale_id.split("-")[0]
+                    uuid = ""
+                    user_id_prefix = "{}-".format(user_id)
+                    if whale_id.startswith(user_id_prefix):
+                        uuid = whale_id[len(user_id_prefix):]
+                    container = ContainerObject(user_id=user_id, uuid=uuid)
+                    if DBContainer.get_current_containers(user_id) is None:
+                        log_simple("whale", "[CTFd Whale] 检测到幽灵镜像：" + whale_id)
+                        try:
+                            DockerUtils.remove_container(container)
+                            Router.reload()
+                        except:
+                            pass
 
     app.register_blueprint(page_blueprint)
 

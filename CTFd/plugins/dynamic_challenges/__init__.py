@@ -139,6 +139,10 @@ class DynamicValueChallenge(BaseChallenge):
                 value = float(value)
             setattr(challenge, attr, value)
 
+
+        challenge.value = challenge.initial
+        db.session.commit()
+
         return DynamicValueChallenge.calculate_value(challenge)
 
     @classmethod

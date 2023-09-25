@@ -1,5 +1,6 @@
 import $ from "jquery";
-import echarts from "echarts/dist/echarts-en.common";
+import echarts from "echarts/dist/echarts.common";
+import echarts_en from "echarts/dist/echarts-en.common";
 import dayjs from "dayjs"; import 'dayjs/locale/zh-cn';import 'dayjs/locale/en';
 import { cumulativeSum, colorHash } from "./utils";
 
@@ -18,9 +19,15 @@ const graph_configs = {
   score_graph: {
     format: (type, id, name, _account_id, responses) => {
       let option = {
+        textStyle: {
+          color: 'white'  // 将整个图表中的文字颜色设置为白色
+        },
         title: {
           left: "center",
-          text: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Score over Time" : "得分曲线")
+          text: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Score over Time" : "得分曲线"),
+          textStyle: {
+            color: 'white'
+          },
         },
         tooltip: {
           trigger: "axis",
@@ -33,12 +40,18 @@ const graph_configs = {
           orient: "horizontal",
           align: "left",
           bottom: 0,
-          data: [name]
+          data: [name],
+          textStyle: {
+            color: 'white'
+          },
         },
         toolbox: {
           feature: {
             saveAsImage: {}
-          }
+          },
+          iconStyle: {
+            borderColor: "rgba(255, 255, 255, 1)",
+          },
         },
         grid: {
           containLabel: true
@@ -63,7 +76,10 @@ const graph_configs = {
             filterMode: "filter",
             height: 20,
             top: 35,
-            fillerColor: "rgba(233, 236, 241, 0.4)"
+            fillerColor: "rgba(233, 236, 241, 0.6)",
+            textStyle: {
+            color: 'white',
+            },
           }
         ],
         series: []
@@ -121,9 +137,15 @@ const graph_configs = {
   category_breakdown: {
     format: (type, id, name, account_id, responses) => {
       let option = {
+        textStyle: {
+          color: 'white'  // 将整个图表中的文字颜色设置为白色
+        },
         title: {
           left: "center",
-          text: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Category Breakdown" : "类别细分")
+          text: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Category Breakdown" : "类别细分"),
+          textStyle: {
+            color: 'white'
+          },
         },
         tooltip: {
           trigger: "item"
@@ -132,14 +154,20 @@ const graph_configs = {
           show: true,
           feature: {
             saveAsImage: {}
-          }
+          },
+          iconStyle: {
+            borderColor: "rgba(255, 255, 255, 1)",
+          },
         },
         legend: {
           type: "scroll",
           orient: "vertical",
           top: "middle",
           right: 0,
-          data: []
+          data: [],
+          textStyle: {
+            color: 'white'
+          },
         },
         series: [
           {
@@ -228,9 +256,15 @@ const graph_configs = {
       const solves_count = responses[0].data.length;
       const fails_count = responses[1].meta.count;
       let option = {
+        textStyle: {
+          color: 'white'  // 将整个图表中的文字颜色设置为白色
+        },
         title: {
           left: "center",
-          text: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Solve Percentages" : "解出比例")
+          text: (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Solve Percentages" : "解出比例"),
+          textStyle: {
+            color: 'white'
+          },
         },
         tooltip: {
           trigger: "item"
@@ -239,13 +273,19 @@ const graph_configs = {
           show: true,
           feature: {
             saveAsImage: {}
-          }
+          },
+          iconStyle: {
+            borderColor: "rgba(255, 255, 255, 1)",
+          },
         },
         legend: {
           orient: "vertical",
           top: "middle",
           right: 0,
-          data: ["Fails", "Solves"]
+          data: ["Fails", "Solves"],
+          textStyle: {
+            color: 'white'
+          },
         },
         series: [
           {
@@ -321,7 +361,15 @@ export function createGraph(
   account_id
 ) {
   const cfg = graph_configs[graph_type];
-  let chart = echarts.init(document.querySelector(target));
+
+  let chart;
+  if (getCookieForLanguage("Scr1wCTFdLanguage") === "en")
+  {
+    chart = echarts_en.init(document.querySelector(target));
+  }else
+  {
+    chart = echarts.init(document.querySelector(target));
+  }
   chart.setOption(cfg.format(type, id, name, account_id, data));
   $(window).on("resize", function() {
     if (chart != null && chart != undefined) {
@@ -340,7 +388,15 @@ export function updateGraph(
   account_id
 ) {
   const cfg = graph_configs[graph_type];
-  let chart = echarts.init(document.querySelector(target));
+
+  let chart;
+  if (getCookieForLanguage("Scr1wCTFdLanguage") === "en")
+  {
+    chart = echarts_en.init(document.querySelector(target));
+  }else
+  {
+    chart = echarts.init(document.querySelector(target));
+  }
   chart.setOption(cfg.format(type, id, name, account_id, data));
 }
 

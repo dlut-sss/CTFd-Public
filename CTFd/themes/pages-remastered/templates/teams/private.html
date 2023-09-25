@@ -9,7 +9,7 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<h2 class="modal-action text-center w-100">Edit Team</h2>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute;top: 0;right: 0;padding: 30px;">
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
@@ -18,46 +18,28 @@
 					{% from "macros/forms.html" import render_extra_fields %}
 					<form id="team-info-form" method="POST">
 						<div class="form-group">
-							<b>{{ form.name.label }}</b>
+                            <b>{{ 'Team Name' if en else form.name.label }}</b>
 							{{ form.name(class="form-control") }}
-							<small class="form-text text-muted">
-								{{ form.name.description }}
-							</small>
 						</div>
 						<div class="form-group">
-							<b>{{ form.password.label }}</b>
-							{{ form.password(class="form-control") }}
-							<small class="form-text text-muted">
-								{{ form.password.description }}
-							</small>
-						</div>
-						<div class="form-group">
-							<b>{{ form.confirm.label }}</b>
+                            <b>{{ 'Confirm Password' if en else '确认密码' }}</b>
 							{{ form.confirm(class="form-control") }}
-							<small class="form-text text-muted">
-								{{ form.confirm.description }}
-							</small>
 						</div>
+                        <div class="form-group">
+                            <b>{{ 'New Password' if en else '新密码' }}</b>
+                            {{ form.password(class="form-control") }}
+                        </div>
 						<div class="form-group">
-							<b>{{ form.website.label }}</b>
+                            <b>{{ 'Website' if en else form.website.label }}</b>
 							{{ form.website(class="form-control") }}
-							<small class="form-text text-muted">
-								{{ form.website.description }}
-							</small>
 						</div>
 						<div class="form-group">
-							<b>{{ form.affiliation.label }}</b>
+                            <b>{{ 'Affiliation/Signature' if en else '所属单位/个性签名' }}</b>
 							{{ form.affiliation(class="form-control") }}
-							<small class="form-text text-muted">
-								{{ form.affiliation.description }}
-							</small>
 						</div>
 						<div class="form-group">
-							<b>{{ form.country.label }}</b>
+                            <b>{{ 'Country or Region' if en else form.country.label }}</b>
 							{{ form.country(class="form-control custom-select") }}
-							<small class="form-text text-muted">
-								{{ form.country.description }}
-							</small>
 						</div>
 
 						<hr>
@@ -67,7 +49,11 @@
 						<div id="results">
 
 						</div>
-						{{ form.submit(class="btn btn-primary btn-outlined float-right modal-action") }}
+                        {% if en %}
+                        {{ form.submit(class="btn btn-primary btn-outlined float-right modal-action",value="Update") }}
+                        {% else %}
+                        {{ form.submit(class="btn btn-primary btn-outlined float-right modal-action",value="更新") }}
+                        {% endif %}
 					</form>
 					{% endwith %}
 				</div>
@@ -79,8 +65,8 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h2 class="modal-action text-center w-100">Choose Captain</h2>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<h2 class="modal-action text-center w-100">{{ 'Choose Captain' if en else '选择队长' }}</h2>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute;top: 0;right: 0;padding: 30px;">
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
@@ -88,7 +74,7 @@
 					{% with form = Forms.teams.TeamCaptainForm(captain_id=team.captain_id) %}
 					<form id="team-captain-form" method="POST">
 						<div class="form-group">
-							{{ form.captain_id.label }}
+                            <label for="captain_id">{{ 'Captain' if en else '队长' }}</label>
 							{% for member in team.members %}
 								{# Append members to the select choices #}
 								{% set _ = form.captain_id.choices.append((member.id, member.name)) %}
@@ -97,7 +83,11 @@
 						</div>
 						<div id="results">
 						</div>
-						{{ form.submit(class="btn btn-primary btn-outlined float-right modal-action") }}
+                        {% if en %}
+                        {{ form.submit(class="btn btn-primary btn-outlined float-right modal-action",value="Confirm") }}
+                        {% else %}
+                        {{ form.submit(class="btn btn-primary btn-outlined float-right modal-action",value="确定") }}
+                        {% endif %}
 					</form>
 					{% endwith %}
 				</div>
@@ -109,8 +99,8 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h2 class="modal-action text-center w-100">Invite Users</h2>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<h2 class="modal-action text-center w-100">{{ 'Invite Users' if en else '邀请用户' }}</h2>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute;top: 0;right: 0;padding: 30px;">
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
@@ -118,7 +108,7 @@
 					{% with form = Forms.teams.TeamInviteForm() %}
 					<form method="POST">
 						<div class="form-group">
-							<b>{{ form.link.label }}</b>
+							<b><label for="link">{{ 'Invite Link' if en else '邀请链接' }}</label></b>
 							<div class="input-group mb-3">
 								{{ form.link(id="team-invite-link", class="form-control") }}
 								<div class="input-group-append">
@@ -128,10 +118,10 @@
 								</div>
 							</div>
 							<small class="form-text text-muted">
-								Share this link with your team members for them to join your team
+                                {{ 'Share this link with your team members for them to join your team' if en else '与您的团队成员分享此链接，以便他们加入您的团队' }}
 							</small>
 							<small class="form-text text-muted">
-								Invite links can be re-used and expire after 1 day
+                                {{ 'Invite links can be re-used and expire after 1 day' if en else '邀请链接可以重复使用，并在 1 天后过期' }}
 							</small>
 						</div>
 					</form>
@@ -172,17 +162,15 @@
 			and we don't want to leak their place in the CTF. #}
 				{# Public page hiding is done at the route level #}
 				{% if scores_visible() %}
-					{% if place %}
-						{{ place }}
-						<small>place</small>
-					{% endif %}
+                {% if place %}
+                <small>{{ place }}</small>
+                {% endif %}
 				{% endif %}
 			</h2>
 			<h2 id="team-score" class="text-center">
-				{% if score %}
-					{{ score }}
-					<small>points</small>
-				{% endif %}
+                {% if score %}
+                <small>{{ score }}{{ ' points' if en else '分' }}</small>
+                {% endif %}
 			</h2>
 			<div class="pt-3">
 				<a class="edit-team">
@@ -190,43 +178,43 @@
 						<i class="btn-fa fas fa-cogs fa-2x px-2"
 						   data-toggle="tooltip"
 						   data-placement="top"
-						   title="Edit Team"></i>
+						   title="{{ 'Edit Team' if en else '编辑队伍' }}"></i>
 
 						<a class="edit-captain">
 							<i class="btn-fa fas fa-user-tag fa-2x px-2" data-toggle="tooltip" data-placement="top"
-							   title="Choose Captain"></i>
+							   title="{{ 'Choose Captain' if en else '选择队长' }}"></i>
 						</a>
 
 						<a class="invite-members">
 							<i class="btn-fa fas fa-ticket-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
-							   title="Invite Users"></i>
+							   title="{{ 'Invite Users' if en else '邀请用户' }}"></i>
 						</a>
 						<a class="disband-team">
 							<i class="btn-fa fas fa-trash-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
-								title="Disband Team"></i>
+								title="{{ 'Disband Team' if en else '解散队伍' }}"></i>
 						</a>
 					{% else %}
 						<i class="btn-fa fas fa-cogs fa-2x px-2 fa-disabled"
 						   data-toggle="tooltip"
 						   data-placement="top"
-						   title="Only team captains can edit team information"></i>
+						   title="{{ 'Only team captains can edit team information' if en else '只有队长可以编辑队伍信息' }}"></i>
 						<a class="edit-captain">
 							<i class="btn-fa fas fa-user-tag fa-2x px-2 fa-disabled"
 							   data-toggle="tooltip"
 							   data-placement="top"
-							   title="Only team captains can choose a new captain"></i>
+							   title="{{ 'Only team captains can choose a new captain' if en else '只有队长才能选择新队长' }}"></i>
 						</a>
 						<a class="invite-members">
 							<i class="btn-fa fas fa-ticket-alt fa-2x px-2"
 								data-toggle="tooltip"
 								data-placement="top"
-								title="Only team captains can generate invite links"></i>
+								title="{{ 'Only team captains can generate invite links' if en else '只有队长才能生成邀请链接' }}"></i>
 						</a>
 						<a class="disband-team">
 							<i class="btn-fa fas fa-trash-alt fa-2x px-2 fa-disabled"
 								data-toggle="tooltip"
 								data-placement="top"
-								title="Only team captains can disband the team"></i>
+								title="{{ 'Only team captains can disband the team' if en else '只有队长可以解散队伍' }}"></i>
 						</a>
 					{% endif %}
 				</a>
@@ -246,13 +234,13 @@
 
 		<div class="row min-vh-25">
 			<div class="col-md-12">
-				<h3>Members</h3>
+                <h3>{{ 'Members' if en else '成员列表' }}</h3>
 				<table class="table table-striped">
 					<thead>
-					<tr>
-						<td><b>User Name</b></td>
-						<td><b>Score</b></td>
-					</tr>
+                    <tr>
+                        <td><b>{{ 'Username' if en else '队员昵称' }}</b></td>
+                        <td><b>{{ 'Score' if en else '得分' }}</b></td>
+                    </tr>
 					</thead>
 					<tbody>
 					{% for member in team.members %}
@@ -262,7 +250,7 @@
 									{{ member.name }}
 								</a>
 								{% if team.captain_id == member.id %}
-									<span class="badge badge-primary ml-2">Captain</span>
+									<span class="badge badge-primary ml-2">{{ 'Captain' if en else '队长' }}</span>
 								{% endif %}
 							</td>
 							<td>{{ member.score }}</td>
@@ -304,7 +292,7 @@
 			{% if awards %}
 				<div class="row">
 					<div class="col-md-12">
-						<h3>Awards</h3>
+                        <h3>{{ 'Awards' if en else '获得奖项' }}</h3>
 					</div>
 					{% for award in awards %}
 						<div class="col-md-3 col-sm-6">
@@ -325,14 +313,15 @@
 
 			<div class="row">
 				<div class="col-md-12">
-					<h3>Solves</h3>
+                    <h3>{{ 'Solves' if en else '解出题目' }}</h3>
 					<table class="table table-striped">
 						<thead>
 						<tr>
-							<td><b>Challenge</b></td>
-							<td class="d-none d-md-block d-lg-block"><b>Category</b></td>
-							<td><b>Value</b></td>
-							<td><b>Time</b></td>
+                            <td><b>{{ 'Challenge' if en else '题目' }}</b></td>
+                            <td><b>{{ 'Category' if en else '类别' }}</b></td>
+                            <td><b>{{ 'Subcategory' if en else '子类别' }}</b></td>
+                            <td><b>{{ 'Value' if en else '分值' }}</b></td>
+                            <td style="width: 240px;"><b>{{ 'Time' if en else '时间' }}</b></td>
 						</tr>
 						</thead>
 						<tbody>
@@ -343,8 +332,9 @@
 										{{ solve.challenge.name }}
 									</a>
 								</td>
-								<td class="d-none d-md-block d-lg-block">{{ solve.challenge.category }}</td>
-								<td>{{ solve.challenge.value }}</td>
+                                <td>{{ solve.challenge.category }}</td>
+                                <td>{{ solve.challenge.subcategory }}</td>
+                                <td>{{ solve.challenge.value }}</td>
 								<td class="solve-time">
 									<span data-time="{{ solve.date | isoformat }}">{{ solve.date }}</span>
 								</td>
@@ -357,7 +347,7 @@
 		{% else %}
 			<div class="row min-vh-25">
 				<h3 class="opacity-50 text-center w-100 justify-content-center align-self-center">
-					No solves yet
+                    {{ 'No solves yet' if en else '尚未解出题目' }}
 				</h3>
 			</div>
 		{% endif %}

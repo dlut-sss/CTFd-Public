@@ -129,7 +129,6 @@
 						<tr>
                             <td><b>{{ 'Challenge' if en else '题目' }}</b></td>
                             <td><b>{{ 'Category' if en else '类别' }}</b></td>
-                            <td><b>{{ 'Subcategory' if en else '子类别' }}</b></td>
                             <td><b>{{ 'Value' if en else '分值' }}</b></td>
                             <td style="width: 240px;"><b>{{ 'Time' if en else '时间' }}</b></td>
 						</tr>
@@ -143,7 +142,6 @@
 									</a>
 								</td>
 								<td>{{ solve.challenge.category }}</td>
-                                <td>{{ solve.challenge.subcategory }}</td>
 								<td>{{ solve.challenge.value }}</td>
 								<td class="solve-time">
 									<span data-time="{{ solve.date | isoformat }}"></span>

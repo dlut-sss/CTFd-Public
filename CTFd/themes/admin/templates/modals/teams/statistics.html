@@ -1,3 +1,8 @@
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+{% set en = true %}
+{% else %}
+{% set en = false %}
+{% endif %}
 <div class="row min-vh-25">
 	{% if solves %}
 		<div id="keys-pie-graph" class="col-md-6 d-flex align-items-center">
@@ -17,7 +22,7 @@
 		</div>
 	{% else %}
 		<h3 class="opacity-50 text-center w-100 justify-content-center align-self-center">
-			No data yet
+            {{ 'No data yet' if en else '尚无数据' }}
 		</h3>
 	{% endif %}
 </div>

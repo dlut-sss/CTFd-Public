@@ -1,7 +1,8 @@
 import "./main";
 import $ from "jquery";
 import CTFd from "../CTFd";
-import echarts from "echarts/dist/echarts-en.common";
+import echarts from "echarts/dist/echarts.common";
+import echarts_en from "echarts/dist/echarts-en.common";
 import dayjs from "dayjs"; import 'dayjs/locale/zh-cn';import 'dayjs/locale/en';
 import { htmlEntities, cumulativeSum, colorHash } from "../utils";
 
@@ -159,7 +160,15 @@ const createGraph = () => {
     }
 
     graph.empty(); // Remove spinners
-    let chart = echarts.init(document.querySelector("#score-graph"));
+
+    let chart;
+    if (getCookieForLanguage("Scr1wCTFdLanguage") === "en")
+    {
+      chart = echarts_en.init(document.querySelector("#score-graph"));
+    }else
+    {
+      chart = echarts.init(document.querySelector("#score-graph"));
+    }
     chart.setOption(option);
 
     $(window).on("resize", function() {
@@ -172,7 +181,15 @@ const createGraph = () => {
 
 const updateGraph = () => {
   buildGraphData().then(option => {
-    let chart = echarts.init(document.querySelector("#score-graph"));
+
+    let chart;
+    if (getCookieForLanguage("Scr1wCTFdLanguage") === "en")
+    {
+      chart = echarts_en.init(document.querySelector("#score-graph"));
+    }else
+    {
+      chart = echarts.init(document.querySelector("#score-graph"));
+    }
     chart.setOption(option);
   });
 };

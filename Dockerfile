@@ -3,7 +3,8 @@ FROM python:3.9-slim-buster as build
 WORKDIR /opt/CTFd
 
 # hadolint ignore=DL3008
-RUN apt-get update \
+RUN sed -i "s|http://deb.debian.org/debian|https://mirror.sjtu.edu.cn/debian|g" /etc/apt/sources.list \
+    && apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
         libffi-dev \
@@ -29,7 +30,8 @@ FROM python:3.9-slim-buster as release
 WORKDIR /opt/CTFd
 
 # hadolint ignore=DL3008
-RUN apt-get update \
+RUN sed -i "s|http://deb.debian.org/debian|https://mirror.sjtu.edu.cn/debian|g" /etc/apt/sources.list \
+    && apt-get update \
     && apt-get install -y --no-install-recommends \
         libffi6 \
         libssl1.1 \

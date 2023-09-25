@@ -1,31 +1,60 @@
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+{% set en = true %}
+{% else %}
+{% set en = false %}
+{% endif %}
 {% with form = Forms.teams.TeamCreateForm() %}
 {% from "admin/macros/forms.html" import render_extra_fields %}
 <form id="team-info-create-form" method="POST">
 	<div class="form-group">
-		{{ form.name.label }}
+        {% if en %}
+        <label for="name">name</label>
+        {% else %}
+        {{ form.name.label }}
+        {% endif %}
 		{{ form.name(class="form-control", autocomplete="off") }}
 	</div>
 	<div class="form-group">
-		{{ form.email.label }}
+        {% if en %}
+        <label for="email">email</label>
+        {% else %}
+        {{ form.email.label }}
+        {% endif %}
 		{{ form.email(class="form-control", autocomplete="off") }}
 	</div>
 	<div class="form-group">
-		{{ form.password.label }}
+        {% if en %}
+        <label for="password">password</label>
+        {% else %}
+        {{ form.password.label }}
+        {% endif %}
 		{{ form.password(class="form-control", autocomplete="off") }}
 	</div>
 	<div class="form-group">
-		{{ form.website.label }}
-		<small class="float-right text-muted align-text-bottom">Optional</small>
+        {% if en %}
+        <label for="website">website</label>
+        {% else %}
+        {{ form.website.label }}
+        {% endif %}
+		<small class="float-right text-muted align-text-bottom">{{ 'Optional' if en else '可选' }}</small>
 		{{ form.website(class="form-control", autocomplete="off") }}
 	</div>
 	<div class="form-group">
-		{{ form.affiliation.label }}
-		<small class="float-right text-muted align-text-bottom">Optional</small>
+        {% if en %}
+        <label for="affiliation">affiliation/signature</label>
+        {% else %}
+        <label for="affiliation">所属单位/个性签名</label>
+        {% endif %}
+		<small class="float-right text-muted align-text-bottom">{{ 'Optional' if en else '可选' }}</small>
 		{{ form.affiliation(class="form-control", autocomplete="off") }}
 	</div>
 	<div class="form-group">
-		{{ form.country.label }}
-		<small class="float-right text-muted align-text-bottom">Optional</small>
+        {% if en %}
+        <label for="country">Country or Region</label>
+        {% else %}
+        {{ form.country.label }}
+        {% endif %}
+		<small class="float-right text-muted align-text-bottom">{{ 'Optional' if en else '可选' }}</small>
 		{{ form.country(class="form-control custom-select", autocomplete="off") }}
 	</div>
 
@@ -34,16 +63,29 @@
 	<div class="form-group">
 		<div class="form-check form-check-inline">
 			{{ form.hidden(class="form-check-input", autocomplete="off") }}
-			{{ form.hidden.label(class="form-check-label") }}
+            {% if en %}
+            <label class="form-check-label" for="hidden">hidden</label>
+            {% else %}
+            {{ form.hidden.label(class="form-check-label") }}
+            {% endif %}
 		</div>
 		<div class="form-check form-check-inline">
 			{{ form.banned(class="form-check-input", autocomplete="off") }}
-			{{ form.banned.label(class="form-check-label") }}
+            {% if en %}
+            <label class="form-check-label" for="banned">banned</label>
+            {% else %}
+            {{ form.banned.label(class="form-check-label") }}
+            {% endif %}
 		</div>
 	</div>
 	<div id="results">
 
 	</div>
-	{{ form.submit(id="update-team", class="btn btn-primary btn-outlined float-right modal-action") }}
+
+    {% if en %}
+    {{ form.submit(id="update-user", class="btn btn-primary btn-outlined float-right modal-action",value="Confirm") }}
+    {% else %}
+    {{ form.submit(id="update-user", class="btn btn-primary btn-outlined float-right modal-action") }}
+    {% endif %}
 </form>
 {% endwith %}
