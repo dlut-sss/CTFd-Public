@@ -295,6 +295,7 @@ def setup():
 
             # sso默认设置
             set_config("sso_auth", 0)
+            set_config("sso_enabled", 0)
             set_config("register_uid", 0)
             set_config("register_uid_empty", 0)
 

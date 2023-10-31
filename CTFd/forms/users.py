@@ -166,8 +166,8 @@ class PublicUserSearchForm(BaseForm):
 class UserBaseForm(BaseForm):
     name = StringField("用户名", validators=[InputRequired()])
     email = EmailField("邮箱地址", validators=[InputRequired()])
-    sname = StringField("真实姓名", validators=[InputRequired()])
-    sid = StringField("学号", validators=[InputRequired()])
+    sname = StringField("真实姓名")
+    sid = StringField("学号")
     password = PasswordField("密码")
     website = StringField("网站")
     affiliation = StringField("签名")

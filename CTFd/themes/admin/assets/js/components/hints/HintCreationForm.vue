@@ -53,28 +53,29 @@
                   </div>
 
                   <div class="form-group">
-                    <label>
+                    <label style="word-break: break-all;">
                       {{ language("Requirements:","前置要求：") }}<br />
                       <small>
                         {{ language("Hints that must be unlocked before unlocking this hint","解锁此提示之前必须先解锁的提示") }}
                       </small>
                     </label>
                     <div
-                      class="form-check"
-                      v-for="hint in hints"
-                      :key="hint.id"
+                        class="form-check"
+                        v-for="hint in hints"
+                        :key="hint.id"
                     >
-                      <label class="form-check-label cursor-pointer">
+                      <label class="form-check-label cursor-pointer" style="word-break: break-all;">
                         <input
-                          class="form-check-input"
-                          type="checkbox"
-                          :value="hint.id"
-                          v-model="selectedHints"
+                            class="form-check-input"
+                            type="checkbox"
+                            :value="hint.id"
+                            v-model="selectedHints"
                         />
-                        ID: {{ hint.content }} - {{ language("Content:","内容：") }}{{ hint.content }} - {{ language("Cost:","花费：") }}{{ hint.cost }}
+                        ID: {{ hint.id }} - {{ language("Content:","内容：") }}{{ hint.content }} - {{ language("Cost:","花费：") }}{{ hint.cost }}
                       </label>
                     </div>
                   </div>
+
                   <input type="hidden" id="hint-id-for-hint" name="id" />
                 </div>
               </div>

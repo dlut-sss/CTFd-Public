@@ -1,6 +1,11 @@
 import base64  # noqa: I001
+import json
+from urllib.parse import quote
 
 import requests
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from flask import Blueprint, abort
 from flask import current_app as app
 from flask import redirect, render_template, request, session, url_for
@@ -23,10 +28,6 @@ from CTFd.utils.modes import TEAMS_MODE
 from CTFd.utils.security.auth import login_user, logout_user
 from CTFd.utils.security.signing import unserialize
 from CTFd.utils.validators import ValidationError
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives import padding
-from cryptography.hazmat.backends import default_backend
-import json
 
 auth = Blueprint("auth", __name__)
 
@@ -267,255 +268,495 @@ def register():
     if current_user.authed():
         return redirect(url_for("challenges.listing"))
 
-    if request.method == "POST":
-        name = request.form.get("name", "").strip()
-        email_address = request.form.get("email", "").strip().lower()
-        password = request.form.get("password", "").strip()
-        sname = request.form.get("sname", "").strip()
+    sso_enabled = get_config("sso_enabled")
+    if sso_enabled == 1:
+        # 启用sso统一认证
+        ticket = request.args.get("ticket")
 
-        sid = ""
-        register_uid = get_config("register_uid")
-        if register_uid:
-            sid = request.form.get("sid", "").strip()
+        session_ticket = session.get("ticket")
 
-        website = request.form.get("website")
-        affiliation = request.form.get("affiliation")
-        country = request.form.get("country")
-        registration_code = str(request.form.get("registration_code", ""))
+        if ticket:
+            session["ticket"] = ticket
+            return redirect("/register")
+        else:
+            if not session_ticket:
+                if "?" in request.url:
+                    return redirect(get_config("sso_server_address") + "?serviceUrl=" + quote(request.url + "&type=encryptedticket",safe=""))
+                else:
+                    return redirect(get_config("sso_server_address") + "?serviceUrl=" + quote(request.url + "?type=encryptedticket",safe=""))
 
-        name_len = len(name) == 0
-        names = Users.query.add_columns("name", "id").filter_by(name=name).first()
-        emails = (
-            Users.query.add_columns("email", "id")
-            .filter_by(email=email_address)
-            .first()
-        )
+        ticket =session_ticket
 
-        if register_uid:
+
+        decrypted_ticket = decrypt_ticket(ticket)
+        ticket_data = json.loads(decrypted_ticket)
+
+        snamex = ticket_data.get("USER_NAME")
+        sidx = ticket_data.get("ID_NUMBER")
+
+        if request.method == "POST":
+            name = request.form.get("name", "").strip()
+            email_address = request.form.get("email", "").strip().lower()
+            password = request.form.get("password", "").strip()
+            sid = sidx
+
+            website = request.form.get("website")
+            affiliation = request.form.get("affiliation")
+            country = request.form.get("country")
+            registration_code = str(request.form.get("registration_code", ""))
+
+            name_len = len(name) == 0
+            names = Users.query.add_columns("name", "id").filter_by(name=name).first()
+            emails = (
+                Users.query.add_columns("email", "id")
+                .filter_by(email=email_address)
+                .first()
+            )
+
             sid = Users.query.add_columns("sid", "id").filter_by(sid=sid).first()
 
-        pass_short = len(password) == 0
-        pass_long = len(password) > 128
-        vaild_number = validators.validate_sid(
-            request.form.get("sid", "").strip())
-        valid_email = validators.validate_email(email_address)
-        team_name_email_check = validators.validate_email(name)
+            pass_short = len(password) == 0
+            pass_long = len(password) > 128
+            valid_email = validators.validate_email(email_address)
+            team_name_email_check = validators.validate_email(name)
 
-        if get_config("registration_code"):
-            if (
-                    registration_code.lower()
-                    != str(get_config("registration_code", default="")).lower()
-            ):
-                if language == "zh":
-                    errors.append("注册码错误")
-                else:
-                    errors.append("The registration code you entered was incorrect")
-
-        # Process additional user fields
-        fields = {}
-        for field in UserFields.query.all():
-            fields[field.id] = field
-
-        entries = {}
-        for field_id, field in fields.items():
-            value = request.form.get(f"fields[{field_id}]", "").strip()
-            if field.required is True and (value is None or value == ""):
-                if language == "zh":
-                    errors.append("请提供所有必填字段")
-                else:
-                    errors.append("Please provide all required fields")
-                break
-
-            # Handle special casing of existing profile fields
-            if field.name.lower() == "affiliation":
-                affiliation = value
-                break
-            elif field.name.lower() == "website":
-                website = value
-                break
-
-            if field.field_type == "boolean":
-                entries[field_id] = bool(value)
-            else:
-                entries[field_id] = value
-
-        if country:
-            try:
-                validators.validate_country_code(country)
-                valid_country = True
-            except ValidationError:
-                valid_country = False
-        else:
-            valid_country = True
-
-        register_uid_empty = get_config("register_uid_empty")
-
-        if language == "zh":
-            if not vaild_number:
-                if register_uid:
-                    if not register_uid_empty:
-                        errors.append("请输入有效的学号")
-                    else:
-                        if not request.form.get("sid", "").strip() == "":
-                            errors.append("请输入有效的学号")
-        else:
-            if not vaild_number:
-                if register_uid:
-                    if not register_uid_empty:
-                        errors.append("Please enter a valid student number")
-                    else:
-                        if not request.form.get("sid", "").strip() == "":
-                            errors.append("Please enter a valid student number")
-
-        if website:
-            valid_website = validators.validate_url(website)
-        else:
-            valid_website = True
-
-        if affiliation:
-            valid_affiliation = len(affiliation) < 128
-        else:
-            valid_affiliation = True
-
-        if language == "zh":
-            if not valid_email:
-                errors.append("邮箱名无效")
-            if email.check_email_is_whitelisted(email_address) is False:
-                errors.append("您的电子邮件地址不是来自允许的域")
-            if names:
-                errors.append("名字已经被占用了，换一个吧")
-            if team_name_email_check is True:
-                errors.append("你的用户名不能是邮箱名")
-            if emails:
-                errors.append("此邮箱已经存在帐号了！")
-
-            if register_uid:
-                if sid:
-                    if request.form.get("sid", "").strip() == "":
-                        if not register_uid_empty:
-                            errors.append("学号不能为空！")
-                    else:
-                        errors.append("此学号已经存在帐号了！")
-
-            if pass_short:
-                errors.append("密码太短了")
-            if pass_long:
-                errors.append("密码太长了")
-            if name_len:
-                errors.append("名字太短了")
-            if valid_website is False:
-                errors.append(
-                    "网站必须是以 http 或 https 开头的正确 URL")
-            if valid_country is False:
-                errors.append("国家无效")
-            if valid_affiliation is False:
-                errors.append("签名过长")
-        else:
-            if not valid_email:
-                errors.append("Please enter a valid email address")
-            if email.check_email_is_whitelisted(email_address) is False:
-                errors.append("Your email address is not from an allowed domain")
-            if names:
-                errors.append("That user name is already taken")
-            if team_name_email_check is True:
-                errors.append("Your user name cannot be an email address")
-            if emails:
-                errors.append("That email has already been used")
-
-            if register_uid:
-                if sid:
-                    if request.form.get("sid", "").strip() == "":
-                        if not register_uid_empty:
-                            errors.append("Student number cannot be empty!")
-                    else:
-                        errors.append("Same student number already in use!")
-
-            if pass_short:
-                errors.append("Pick a longer password")
-            if pass_long:
-                errors.append("Pick a shorter password")
-            if name_len:
-                errors.append("Pick a longer user name")
-            if valid_website is False:
-                errors.append("Websites must be a proper URL starting with http or https")
-            if valid_country is False:
-                errors.append("Invalid country")
-            if valid_affiliation is False:
-                errors.append("Please provide a shorter affiliation")
-
-        if len(errors) > 0:
-            return render_template(
-                "register.html",
-                errors=errors,
-                name=request.form["name"],
-                email=request.form["email"],
-                password=request.form["password"],
-            )
-        else:
-            with app.app_context():
-                user = Users(name=name,
-                             email=email_address,
-                             password=password,
-                             sname=request.form.get("sname", "").strip(),
-                             sid=request.form.get("sid", "").strip())
-
-                if website:
-                    user.website = website
-                if affiliation:
-                    user.affiliation = affiliation
-                if country:
-                    user.country = country
-
-                db.session.add(user)
-                db.session.commit()
-                db.session.flush()
-
-                for field_id, value in entries.items():
-                    entry = UserFieldEntries(
-                        field_id=field_id, value=value, user_id=user.id
-                    )
-                    db.session.add(entry)
-                db.session.commit()
-
-                login_user(user)
-
-                if request.args.get("next") and validators.is_safe_url(
-                        request.args.get("next")
+            if get_config("registration_code"):
+                if (
+                        registration_code.lower()
+                        != str(get_config("registration_code", default="")).lower()
                 ):
-                    return redirect(request.args.get("next"))
+                    if language == "zh":
+                        errors.append("注册码错误")
+                    else:
+                        errors.append("The registration code you entered was incorrect")
 
-                if config.can_send_mail() and get_config(
-                        "verify_emails"
-                ):  # Confirming users is enabled and we can send email.
-                    log(
-                        "registrations",
-                        format="[{date}] {name} 在 {ip} 使用 {email} 注册了一个尚未确认邮箱的账户",
-                        name=user.name,
-                        email=user.email,
-                    )
-                    email.verify_email_address(user.email)
-                    db.session.close()
-                    return redirect(url_for("auth.confirm"))
-                else:  # Don't care about confirming users
-                    if (
-                            config.can_send_mail()
-                    ):  # We want to notify the user that they have registered.
-                        email.successful_registration_notification(user.email)
+            # Process additional user fields
+            fields = {}
+            for field in UserFields.query.all():
+                fields[field.id] = field
 
-        log(
-            "registrations",
-            format="[{date}] {name} 在 {ip} 使用邮箱 {email} 注册了一个账户",
-            name=user.name,
-            email=user.email,
-        )
-        db.session.close()
+            entries = {}
+            for field_id, field in fields.items():
+                value = request.form.get(f"fields[{field_id}]", "").strip()
+                if field.required is True and (value is None or value == ""):
+                    if language == "zh":
+                        errors.append("请提供所有必填字段")
+                    else:
+                        errors.append("Please provide all required fields")
+                    break
 
-        if is_teams_mode():
-            return redirect(url_for("teams.private"))
+                # Handle special casing of existing profile fields
+                if field.name.lower() == "affiliation":
+                    affiliation = value
+                    break
+                elif field.name.lower() == "website":
+                    website = value
+                    break
 
-        return redirect(url_for("challenges.listing"))
+                if field.field_type == "boolean":
+                    entries[field_id] = bool(value)
+                else:
+                    entries[field_id] = value
+
+            if country:
+                try:
+                    validators.validate_country_code(country)
+                    valid_country = True
+                except ValidationError:
+                    valid_country = False
+            else:
+                valid_country = True
+
+            if website:
+                valid_website = validators.validate_url(website)
+            else:
+                valid_website = True
+
+            if affiliation:
+                valid_affiliation = len(affiliation) < 128
+            else:
+                valid_affiliation = True
+
+            if language == "zh":
+                if not valid_email:
+                    errors.append("邮箱名无效")
+                if email.check_email_is_whitelisted(email_address) is False:
+                    errors.append("您的电子邮件地址不是来自允许的域")
+                if names:
+                    errors.append("名字已经被占用了，换一个吧")
+                if team_name_email_check is True:
+                    errors.append("你的用户名不能是邮箱名")
+                if emails:
+                    errors.append("此邮箱已经存在帐号了！")
+
+                if sid:
+                    errors.append("此学号已经存在帐号了！")
+
+                if pass_short:
+                    errors.append("密码太短了")
+                if pass_long:
+                    errors.append("密码太长了")
+                if name_len:
+                    errors.append("名字太短了")
+                if valid_website is False:
+                    errors.append(
+                        "网站必须是以 http 或 https 开头的正确 URL")
+                if valid_country is False:
+                    errors.append("国家无效")
+                if valid_affiliation is False:
+                    errors.append("签名过长")
+            else:
+                if not valid_email:
+                    errors.append("Please enter a valid email address")
+                if email.check_email_is_whitelisted(email_address) is False:
+                    errors.append("Your email address is not from an allowed domain")
+                if names:
+                    errors.append("That user name is already taken")
+                if team_name_email_check is True:
+                    errors.append("Your user name cannot be an email address")
+                if emails:
+                    errors.append("That email has already been used")
+
+                if sid:
+                    errors.append("Same student number already in use!")
+
+                if pass_short:
+                    errors.append("Pick a longer password")
+                if pass_long:
+                    errors.append("Pick a shorter password")
+                if name_len:
+                    errors.append("Pick a longer user name")
+                if valid_website is False:
+                    errors.append("Websites must be a proper URL starting with http or https")
+                if valid_country is False:
+                    errors.append("Invalid country")
+                if valid_affiliation is False:
+                    errors.append("Please provide a shorter affiliation")
+
+            if len(errors) > 0:
+                return render_template(
+                    "register.html",
+                    errors=errors,
+                    name=request.form["name"],
+                    email=request.form["email"],
+                    password=request.form["password"],
+                )
+            else:
+                with app.app_context():
+                    user = Users(name=name,
+                                 email=email_address,
+                                 password=password,
+                                 sname=snamex,
+                                 sid=sidx
+                                 )
+
+                    if website:
+                        user.website = website
+                    if affiliation:
+                        user.affiliation = affiliation
+                    if country:
+                        user.country = country
+
+                    db.session.add(user)
+                    db.session.commit()
+                    db.session.flush()
+
+                    for field_id, value in entries.items():
+                        entry = UserFieldEntries(
+                            field_id=field_id, value=value, user_id=user.id
+                        )
+                        db.session.add(entry)
+                    db.session.commit()
+
+                    login_user(user)
+
+                    if request.args.get("next") and validators.is_safe_url(
+                            request.args.get("next")
+                    ):
+                        return redirect(request.args.get("next"))
+
+                    if config.can_send_mail() and get_config(
+                            "verify_emails"
+                    ):  # Confirming users is enabled and we can send email.
+                        log(
+                            "registrations",
+                            format="[{date}] {name} 在 {ip} 使用 {email} 注册了一个尚未确认邮箱的账户",
+                            name=user.name,
+                            email=user.email,
+                        )
+                        email.verify_email_address(user.email)
+                        db.session.close()
+                        return redirect(url_for("auth.confirm"))
+                    else:  # Don't care about confirming users
+                        if (
+                                config.can_send_mail()
+                        ):  # We want to notify the user that they have registered.
+                            email.successful_registration_notification(user.email)
+
+            log(
+                "registrations",
+                format="[{date}] {name} 在 {ip} 使用邮箱 {email} 注册了一个账户",
+                name=user.name,
+                email=user.email,
+            )
+            db.session.close()
+
+            if is_teams_mode():
+                return redirect(url_for("teams.private"))
+
+            return redirect(url_for("challenges.listing"))
+        else:
+            return render_template("register.html", errors=errors)
     else:
-        return render_template("register.html", errors=errors)
+        if request.method == "POST":
+            name = request.form.get("name", "").strip()
+            email_address = request.form.get("email", "").strip().lower()
+            password = request.form.get("password", "").strip()
+            sname = request.form.get("sname", "").strip()
+
+            sid = ""
+            register_uid = get_config("register_uid")
+            if register_uid:
+                sid = request.form.get("sid", "").strip()
+
+            website = request.form.get("website")
+            affiliation = request.form.get("affiliation")
+            country = request.form.get("country")
+            registration_code = str(request.form.get("registration_code", ""))
+
+            name_len = len(name) == 0
+            names = Users.query.add_columns("name", "id").filter_by(name=name).first()
+            emails = (
+                Users.query.add_columns("email", "id")
+                .filter_by(email=email_address)
+                .first()
+            )
+
+            if register_uid:
+                sid = Users.query.add_columns("sid", "id").filter_by(sid=sid).first()
+
+            pass_short = len(password) == 0
+            pass_long = len(password) > 128
+            vaild_number = validators.validate_sid(
+                request.form.get("sid", "").strip())
+            valid_email = validators.validate_email(email_address)
+            team_name_email_check = validators.validate_email(name)
+
+            if get_config("registration_code"):
+                if (
+                        registration_code.lower()
+                        != str(get_config("registration_code", default="")).lower()
+                ):
+                    if language == "zh":
+                        errors.append("注册码错误")
+                    else:
+                        errors.append("The registration code you entered was incorrect")
+
+            # Process additional user fields
+            fields = {}
+            for field in UserFields.query.all():
+                fields[field.id] = field
+
+            entries = {}
+            for field_id, field in fields.items():
+                value = request.form.get(f"fields[{field_id}]", "").strip()
+                if field.required is True and (value is None or value == ""):
+                    if language == "zh":
+                        errors.append("请提供所有必填字段")
+                    else:
+                        errors.append("Please provide all required fields")
+                    break
+
+                # Handle special casing of existing profile fields
+                if field.name.lower() == "affiliation":
+                    affiliation = value
+                    break
+                elif field.name.lower() == "website":
+                    website = value
+                    break
+
+                if field.field_type == "boolean":
+                    entries[field_id] = bool(value)
+                else:
+                    entries[field_id] = value
+
+            if country:
+                try:
+                    validators.validate_country_code(country)
+                    valid_country = True
+                except ValidationError:
+                    valid_country = False
+            else:
+                valid_country = True
+
+            register_uid_empty = get_config("register_uid_empty")
+
+            if language == "zh":
+                if not vaild_number:
+                    if register_uid:
+                        if not register_uid_empty:
+                            errors.append("请输入有效的学号")
+                        else:
+                            if not request.form.get("sid", "").strip() == "":
+                                errors.append("请输入有效的学号")
+            else:
+                if not vaild_number:
+                    if register_uid:
+                        if not register_uid_empty:
+                            errors.append("Please enter a valid student number")
+                        else:
+                            if not request.form.get("sid", "").strip() == "":
+                                errors.append("Please enter a valid student number")
+
+            if website:
+                valid_website = validators.validate_url(website)
+            else:
+                valid_website = True
+
+            if affiliation:
+                valid_affiliation = len(affiliation) < 128
+            else:
+                valid_affiliation = True
+
+            if language == "zh":
+                if not valid_email:
+                    errors.append("邮箱名无效")
+                if email.check_email_is_whitelisted(email_address) is False:
+                    errors.append("您的电子邮件地址不是来自允许的域")
+                if names:
+                    errors.append("名字已经被占用了，换一个吧")
+                if team_name_email_check is True:
+                    errors.append("你的用户名不能是邮箱名")
+                if emails:
+                    errors.append("此邮箱已经存在帐号了！")
+
+                if register_uid:
+                    if sid:
+                        if request.form.get("sid", "").strip() == "":
+                            if not register_uid_empty:
+                                errors.append("学号不能为空！")
+                        else:
+                            errors.append("此学号已经存在帐号了！")
+
+                if pass_short:
+                    errors.append("密码太短了")
+                if pass_long:
+                    errors.append("密码太长了")
+                if name_len:
+                    errors.append("名字太短了")
+                if valid_website is False:
+                    errors.append(
+                        "网站必须是以 http 或 https 开头的正确 URL")
+                if valid_country is False:
+                    errors.append("国家无效")
+                if valid_affiliation is False:
+                    errors.append("签名过长")
+            else:
+                if not valid_email:
+                    errors.append("Please enter a valid email address")
+                if email.check_email_is_whitelisted(email_address) is False:
+                    errors.append("Your email address is not from an allowed domain")
+                if names:
+                    errors.append("That user name is already taken")
+                if team_name_email_check is True:
+                    errors.append("Your user name cannot be an email address")
+                if emails:
+                    errors.append("That email has already been used")
+
+                if register_uid:
+                    if sid:
+                        if request.form.get("sid", "").strip() == "":
+                            if not register_uid_empty:
+                                errors.append("Student number cannot be empty!")
+                        else:
+                            errors.append("Same student number already in use!")
+
+                if pass_short:
+                    errors.append("Pick a longer password")
+                if pass_long:
+                    errors.append("Pick a shorter password")
+                if name_len:
+                    errors.append("Pick a longer user name")
+                if valid_website is False:
+                    errors.append("Websites must be a proper URL starting with http or https")
+                if valid_country is False:
+                    errors.append("Invalid country")
+                if valid_affiliation is False:
+                    errors.append("Please provide a shorter affiliation")
+
+            if len(errors) > 0:
+                return render_template(
+                    "register.html",
+                    errors=errors,
+                    name=request.form["name"],
+                    email=request.form["email"],
+                    password=request.form["password"],
+                )
+            else:
+                with app.app_context():
+                    user = Users(name=name,
+                                 email=email_address,
+                                 password=password,
+                                 sname=request.form.get("sname", "").strip(),
+                                 sid=request.form.get("sid", "").strip())
+
+                    if website:
+                        user.website = website
+                    if affiliation:
+                        user.affiliation = affiliation
+                    if country:
+                        user.country = country
+
+                    db.session.add(user)
+                    db.session.commit()
+                    db.session.flush()
+
+                    for field_id, value in entries.items():
+                        entry = UserFieldEntries(
+                            field_id=field_id, value=value, user_id=user.id
+                        )
+                        db.session.add(entry)
+                    db.session.commit()
+
+                    login_user(user)
+
+                    if request.args.get("next") and validators.is_safe_url(
+                            request.args.get("next")
+                    ):
+                        return redirect(request.args.get("next"))
+
+                    if config.can_send_mail() and get_config(
+                            "verify_emails"
+                    ):  # Confirming users is enabled and we can send email.
+                        log(
+                            "registrations",
+                            format="[{date}] {name} 在 {ip} 使用 {email} 注册了一个尚未确认邮箱的账户",
+                            name=user.name,
+                            email=user.email,
+                        )
+                        email.verify_email_address(user.email)
+                        db.session.close()
+                        return redirect(url_for("auth.confirm"))
+                    else:  # Don't care about confirming users
+                        if (
+                                config.can_send_mail()
+                        ):  # We want to notify the user that they have registered.
+                            email.successful_registration_notification(user.email)
+
+            log(
+                "registrations",
+                format="[{date}] {name} 在 {ip} 使用邮箱 {email} 注册了一个账户",
+                name=user.name,
+                email=user.email,
+            )
+            db.session.close()
+
+            if is_teams_mode():
+                return redirect(url_for("teams.private"))
+
+            return redirect(url_for("challenges.listing"))
+        else:
+            return render_template("register.html", errors=errors)
 
 
 @auth.route("/login", methods=["POST", "GET"])

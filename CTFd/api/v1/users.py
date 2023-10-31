@@ -38,7 +38,6 @@ from CTFd.utils.helpers import error_for, get_errors, markup
 
 users_namespace = Namespace("users", description="Endpoint to retrieve Users")
 
-
 UserModel = sqlalchemy_to_pydantic(Users)
 TransientUserModel = sqlalchemy_to_pydantic(Users, exclude=["id"])
 
@@ -68,8 +67,8 @@ class UserList(Resource):
         responses={
             200: ("Success", "UserListSuccessResponse"),
             400: (
-                "An error occured processing the provided or stored data",
-                "APISimpleErrorResponse",
+                    "An error occured processing the provided or stored data",
+                    "APISimpleErrorResponse",
             ),
         },
     )
@@ -80,17 +79,17 @@ class UserList(Resource):
             "bracket": (str, None),
             "q": (str, None),
             "field": (
-                RawEnum(
-                    "UserFields",
-                    {
-                        "name": "name",
-                        "website": "website",
-                        "country": "country",
-                        "bracket": "bracket",
-                        "affiliation": "affiliation",
-                    },
-                ),
-                None,
+                    RawEnum(
+                        "UserFields",
+                        {
+                            "name": "name",
+                            "website": "website",
+                            "country": "country",
+                            "bracket": "bracket",
+                            "affiliation": "affiliation",
+                        },
+                    ),
+                    None,
             ),
         },
         location="query",
@@ -139,8 +138,8 @@ class UserList(Resource):
         responses={
             200: ("Success", "UserDetailedSuccessResponse"),
             400: (
-                "An error occured processing the provided or stored data",
-                "APISimpleErrorResponse",
+                    "An error occured processing the provided or stored data",
+                    "APISimpleErrorResponse",
             ),
         },
         params={
@@ -149,6 +148,10 @@ class UserList(Resource):
     )
     def post(self):
         req = request.get_json()
+        if req.get("sname", "") == "":
+            req.setdefault("sname", "Admin Created")
+        if req.get("sid", "") == "":
+            req.setdefault("sid", "Admin Created")
         schema = UserSchema("admin")
         response = schema.load(req)
 
@@ -182,8 +185,8 @@ class UserPublic(Resource):
         responses={
             200: ("Success", "UserDetailedSuccessResponse"),
             400: (
-                "An error occured processing the provided or stored data",
-                "APISimpleErrorResponse",
+                    "An error occured processing the provided or stored data",
+                    "APISimpleErrorResponse",
             ),
         },
     )
@@ -210,8 +213,8 @@ class UserPublic(Resource):
         responses={
             200: ("Success", "UserDetailedSuccessResponse"),
             400: (
-                "An error occured processing the provided or stored data",
-                "APISimpleErrorResponse",
+                    "An error occured processing the provided or stored data",
+                    "APISimpleErrorResponse",
             ),
         },
     )
@@ -222,7 +225,7 @@ class UserPublic(Resource):
 
         # Admins should not be able to ban themselves
         if data["id"] == session["id"] and (
-            data.get("banned") is True or data.get("banned") == "true"
+                data.get("banned") is True or data.get("banned") == "true"
         ):
             return (
                 {"success": False, "errors": {"id": "You cannot ban yourself"}},
@@ -286,8 +289,8 @@ class UserPrivate(Resource):
         responses={
             200: ("Success", "UserDetailedSuccessResponse"),
             400: (
-                "An error occured processing the provided or stored data",
-                "APISimpleErrorResponse",
+                    "An error occured processing the provided or stored data",
+                    "APISimpleErrorResponse",
             ),
         },
     )
@@ -304,21 +307,28 @@ class UserPrivate(Resource):
         responses={
             200: ("Success", "UserDetailedSuccessResponse"),
             400: (
-                "An error occured processing the provided or stored data",
-                "APISimpleErrorResponse",
+                    "An error occured processing the provided or stored data",
+                    "APISimpleErrorResponse",
             ),
         },
     )
     def patch(self):
         user = get_current_user()
         data = request.get_json()
-        sid = data["sid"]
+        sid = data.get("sid")
+
         if sid:
             userquery = Users.query.filter_by(sid=sid).first()
             if userquery:
                 if userquery.id != user.id:
                     return {"success": False, "errors": {"sid": "学号已存在"}}, 400
+
+        # 添加前面提到的验证和限制代码片段
         schema = UserSchema(view="self", instance=user, partial=True)
+        for field in ["sid", "sname"]:
+            if field in data:
+                return {"success": False, "errors": {field: "禁止修改该字段"}}, 400
+
         response = schema.load(data)
         if response.errors:
             return {"success": False, "errors": response.errors}, 400

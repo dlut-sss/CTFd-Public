@@ -66,14 +66,14 @@
                       v-for="hint in otherHints"
                       :key="hint.id"
                     >
-                      <label class="form-check-label cursor-pointer">
+                      <label class="form-check-label cursor-pointer" style="word-break: break-all;">
                         <input
                           class="form-check-input"
                           type="checkbox"
                           :value="hint.id"
                           v-model="selectedHints"
                         />
-                        ID: {{ hint.content }} - {{ language("Content:","内容：") }}{{ hint.content }} - {{ language("Cost:","花费：") }}{{ hint.cost }}
+                        ID: {{ hint.id }} - {{ language("Content:","内容：") }}{{ hint.content }} - {{ language("Cost:","花费：") }}{{ hint.cost }}
                       </label>
                     </div>
                   </div>

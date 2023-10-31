@@ -6,7 +6,7 @@
 
 修复了一些原生CTFd的UI和代码问题（如提示创建和附件名称）
 
-## [开发日志](https://github.com/dlut-sss/CTFd-Public/blob/main/CHANGELOG.md)
+## [开发日志](https://github.com/dlut-sss/CTFd_3.5.3/blob/main/CHANGELOG.md)
 
 ## 配置方法
 

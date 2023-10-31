@@ -111,5 +111,9 @@ class _ConfigsWrapper:
     def privacy_link(self):
         return get_config("privacy_url", default=url_for("views.privacy"))
 
+    @property
+    def sso_enabled(self):
+        return get_config("sso_enabled", default=0)
+
 
 Configs = _ConfigsWrapper()
