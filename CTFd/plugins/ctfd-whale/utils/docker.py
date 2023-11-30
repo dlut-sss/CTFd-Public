@@ -6,6 +6,7 @@ import uuid
 from collections import OrderedDict
 
 import docker
+from docker import DockerClient
 from flask import current_app
 
 from CTFd.utils import get_config
@@ -34,6 +35,8 @@ def get_docker_client():
 
 
 class DockerUtils:
+    client: DockerClient
+
     @staticmethod
     def init():
         try:

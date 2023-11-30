@@ -104,28 +104,28 @@ def load(app):
             name = request.args.get("name")
             if not name:
                 return {
-                           'success': False,
-                           'message': '缺少参数'
-                       }, 400
+                    'success': False,
+                    'message': '缺少参数'
+                }, 400
             tag = request.args.get("tag")
             if not tag:
                 return {
-                           'success': False,
-                           'message': '缺少参数'
-                       }, 400
+                    'success': False,
+                    'message': '缺少参数'
+                }, 400
             # 检查文件是否存在于请求中
             if 'image' not in request.files:
                 return {
-                           'success': False,
-                           'message': '镜像文件不存在'
-                       }, 500
+                    'success': False,
+                    'message': '镜像文件不存在'
+                }, 500
             file = request.files['image']
             # 如果用户未选择文件，浏览器也可能提交一个空的 part
             if file.filename == '':
                 return {
-                           'success': False,
-                           'message': '镜像文件为空'
-                       }, 500
+                    'success': False,
+                    'message': '镜像文件为空'
+                }, 500
             if file:
                 try:
                     filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
@@ -152,9 +152,9 @@ def load(app):
                     # 删除上传的文件
                     os.remove(filepath)
                     return {
-                               'success': True,
-                               'message': '镜像上传完成'
-                           }, 200
+                        'success': True,
+                        'message': '镜像上传完成'
+                    }, 200
                 except Exception as e:
                     try:
                         os.remove(filepath)
@@ -169,9 +169,9 @@ def load(app):
                         tb=traceback_str,
                     )
                     return {
-                               'success': False,
-                               'message': '镜像加载失败<br>' + str(e)
-                           }, 500
+                        'success': False,
+                        'message': '镜像加载失败<br>' + str(e)
+                    }, 500
 
         return render_template("whale_upload.html")
 
@@ -194,9 +194,9 @@ def load(app):
                 name=name,
             )
             return {
-                       'success': True,
-                       'message': '镜像更新完成'
-                   }, 200
+                'success': True,
+                'message': '镜像更新完成'
+            }, 200
         except Exception as e:
             name = request.args.get('name')
             traceback_str = ''.join(traceback.format_tb(e.__traceback__))
@@ -208,9 +208,47 @@ def load(app):
                 tb=traceback_str
             )
             return {
-                       'success': False,
-                       'message': '镜像更新出错：<br>' + str(e.__cause__)
-                   }, 200
+                'success': False,
+                'message': '镜像更新出错：<br>' + str(e.__cause__)
+            }, 200
+
+    @page_blueprint.route("/admin/getLog")
+    @admins_only
+    def admin_get_log():
+        id = request.args.get("id")
+        tail = request.args.get("tail", 1000)
+        docker_client = DockerUtils.client
+        if id:
+            try:
+                container = docker_client.containers.get(id)
+                logs_text = container.logs(stdout=True, stderr=True, stream=False, tail=tail)
+                return {
+                    'success': True,
+                    'message': logs_text.decode('utf-8')
+                }, 200
+            except e:
+                return {
+                    'success': False,
+                    'message': '日志获取失败：<br>' + str(e.__cause__)
+                }, 200
+        return {
+            'success': False,
+            'message': '日志获取失败'
+        }, 200
+
+    @page_blueprint.route("/admin/docker")
+    @admins_only
+    def admin_list_docker():
+        containers = DockerUtils.client.containers.list(all=True)
+        return render_template("whale_docker.html",
+                               plugin_name=plugin_name,
+                               containers=containers)
+
+    @page_blueprint.route("/admin/viewLog")
+    @admins_only
+    def admin_view_log():
+        return render_template("whale_log.html",
+                               plugin_name=plugin_name)
 
     class ContainerObject:
         def __init__(self, user_id, uuid):

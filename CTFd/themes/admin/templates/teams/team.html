@@ -204,40 +204,40 @@
 		</h3>
 		<hr class="w-50">
 		<div class="pt-3">
-			<a class="edit-team text-dark">
+			<a class="edit-team text-dark no-decoration">
 				<i class="btn-fa fas fa-pencil-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
 				   title="{{ 'Edit Team' if en else '编辑队伍' }}"></i>
 			</a>
-			<a class="invite-team text-dark">
+			<a class="invite-team text-dark no-decoration">
 				<i class="btn-fa fas fa-ticket-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
 				   title="{{ 'Team Invite Link' if en else '团队邀请链接' }}"></i>
 			</a>
-			<a class="members-team text-dark">
+			<a class="members-team text-dark no-decoration">
 				<i class="btn-fa fas fa-user-plus fa-2x px-2" data-toggle="tooltip" data-placement="top"
 				   title="{{ 'Add Team Members' if en else '添加团队成员' }}"></i>
 			</a>
-			<a class="edit-captain text-dark">
+			<a class="edit-captain text-dark no-decoration">
 				<i class="btn-fa fas fa-user-tag fa-2x px-2" data-toggle="tooltip" data-placement="top"
 				   title="{{ 'Choose Captain' if en else '选择队长' }}"></i>
 			</a>
-			<a class="award-team text-dark">
+			<a class="award-team text-dark no-decoration">
 				<i class="btn-fa fas fa-trophy fa-2x px-2" data-toggle="tooltip" data-placement="top" title="{{ 'Award Team Member' if en else '奖励团队成员' }}"></i>
 			</a>
-			<a class="delete-team text-dark">
+			<a class="delete-team text-dark no-decoration">
 				<i class="btn-fa fas fa-trash-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
 				   title="{{ 'Delete Team' if en else '删除队伍' }}"></i>
 			</a>
 		</div>
 		<div class="pt-3">
-			<a class="statistics-team text-dark">
+			<a class="statistics-team text-dark no-decoration">
 				<i class="btn-fa fas fa-chart-pie fa-2x px-2" data-toggle="tooltip" data-placement="top"
 				   title="{{ 'Team Statistics' if en else '队伍数据' }}"></i>
 			</a>
-			<a class="addresses-team text-dark">
+			<a class="addresses-team text-dark no-decoration">
 				<i class="btn-fa fas fa-network-wired fa-2x px-2" data-toggle="tooltip" data-placement="top" title="{{ 'IP Addresses' if en else 'IP地址' }}"></i>
 			</a>
 			{% if team.website %}
-			<a href="{{ team.website }}" target="_blank" class="text-dark" rel="noopener">
+			<a href="{{ team.website }}" target="_blank" class="text-dark no-decoration" rel="noopener">
 				<i class="btn-fa fas fa-external-link-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
 					title="{{ team.website }}" aria-hidden="true"></i>
 			</a>

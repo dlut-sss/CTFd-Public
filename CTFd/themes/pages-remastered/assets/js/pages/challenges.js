@@ -384,19 +384,14 @@ function loadChals() {
 
     if (challenges.length === 0)
     {
-      if (getCookieForLanguage("Scr1wCTFdLanguage") === "zh")
-      {
-        ezToast({
-          title: '自动刷新失败',
-          body: '题目数据为空！'
-        });
-      }else
-      {
-        ezToast({
-          title: 'Auto refresh failed',
-          body: 'Challenge data is empty!'
-        });
-      }
+      getCookieForLanguage("Scr1wCTFdLanguage") === "en" ?
+          ezToast({
+            title: 'Auto refresh failed',
+            body: 'Challenge data is empty!'
+          }) : ezToast({
+            title: '自动刷新失败',
+            body: '题目数据为空！'
+          });
       return;
     }
 

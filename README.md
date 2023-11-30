@@ -6,7 +6,7 @@
 
 修复了一些原生CTFd的UI和代码问题（如提示创建和附件名称）
 
-## [开发日志](https://github.com/dlut-sss/CTFd_3.5.3/blob/main/CHANGELOG.md)
+## [开发日志](https://github.com/dlut-sss/CTFd-public/blob/main/CHANGELOG.md)
 
 ## 配置方法
 
@@ -123,3 +123,6 @@
 ![img](docs/ctfd-whale-upload.png)
 - 镜像一键更新
 ![img](docs/challenges-update.png)
+- 容器监测与日志查看
+![img](docs/docker-1.png)
+![img](docs/docker-2.png)

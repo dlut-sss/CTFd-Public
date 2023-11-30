@@ -7,6 +7,14 @@
 <form id="user-mail-form" method="POST">
 	<div class="form-group">
         {% if en %}
+        <label for="title">Title</label>
+        {% else %}
+        {{ form.title.label }}
+        {% endif %}
+		{{ form.title(class="form-control") }}
+	</div>
+	<div class="form-group">
+        {% if en %}
         <label for="text">Message</label>
         {% else %}
         {{ form.text.label }}

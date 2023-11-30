@@ -178,23 +178,23 @@
                 {% endif %}
 			</h2>
 			<div class="pt-3">
-				<a class="edit-team">
+				<a class="edit-team no-decoration">
 					{% if team.captain_id == user.id %}
 						<i class="btn-fa fas fa-cogs fa-2x px-2"
 						   data-toggle="tooltip"
 						   data-placement="top"
 						   title="{{ 'Edit Team' if en else '编辑队伍' }}"></i>
 
-						<a class="edit-captain">
+						<a class="edit-captain no-decoration">
 							<i class="btn-fa fas fa-user-tag fa-2x px-2" data-toggle="tooltip" data-placement="top"
 							   title="{{ 'Choose Captain' if en else '选择队长' }}"></i>
 						</a>
 
-						<a class="invite-members">
+						<a class="invite-members no-decoration">
 							<i class="btn-fa fas fa-ticket-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
 							   title="{{ 'Invite Users' if en else '邀请用户' }}"></i>
 						</a>
-						<a class="disband-team">
+						<a class="disband-team no-decoration">
 							<i class="btn-fa fas fa-trash-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
 								title="{{ 'Disband Team' if en else '解散队伍' }}"></i>
 						</a>
@@ -203,19 +203,19 @@
 						   data-toggle="tooltip"
 						   data-placement="top"
 						   title="{{ 'Only team captains can edit team information' if en else '只有队长可以编辑队伍信息' }}"></i>
-						<a class="edit-captain">
+						<a class="edit-captain no-decoration">
 							<i class="btn-fa fas fa-user-tag fa-2x px-2 fa-disabled"
 							   data-toggle="tooltip"
 							   data-placement="top"
 							   title="{{ 'Only team captains can choose a new captain' if en else '只有队长才能选择新队长' }}"></i>
 						</a>
-						<a class="invite-members">
+						<a class="invite-members no-decoration">
 							<i class="btn-fa fas fa-ticket-alt fa-2x px-2"
 								data-toggle="tooltip"
 								data-placement="top"
 								title="{{ 'Only team captains can generate invite links' if en else '只有队长才能生成邀请链接' }}"></i>
 						</a>
-						<a class="disband-team">
+						<a class="disband-team no-decoration">
 							<i class="btn-fa fas fa-trash-alt fa-2x px-2 fa-disabled"
 								data-toggle="tooltip"
 								data-placement="top"

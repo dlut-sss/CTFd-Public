@@ -1,0 +1,125 @@
+{% extends "admin/base.html" %}
+
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+    {% set en = true %}
+{% else %}
+    {% set en = false %}
+{% endif %}
+
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('plugins.ctfd-whale.assets', path='log.css') }}">
+    <link rel="stylesheet" href="{{ url_for('plugins.ctfd-whale.assets', path='xterm.css') }}">
+    <div class="container mt-4">
+        <h1>容器日志</h1>
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <label for="logLines">日志行数:</label>
+                <input type="number" id="logLines" class="form-control" value="500">
+            </div>
+            <div class="col-md-6">
+                <label for="switch">自动刷新:</label>
+                <br>
+                <div id="switch" class="switch">
+                    <input type="checkbox" id="autoRefresh" checked>
+                    <span class="slider round"></span>
+                </div>
+            </div>
+        </div>
+        <div id="terminal"></div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script defer src="{{ url_for('plugins.ctfd-whale.assets', path='xterm.js') }}"></script>
+    <script defer src="{{ url_for('plugins.ctfd-whale.assets', path='xterm-addon-fit.js') }}"></script>
+    <script defer src="{{ url_for('plugins.ctfd-whale.assets', path='bundle.js') }}"></script>
+    <script>
+        // bundle的源码
+        // import {Terminal} from 'xterm'
+        // import {FitAddon} from 'xterm-addon-fit';
+        //
+        // window.addEventListener('DOMContentLoaded', (event) => {
+        //     function getCookieForLanguage(name) {
+        //         const cookies = document.cookie.split('; ');
+        //         for (const cookie of cookies) {
+        //             const [cookieName, cookieValue] = cookie.split('=');
+        //             if (cookieName === name) {
+        //                 return decodeURIComponent(cookieValue);
+        //             }
+        //         }
+        //         return null;
+        //     }
+        //     const terminal = new Terminal();
+        //     const fitAddon = new FitAddon();
+        //     terminal.loadAddon(fitAddon);
+        //     terminal.open(document.getElementById('terminal'));
+        //     fitAddon.fit();
+        //
+        //     // 获取当前页面地址中的id参数
+        //     const urlParams = new URLSearchParams(window.location.search);
+        //     const id = urlParams.get('id');
+        //
+        //     const logContent = document.getElementById('logContent');
+        //     const logLines = document.getElementById('logLines');
+        //     const autoRefresh = document.getElementById('autoRefresh');
+        //
+        //     // 获取日志内容的函数
+        //     function getLog() {
+        //         const tail = logLines.value;
+        //         const url = `/plugins/ctfd-whale/admin/getLog?id=${id}&tail=${tail}`;
+        //
+        //         window.CTFd.fetch(url, {
+        //             method: 'GET',
+        //             credentials: 'same-origin',
+        //             headers: {
+        //                 'Accept': 'application/json',
+        //             }
+        //         }).then(function (response) {
+        //             if (response.status === 429) {
+        //                 // User was ratelimited but process response
+        //                 return response.json();
+        //             }
+        //             if (response.status === 403) {
+        //                 // User is not logged in or CTF is paused.
+        //                 return response.json();
+        //             }
+        //             return response.json();
+        //         }).then(function (response) {
+        //             if (response.success) {
+        //                 terminal.clear();
+        //                 const messages = response.message.split('\n');
+        //                 for (const message of messages) {
+        //                     terminal.writeln(message);
+        //                 }
+        //             } else {
+        //                 var e = new Object;
+        //                 e.title = (getCookieForLanguage("Scr1wCTFdLanguage") === "en" ? "Log Auto Refresh Fail!" : "日志自动刷新失败！");
+        //                 e.body = response.message;
+        //                 CTFd.ui.ezq.ezToast(e)
+        //             }
+        //         });
+        //     }
+        //
+        //     // 自动刷新日志内容
+        //     let refreshInterval;
+        //
+        //     function startAutoRefresh() {
+        //         refreshInterval = setInterval(getLog, 10000); // 10 seconds
+        //     }
+        //
+        //     function stopAutoRefresh() {
+        //         clearInterval(refreshInterval);
+        //     }
+        //
+        //     // 切换自动刷新状态
+        //     autoRefresh.addEventListener('change', () => {
+        //         if (autoRefresh.checked) {
+        //             startAutoRefresh();
+        //         } else {
+        //             stopAutoRefresh();
+        //         }
+        //     });
+        //     getLog()
+        //     startAutoRefresh()
+        // })
+    </script>
+{% endblock %}

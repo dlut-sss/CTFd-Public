@@ -74,6 +74,17 @@
 
                 <div class="row pt-3">
                     <div class="col-md-12">
+                        {% if Configs.sso_enabled == 1 %}
+                            {% if en %}
+                                <input class="btn btn-md btn-primary btn-outlined float-right"
+                                       style="margin-left: 10px;margin-bottom: 10px;" id="sso" value="change SSO auth"
+                                       name="_sso" type="button" onclick="ssoregister()">
+                            {% else %}
+                                <input class="btn btn-md btn-primary btn-outlined float-right"
+                                       style="margin-left: 10px;margin-bottom: 10px;" id="sso" value="重新认证"
+                                       name="_sso" type="button" onclick="ssoregister()">
+                            {% endif %}
+                        {% endif %}
                         {% if en %}
                         {{ form.submit(class="btn btn-md btn-primary btn-outlined float-right",value="register") }}
                         {% else %}
@@ -106,6 +117,19 @@
         </div>
     </div>
 </div>
+
+{% if Configs.sso_enabled == 1 %}
+<script>
+    function ssoregister() {
+        var server = "{{ Configs.sso_server_address }}"
+        if (window.location.href.includes("?")) {
+            window.location.href = server + '?serviceUrl=' + encodeURIComponent(window.location.href + "&type=encryptedticket")
+        } else {
+            window.location.href = server + '?serviceUrl=' + encodeURIComponent(window.location.href + "?type=encryptedticket")
+        }
+    }
+</script>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}

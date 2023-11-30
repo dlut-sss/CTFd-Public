@@ -42,7 +42,7 @@ DEFAULT_PASSWORD_CHANGE_ALERT_BODY = (
 )
 
 
-def sendmail(addr, text, subject="Message from {ctf_name}"):
+def sendmail(addr, text, subject="来自 {ctf_name} 的消息"):
     subject = safe_format(subject, ctf_name=get_config("ctf_name"))
     provider = get_mail_provider()
     EmailProvider = PROVIDERS.get(provider)

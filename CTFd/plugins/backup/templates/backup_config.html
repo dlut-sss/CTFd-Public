@@ -1,0 +1,149 @@
+{% extends "admin/base.html" %}
+
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+{% set en = true %}
+{% else %}
+{% set en = false %}
+{% endif %}
+
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <h1><b>{{ "Backup Setting" if en else "自动备份插件设置" }}</b></h1>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="pill"
+                       href="#settings">{{ "Settings" if en else "插件设置" }}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="pill" href="#record">{{ "Record" if en else "备份文件" }}</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-9">
+            <div class="tab-content">
+                <div class="config-section tab-pane fade show active" id="settings" role="tabpanel"
+                     aria-autocomplete="none">
+                    <form method="POST" accept-charset="utf-8" action="/admin/plugins/backup"
+                          class="form-horizontal">
+                        {% set enabled = get_config('backup:enabled') %}
+                        <div class="form-group">
+                            <label for="enabled">
+                                {{ "Enable Switch" if en else "插件开关" }}
+                                <small class="form-text text-muted">
+                                    {{ "Whether to enable auto backup" if en else "是否开启自动备份" }}
+                                </small>
+                            </label>
+                            <select id="enabled" name="backup:enabled" class="form-control custom-select">
+                                <option value="true" {{
+                                "selected" if enabled == true }}>{{ "ON" if en else "开启" }}</option>
+                                <option value="false" {{
+                                "selected" if enabled == false }}>{{ "OFF" if en else "关闭" }}</option>
+                            </select>
+                        </div>
+                        {% set interval = get_config('backup:interval') %}
+                        <div class="form-group">
+                            <label for="interval">
+                                {{ "Backup interval (Unit: day)" if en else "进行备份的间隔 (单位：天)" }}
+                            </label>
+                            <div class="input-group">
+                                <input class="form-control" id='interval' name='backup:interval' type='number'
+                                       {% if interval is defined and interval !=None %}value="{{ interval }}" {% endif
+                                       %}>
+                                <div class="input-group-append">
+                                    <span class="input-group-text">{{ "Days" if en else "天" }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% set time = get_config('backup:time') %}
+                        <div class="form-group">
+                            <label for="time">
+                                {{ "Backup time (Unit: hour)" if en else "进行备份的时间 (单位：小时)" }}
+                            </label>
+                            <div class="input-group">
+                                <input class="form-control" id='time' name='backup:time' type='number' max="24" min="0"
+                                       {% if time is defined and time !=None %}value="{{ time }}" {% endif %}>
+                                <div class="input-group-append">
+                                    <span class="input-group-text">{{ "Hours" if en else "小时" }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% set max = get_config('backup:max') %}
+                        <div class="form-group">
+                            <label for="max">
+                                {{ "Backup Max Number" if en else "最大保存的备份个数" }}
+                            </label>
+                            <div class="input-group">
+                                <input class="form-control" id='max' name='backup:max' type='number'
+                                       {% if max is defined and max !=None %}value="{{ max }}" {% endif %}>
+                            </div>
+                        </div>
+
+                        <div class="submit-row float-right">
+                            <button type="submit" tabindex="0" class="btn btn-md btn-primary btn-outlined">
+                                {{ "Submit" if en else "确定" }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="tab-pane fade" id="record" role="tabpanel">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th class="text-center">{{ "File Name" if en else "文件名" }}</th>
+                            <th class="text-center">{{ "Size" if en else "大小" }}</th>
+                            <th class="text-center">{{ "Date" if en else "日期" }}</th>
+                            <th class="text-center" colspan="2">{{ "Actions" if en else "操作" }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for file in backup_files %}
+                        <tr>
+                            <td>{{ file['name'] }}</td>
+                            <td class="text-center">{{ file['size'] }}</td>
+                            <td class="text-center">
+                                <span data-time="{{ file['date'] | isoformat }}"></span>
+                            </td>
+                            <td class="text-center">
+                                <a href="/plugins/backup/admin/download?name={{file['name']}}" target="_blank" data-toggle="tooltip"
+                                   data-placement="top">
+                                    {{ "Download" if en else "下载" }}
+                                    <i class="fas fa-file-download"></i>
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a class="delete-backup" data-filename="{{file['name']}}" href="javascript:void(0)" data-toggle="tooltip"
+                                   data-placement="top">
+                                    {{ "Delete" if en else "删除" }}
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div class="submit-row float-right">
+                        <button type="button" tabindex="0" class="btn btn-md btn-primary btn-outlined backup-now">
+                            {{ "Backup Now" if en else "立即备份" }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script defer src="/plugins/backup/static/config.js"></script>
+<script defer src="/plugins/backup/static/delete.js"></script>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends "admin/base.html" %}
+
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+{% set en = true %}
+{% else %}
+{% set en = false %}
+{% endif %}
+
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <h1><b>{{ "Captcha Setting" if en else "人机验证插件设置" }}</b></h1>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 config-section">
+            <form method="POST" accept-charset="utf-8" action="/admin/plugins/captcha"
+                  class="form-horizontal">
+                {% set CAPTCHA_ENABLED = get_config('captcha:ENABLED') %}
+                <div class="form-group">
+                    <label for="ENABLED">
+                        {{"Enable Switch" if en else "插件开关"}}
+                        <small class="form-text text-muted">
+                            {{"Whether to enable captcha on register" if en else "是否开启注册界面人机验证"}}
+                        </small>
+                    </label>
+                    <select id="ENABLED" name="captcha:ENABLED" class="form-control custom-select">
+                        <option value="true" {{ "selected" if CAPTCHA_ENABLED == true }}>{{"ON" if en else "开启"}}</option>
+                        <option value="false" {{ "selected" if CAPTCHA_ENABLED == false }}>{{"OFF" if en else "关闭"}}</option>
+                    </select>
+                </div>
+                {% set VERIFY_REMOTE_IP = get_config('captcha:VERIFY_REMOTE_IP') %}
+                <div class="form-group">
+                    <label for="VERIFY_REMOTE_IP">
+                        {{"IP Verify Switch" if en else "IP验证开关"}}
+                        <small class="form-text text-muted">
+                            {{"Whether to verify remote ip" if en else "是否验证远程地址"}}
+                        </small>
+                    </label>
+                    <select id="VERIFY_REMOTE_IP" name="captcha:VERIFY_REMOTE_IP" class="form-control custom-select">
+                        <option value="true" {{ "selected" if VERIFY_REMOTE_IP == true }}>{{"ON" if en else "开启"}}</option>
+                        <option value="false" {{ "selected" if VERIFY_REMOTE_IP == false }}>{{"OFF" if en else "关闭"}}</option>
+                    </select>
+                </div>
+                {% set PROVIDER = get_config('captcha:PROVIDER') %}
+                <div class="form-group">
+                    <label for="PROVIDER">
+                        {{"Verify Provider" if en else "验证服务提供商"}}
+                        <small class="form-text text-muted">
+                            {{"The institute that provide the service" if en else "提供验证服务的服务商"}}
+                        </small>
+                    </label>
+                    <select id="PROVIDER" name="captcha:PROVIDER" class="form-control custom-select">
+                        <option value="reCaptcha" {{ "selected" if PROVIDER == "reCaptcha" }}>reCaptcha</option>
+                        <option value="hCaptcha" {{ "selected" if PROVIDER == "hCaptcha" }}>hCaptcha</option>
+                    </select>
+                </div>
+                {% set SECRET = get_config('captcha:SECRET') %}
+                <div class="form-group">
+                    <label for="SECRET">
+                        {{"key" if en else "密钥"}}
+                    </label>
+                    <input class="form-control" id='SECRET' name='captcha:SECRET' type='text'
+                           {% if SECRET is defined and SECRET != None %}value="{{ SECRET }}"{% endif %}>
+                </div>
+                {% set SITE_KEY = get_config('captcha:SITE_KEY') %}
+                <div class="form-group">
+                    <label for="SITE_KEY">
+                        {{"site key" if en else "网站密钥"}}
+                    </label>
+                    <input class="form-control" id='SITE_KEY' name='captcha:SITE_KEY' type='text'
+                           {% if SITE_KEY is defined and SITE_KEY != None %}value="{{ SITE_KEY }}"{% endif %}>
+                </div>
+
+                <div class="submit-row float-right">
+                    <button type="submit" tabindex="0" class="btn btn-md btn-primary btn-outlined">
+                        {{"Submit" if en else "确定"}}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script defer src="/plugins/captcha/static/config.js"></script>
+{% endblock %}

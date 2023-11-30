@@ -85,7 +85,7 @@
             <div class="container">
               <div class="row">
                 <div class="col-md-12">
-                  <button class="btn btn-primary float-right">Submit</button>
+                  <button class="btn btn-primary float-right">{{ language("Submit","提交") }}</button>
                 </div>
               </div>
             </div>

@@ -1,0 +1,76 @@
+{% extends "whale_base.html" %}
+
+{% block menu %}
+    <li class="nav-item">
+        <a class="nav-link" href="/plugins/ctfd-whale/admin/settings">🔗{{"Settings" if en else "设置"}}</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/plugins/ctfd-whale/admin/containers">🔗{{"Instances" if en else "实例"}}</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/plugins/ctfd-whale/admin/upload">🔗{{"Upload" if en else "上传"}}</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" href="#">{{"Containers" if en else "容器"}}</a>
+    </li>
+{% endblock %}
+
+{% block panel %}
+    <svg hidden>
+        <symbol id="copy" viewBox="0 0 24 24">
+            <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"></path>
+        </symbol>
+    </svg>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped border">
+                <thead>
+                <tr>
+                    <th class="sort-col text-center"><b>ID</b></td>
+                    <th class="text-center"><b>{{"Image Name" if en else "镜像名称"}}</b></td>
+                    <th class="sort-col text-center"><b>{{"Container Name" if en else "容器名称"}}</b></td>
+                    <th class="sort-col text-center"><b>{{"Container Satus" if en else "运行状态"}}</b></td>
+                    <th class="text-center"><b>{{"Container Logs" if en else "容器日志"}}</b></td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for container in containers %}
+                    <tr>
+                        <td class="text-center">
+                            {{ container.id  | truncate(12)}}
+                            <svg class="click-copy" data-copy="{{ container.id }}"
+                                 height="24" width="24" style="cursor: pointer;">
+                                <use xlink:href="#copy" />
+                            </svg>
+                        </td>
+                        <td class="text-center">
+                            {{ container.image.tags[0]  }}
+                            <svg class="click-copy" data-copy="{{ container.image.tags[0] }}"
+                                 height="24" width="24" style="cursor: pointer;">
+                                <use xlink:href="#copy" />
+                            </svg>
+                        </td>
+                        <td class="text-center">
+                            {{ container.name }}
+                        </td>
+                        <td class="text-center">
+                            {{ container.status }}&nbsp;
+                        </td>
+                        <td class="text-center">
+                            <a class="view-log" container-id="{{ container.id }}" data-toggle="tooltip" data-placement="top"
+                               title="{{'Check Logs' if en else '查看日志'}}">
+                                <i class="fas fa-file"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script defer src="{{ url_for('plugins.ctfd-whale.assets', path='docker.js') }}"></script>
+{% endblock %}

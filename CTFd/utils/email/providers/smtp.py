@@ -45,10 +45,10 @@ class SMTPEmailProvider(EmailProvider):
             msg["From"] = mailfrom_addr
             msg["To"] = addr
 
-            # Check whether we are using an admin-defined SMTP server
+            # 检查我们是否使用管理员定义的 SMTP 服务器
             custom_smtp = bool(get_config("mail_server"))
 
-            # We should only consider the MAILSENDER_ADDR value on servers defined in config
+            # 我们应该只考虑配置中定义的服务器上的 MAILSENDER_ADDR 值
             if custom_smtp:
                 smtp.send_message(msg)
             else:
@@ -56,13 +56,22 @@ class SMTPEmailProvider(EmailProvider):
                 smtp.send_message(msg, from_addr=mailsender_addr)
 
             smtp.quit()
-            return True, "邮件已发送"
+            print(f"[CTFd] 发往{addr}的邮件已成功发送。", flush=True)
+            return True, f"发往{addr}的邮件已成功发送。"
         except smtplib.SMTPException as e:
-            return False, str(e)
+            print(f"[CTFd] 邮件发送失败，出现了SMTPException异常{str(e)}", flush=True)
+            return False, f"邮件发送失败，出现了SMTPException异常{str(e)}"
         except timeout:
+            print("[CTFd] 邮件发送失败，SMTP 服务器连接超时", flush=True)
             return False, "SMTP 服务器连接超时"
         except Exception as e:
-            return False, str(e)
+            if "WRONG_VERSION_NUMBER" in str(e):
+                print(f"[CTFd] 邮件发送失败，出现了异常{str(e)}", flush=True)
+                print(f"[CTFd] WRONG_VERSION_NUMBER代表你可能开启了tls，但是服务器端口仍然为25，应设置为465", flush=True)
+                return False, f"邮件发送失败，出现了异常{str(e)}，代表你可能开启了tls，但是服务器端口仍然为25，应设置为465"
+            else:
+                print(f"[CTFd] 邮件发送失败，出现了异常{str(e)}", flush=True)
+                return False, f"邮件发送失败，出现了异常{str(e)}"
 
 
 def get_smtp(host, port, username=None, password=None, TLS=None, SSL=None, auth=None):

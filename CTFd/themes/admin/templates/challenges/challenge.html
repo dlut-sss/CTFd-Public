@@ -33,7 +33,7 @@
 <div class="jumbotron">
     <div class="container">
         <h1 class="text-center">{{ challenge.name }}</h1>
-        <h2 class="text-center">{{ challenge.category }}</h2>
+        <h2 class="text-center">{{ challenge.category }} > {{ challenge.subcategory }}</h2>
         <h2 class="text-center">{{ challenge.type }}</h2>
         {% set badge_state = 'badge-danger' if challenge.state == 'hidden' else 'badge-success' %}
         <h5>
@@ -43,7 +43,7 @@
         </h5>
         <h3 class="text-center">{{ challenge.value }} points</h3>
         <div class="pt-3">
-            <a class="preview-challenge">
+            <a class="preview-challenge no-decoration">
                 <i class="btn-fa fas fa-file-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
                    title="Preview Challenge"></i>
             </a>
@@ -51,11 +51,11 @@
                 <i class="btn-fa fas fa-tasks fa-2x px-2" data-toggle="tooltip" data-placement="top"
                    title="Correct Submissions"></i>
             </a>
-            <a class="comments-challenge">
+            <a class="comments-challenge no-decoration">
                 <i class="btn-fa fas fa-comments fa-2x px-2" data-toggle="tooltip" data-placement="top"
                    title="Comments"></i>
             </a>
-            <a class="delete-challenge">
+            <a class="delete-challenge no-decoration">
                 <i class="btn-fa fas fa-trash-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
                    title="Delete Challenge"></i>
             </a>
@@ -169,7 +169,7 @@
 <div class="jumbotron">
     <div class="container">
         <h1 class="text-center">{{ challenge.name }}</h1>
-        <h2 class="text-center">{{ challenge.category }}</h2>
+        <h2 class="text-center">{{ challenge.category }} > {{ challenge.subcategory }}</h2>
         <h2 class="text-center">{{ challenge.type }}</h2>
         {% set badge_state = 'badge-danger' if challenge.state == 'hidden' else 'badge-success' %}
         <h5>
@@ -179,7 +179,7 @@
         </h5>
         <h3 class="text-center">{{ challenge.value }} 分值</h3>
         <div class="pt-3">
-            <a class="preview-challenge">
+            <a class="preview-challenge no-decoration">
                 <i class="btn-fa fas fa-file-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
                    title="预览题目"></i>
             </a>
@@ -187,11 +187,11 @@
                 <i class="btn-fa fas fa-tasks fa-2x px-2" data-toggle="tooltip" data-placement="top"
                    title="正确提交"></i>
             </a>
-            <a class="comments-challenge">
+            <a class="comments-challenge no-decoration">
                 <i class="btn-fa fas fa-comments fa-2x px-2" data-toggle="tooltip" data-placement="top"
                    title="评论"></i>
             </a>
-            <a class="delete-challenge">
+            <a class="delete-challenge no-decoration">
                 <i class="btn-fa fas fa-trash-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
                    title="删除题目"></i>
             </a>

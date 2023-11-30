@@ -493,22 +493,53 @@ class UserEmails(Resource):
     @ratelimit(method="POST", limit=10, interval=60)
     def post(self, user_id):
         req = request.get_json()
+        title = req.get("title", "").strip()
         text = req.get("text", "").strip()
         user = Users.query.filter_by(id=user_id).first_or_404()
 
+        language = "zh"
+        try:
+            language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+        except Exception:
+            pass
+
         if get_mail_provider() is None:
-            return (
-                {"success": False, "errors": {"": ["Email settings not configured"]}},
-                400,
-            )
+            if language == "zh":
+                return (
+                    {"success": False, "errors": {"": ["邮件系统未配置，无法发送邮件"]}},
+                    400,
+                )
+            else:
+                return (
+                    {"success": False, "errors": {"": ["Email settings not configured"]}},
+                    400,
+                )
+
+        if not title:
+            if language == "zh":
+                return (
+                    {"success": False, "errors": {"text": ["邮件标题不能为空"]}},
+                    400,
+                )
+            else:
+                return (
+                    {"success": False, "errors": {"text": ["Email title cannot be empty"]}},
+                    400,
+                )
 
         if not text:
-            return (
-                {"success": False, "errors": {"text": ["Email text cannot be empty"]}},
-                400,
-            )
+            if language == "zh":
+                return (
+                    {"success": False, "errors": {"text": ["邮件内容不能为空"]}},
+                    400,
+                )
+            else:
+                return (
+                    {"success": False, "errors": {"text": ["Email text cannot be empty"]}},
+                    400,
+                )
 
-        result, response = sendmail(addr=user.email, text=text)
+        result, response = sendmail(addr=user.email, text=text, subject=title)
 
         if result is True:
             return {"success": True}

@@ -79,9 +79,9 @@ const loadChal = id => {
 };
 
 const loadChalByName = name => {
-    if (name.includes("-page-row")){
-        const pagebar_id= "#{0}".format(name);
-        if ($("#pages-board").find(pagebar_id).length!==0){
+    if (name.includes("-page-row")) {
+        const pagebar_id = "#{0}".format(name);
+        if ($("#pages-board").find(pagebar_id).length !== 0) {
             $("#pages-board").find(".active").removeClass("active");
             $("#pages-board").find(pagebar_id).addClass("active").trigger("shown.bs.tab");
             const catid = name.split("-page-row")[0];
@@ -383,17 +383,14 @@ function loadChals() {
         }
 
         if (challenges.length === 0) {
-            if (getCookieForLanguage("Scr1wCTFdLanguage") === "zh") {
-                ezToast({
-                    title: '自动刷新失败',
-                    body: '题目数据为空！'
-                });
-            } else {
+            getCookieForLanguage("Scr1wCTFdLanguage") === "en" ?
                 ezToast({
                     title: 'Auto refresh failed',
                     body: 'Challenge data is empty!'
+                }) : ezToast({
+                    title: '自动刷新失败',
+                    body: '题目数据为空！'
                 });
-            }
             return;
         }
 
@@ -406,8 +403,7 @@ function loadChals() {
         ) {
             if (window.init.theme_settings.page_bar_shown === "shown") {
                 $("#pages-board-container").show()
-            }
-            else {
+            } else {
                 $("#pages-board-container").hide()
             }
         } else {

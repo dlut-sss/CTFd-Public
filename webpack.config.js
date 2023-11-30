@@ -2,14 +2,48 @@ const path = require('path')
 const webpack = require('webpack')
 const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries")
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
-const RemoveStrictPlugin = require('remove-strict-webpack-plugin')
-const WebpackShellPlugin = require('webpack-shell-plugin');
-const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const { VueLoaderPlugin } = require('vue-loader')
 
 const roots = {
+  'themes/competition': {
+    'css': {
+      'challenge-board': 'assets/css/challenge-board.scss',
+      'fonts': 'assets/css/fonts.scss',
+      'main': 'assets/css/main.scss',
+      'core': 'assets/css/core.scss',
+      'codemirror': 'assets/css/codemirror.scss',
+    },
+    'js': {
+      'pages/main': 'assets/js/pages/main.js',
+      'pages/setup': 'assets/js/pages/setup.js',
+      'pages/challenges': 'assets/js/pages/challenges.js',
+      'pages/scoreboard': 'assets/js/pages/scoreboard.js',
+      'pages/settings': 'assets/js/pages/settings.js',
+      'pages/stats': 'assets/js/pages/stats.js',
+      'pages/notifications': 'assets/js/pages/notifications.js',
+      'pages/teams/private': 'assets/js/pages/teams/private.js',
+    }
+  },
   'themes/core': {
+    'css': {
+      'challenge-board': 'assets/css/challenge-board.scss',
+      'fonts': 'assets/css/fonts.scss',
+      'main': 'assets/css/main.scss',
+      'core': 'assets/css/core.scss',
+      'codemirror': 'assets/css/codemirror.scss',
+    },
+    'js': {
+      'pages/main': 'assets/js/pages/main.js',
+      'pages/setup': 'assets/js/pages/setup.js',
+      'pages/challenges': 'assets/js/pages/challenges.js',
+      'pages/scoreboard': 'assets/js/pages/scoreboard.js',
+      'pages/settings': 'assets/js/pages/settings.js',
+      'pages/stats': 'assets/js/pages/stats.js',
+      'pages/notifications': 'assets/js/pages/notifications.js',
+      'pages/teams/private': 'assets/js/pages/teams/private.js',
+    }
+  },
+  'themes/pages-remastered': {
     'css': {
       'challenge-board': 'assets/css/challenge-board.scss',
       'fonts': 'assets/css/fonts.scss',
@@ -119,18 +153,6 @@ function getJSConfig(root, type, entries, mode) {
           },
         },
       },
-      minimizer: [
-        new UglifyJsPlugin({
-            cache: true,
-            parallel: true,
-            uglifyOptions: {
-              compress: {
-                // Remove console.log in production
-                drop_console: mode === 'production'
-              },
-            },
-        }),
-      ],
     },
     module: {
       rules: [
@@ -170,20 +192,16 @@ function getJSConfig(root, type, entries, mode) {
             'css-loader'
           ]
         },
+        {
+          test: /\.(jpg|JPG|jpeg|png|gif|mp3|svg|ttf|woff2|woff|eot)$/gi,
+          use: [
+            'file-loader'
+          ]
+        },
       ],
     },
     plugins: [
-      new VueLoaderPlugin(),
-      new webpack.NamedModulesPlugin(),
-      new RemoveStrictPlugin(),
-      // Identify files that are generated in development but not in production and create stubs to avoid a 404
-      // Pretty nasty hack, would be a little better if this was purely JS
-      new WebpackShellPlugin({
-        onBuildEnd:[
-          mode == 'development' ? 'echo Skipping JS stub generation' : 'python3 -c \'exec(\"\"\"\nimport glob\nimport os\n\nstatic_js_dirs = [\n    "CTFd/themes/core/static/js/**/*.dev.js",\n    "CTFd/themes/admin/static/js/**/*.dev.js",\n]\n\nfor js_dir in static_js_dirs:\n    for path in glob.glob(js_dir, recursive=True):\n        if path.endswith(".dev.js"):\n            path = path.replace(".dev.js", ".min.js")\n            if os.path.isfile(path) is False:\n                open(path, "a").close()\n\"\"\")\''
-        ],
-        safe: true,
-      }),
+      new VueLoaderPlugin()
     ],
     resolve: {
       extensions: ['.js'],
@@ -209,27 +227,14 @@ function getCSSConfig(root, type, entries, mode) {
     mode: mode,
     output: {
       path: path.resolve(__dirname, 'CTFd', root, 'static', type),
-      publicPath: '/' + root + '/static/' + type,
-    },
-    optimization: {
-      minimizer: [
-        new OptimizeCssAssetsPlugin({})
-      ]
+      publicPath: '/' + root + '/static/' + type+'/',
     },
     module: {
       rules: [
         {
           test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?(#\w+)?$/,
-          use: [
-            {
-              loader: 'file-loader',
-              options: {
-                name: '[name].[ext]',
-                publicPath: '../fonts',
-                outputPath: '../fonts',
-              }
-            }
-          ]
+          type: 'asset/resource',
+          dependency: { not: ['url'] }
         },
         {
           test: /\.(s?)css$/,

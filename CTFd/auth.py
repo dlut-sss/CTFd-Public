@@ -93,20 +93,36 @@ def confirm(data=None):
     if data is None:
         if request.method == "POST":
             # User wants to resend their confirmation email
-            email.verify_email_address(user.email)
-            log(
-                "registrations",
-                format="[{date}] {name} 在 {ip} 请求重新发送确认邮件",
-                name=user.name,
-            )
-            if language == "zh":
-                return render_template(
-                    "confirm.html", infos=[f"验证邮件已发送至{user.email}!"]
+            result, text = email.verify_email_address(user.email)
+            if result:
+                log(
+                    "registrations",
+                    format="[{date}] {name} 在 {ip} 请求重新发送确认邮件",
+                    name=user.name,
                 )
+                if language == "zh":
+                    return render_template(
+                        "confirm.html", infos=[f"验证邮件已发送至{user.email}!"]
+                    )
+                else:
+                    return render_template(
+                        "confirm.html", infos=[f"Confirmation email sent to {user.email}!"]
+                    )
             else:
-                return render_template(
-                    "confirm.html", infos=[f"Confirmation email sent to {user.email}!"]
+                log(
+                    "registrations",
+                    format="[{date}] {name} 在 {ip} 请求重新发送确认邮件失败，错误原因{text}",
+                    name=user.name,
+                    text=text,
                 )
+                if language == "zh":
+                    return render_template(
+                        "confirm.html", errors=[f"验证邮件发送失败，请联系管理员!"]
+                    )
+                else:
+                    return render_template(
+                        "confirm.html", errors=[f"Confirmation email sent failed,please contact admin!"]
+                    )
         elif request.method == "GET":
             # User has been directed to the confirm page
             return render_template("confirm.html")
@@ -196,7 +212,7 @@ def reset_password(data=None):
             clear_user_session(user_id=user.id)
             log(
                 "logins",
-                format="[{date}] {ip} - successful password reset for {name}",
+                format="[{date}] {ip} - 成功重置了 {name} 的密码",
                 name=user.name,
             )
             db.session.close()
@@ -241,21 +257,31 @@ def reset_password(data=None):
                     ],
                 )
 
-        email.forgot_password(email_address)
-        if language == "zh":
-            return render_template(
-                "reset_password.html",
-                infos=[
-                    "如果该帐户存在，您将收到一封电子邮件，请检查您的收件箱"
-                ],
-            )
+        result, text = email.forgot_password(email_address)
+        if result:
+            if language == "zh":
+                return render_template(
+                    "reset_password.html",
+                    infos=[
+                        "如果该帐户存在，您将收到一封电子邮件，请检查您的收件箱"
+                    ],
+                )
+            else:
+                return render_template(
+                    "reset_password.html",
+                    infos=[
+                        "If that account exists you will receive an email, please check your inbox"
+                    ],
+                )
         else:
-            return render_template(
-                "reset_password.html",
-                infos=[
-                    "If that account exists you will receive an email, please check your inbox"
-                ],
-            )
+            if language == "zh":
+                return render_template(
+                    "reset_password.html", errors=["邮件发送失败，请联系管理员重置密码！"]
+                )
+            else:
+                return render_template(
+                    "reset_password.html", errors=["Email send failed, please contact admin for password reset"]
+                )
     return render_template("reset_password.html")
 
 
@@ -281,12 +307,15 @@ def register():
         else:
             if not session_ticket:
                 if "?" in request.url:
-                    return redirect(get_config("sso_server_address") + "?serviceUrl=" + quote(request.url + "&type=encryptedticket",safe=""))
+                    return redirect(
+                        get_config("sso_server_address") + "?serviceUrl=" + quote(request.url + "&type=encryptedticket",
+                                                                                  safe=""))
                 else:
-                    return redirect(get_config("sso_server_address") + "?serviceUrl=" + quote(request.url + "?type=encryptedticket",safe=""))
+                    return redirect(
+                        get_config("sso_server_address") + "?serviceUrl=" + quote(request.url + "?type=encryptedticket",
+                                                                                  safe=""))
 
-        ticket =session_ticket
-
+        ticket = session_ticket
 
         decrypted_ticket = decrypt_ticket(ticket)
         ticket_data = json.loads(decrypted_ticket)
@@ -478,15 +507,32 @@ def register():
                     if config.can_send_mail() and get_config(
                             "verify_emails"
                     ):  # Confirming users is enabled and we can send email.
-                        log(
-                            "registrations",
-                            format="[{date}] {name} 在 {ip} 使用 {email} 注册了一个尚未确认邮箱的账户",
-                            name=user.name,
-                            email=user.email,
-                        )
-                        email.verify_email_address(user.email)
-                        db.session.close()
-                        return redirect(url_for("auth.confirm"))
+                        result, text = email.verify_email_address(user.email)
+                        if result:
+                            log(
+                                "registrations",
+                                format="[{date}] {name} 在 {ip} 使用 {email} 注册了一个尚未确认邮箱的账户",
+                                name=user.name,
+                                email=user.email,
+                            )
+                            db.session.close()
+                            return redirect(url_for("auth.confirm"))
+                        else:
+                            log(
+                                "registrations",
+                                format="[{date}] {name} 在 {ip} 使用 {email} 注册了一个尚未确认邮箱的账户，验证邮件发送失败",
+                                name=user.name,
+                                email=user.email,
+                            )
+                            db.session.close()
+                            if language == "zh":
+                                return render_template(
+                                    "confirm.html", errors=[f"验证邮件发送失败，请联系管理员!"]
+                                )
+                            else:
+                                return render_template(
+                                    "confirm.html", errors=[f"Confirmation email sent failed,please contact admin!"]
+                                )
                     else:  # Don't care about confirming users
                         if (
                                 config.can_send_mail()
@@ -728,15 +774,32 @@ def register():
                     if config.can_send_mail() and get_config(
                             "verify_emails"
                     ):  # Confirming users is enabled and we can send email.
-                        log(
-                            "registrations",
-                            format="[{date}] {name} 在 {ip} 使用 {email} 注册了一个尚未确认邮箱的账户",
-                            name=user.name,
-                            email=user.email,
-                        )
-                        email.verify_email_address(user.email)
-                        db.session.close()
-                        return redirect(url_for("auth.confirm"))
+                        result, text = email.verify_email_address(user.email)
+                        if result:
+                            log(
+                                "registrations",
+                                format="[{date}] {name} 在 {ip} 使用 {email} 注册了一个尚未确认邮箱的账户",
+                                name=user.name,
+                                email=user.email,
+                            )
+                            db.session.close()
+                            return redirect(url_for("auth.confirm"))
+                        else:
+                            log(
+                                "registrations",
+                                format="[{date}] {name} 在 {ip} 使用 {email} 注册了一个尚未确认邮箱的账户，验证邮件发送失败",
+                                name=user.name,
+                                email=user.email,
+                            )
+                            db.session.close()
+                            if language == "zh":
+                                return render_template(
+                                    "confirm.html", errors=[f"验证邮件发送失败，请联系管理员!"]
+                                )
+                            else:
+                                return render_template(
+                                    "confirm.html", errors=[f"Confirmation email sent failed,please contact admin!"]
+                                )
                     else:  # Don't care about confirming users
                         if (
                                 config.can_send_mail()
