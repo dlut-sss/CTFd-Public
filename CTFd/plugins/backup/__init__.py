@@ -278,6 +278,10 @@ def load(app):
         schedule.every(it).days.at(convert_hours_to_time_string(t), get_config("backend_timezone")).do(backup)
         print("[Auto Backup] 计划任务重设完成！", flush=True)
 
+    def run_schedule():
+        with app.app_context():
+            schedule.run_pending()
+
     scheduler = APScheduler()
     scheduler.init_app(app)
     scheduler.start()
@@ -286,6 +290,11 @@ def load(app):
                       trigger="interval",
                       seconds=3600)
 
-    schedule.every(interval).days.at(convert_hours_to_time_string(time)).do(backup)
+    scheduler.add_job(id='schedule',
+                      func=run_schedule,
+                      trigger="interval",
+                      seconds=1)
+
+    schedule.every(interval).days.at(convert_hours_to_time_string(time), get_config("backend_timezone")).do(backup)
 
     app.register_blueprint(page_blueprint)
