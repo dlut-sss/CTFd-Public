@@ -2,11 +2,11 @@
 
 ## 这是个啥
 
-基于CTFd 3.5.3 版本二次开发,整合CTFd-Whale插件,比赛计分板插件并进行修复和重构的部署版。
+基于CTFd 3.5.3 版本二次开发,整合CTFd-Whale插件,比赛计分板插件,自动备份插件,验证码插件，题解收集插件并进行修复和重构的部署版。
 
 修复了一些原生CTFd的UI和代码问题（如提示创建和附件名称）
 
-## [开发日志](https://github.com/dlut-sss/CTFd-public/blob/main/CHANGELOG.md)
+## [开发日志](https://github.com/dlut-sss/CTFd-Public/blob/main/CHANGELOG.md)
 
 ## 配置方法
 
@@ -27,7 +27,7 @@
    ```
    ### **⚠⚠⚠然后将下载完的本仓库目录重命名为CTFd⚠⚠⚠**
    ```bash
-   mv CTFd_3.5.3/ CTFd/
+   mv CTFd-Public/ CTFd/
    ```
    如果说没有进行这步导致创建网络出现错误，请先查找所有ctfd相关的docker网络并进行移除，移除不了的重启后再移除！
    

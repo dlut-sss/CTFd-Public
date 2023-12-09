@@ -2,7 +2,7 @@
 <div role="tabpanel" class="tab-pane config-section" id="settings">
     <form method="POST" autocomplete="off" class="w-100">
         <div class="form-group">
-            <label for="backend-timezone">Backend Timezone</label>
+            <label for="backend-timezone">Backend Timezone Current:({% if backend_timezone is defined and backend_timezone != None %} {{ backend_timezone }} {% else %} None {% endif %})</label>
             <select class="form-control custom-select start-date" id="backend-timezone-select">
             </select>
         </div>
@@ -126,7 +126,7 @@
 <div role="tabpanel" class="tab-pane config-section" id="settings">
     <form method="POST" autocomplete="off" class="w-100">
         <div class="form-group">
-            <label for="backend-timezone">后端时区</label>
+            <label for="backend-timezone">后端时区 当前:({% if backend_timezone is defined and backend_timezone != None %} {{ backend_timezone }} {% else %} 未设置 {% endif %})</label>
             <select class="form-control custom-select start-date" id="backend-timezone-select">
             </select>
         </div>

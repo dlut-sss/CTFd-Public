@@ -277,7 +277,7 @@ def load(app):
                         uuid = whale_id[len(user_id_prefix):]
                     container = ContainerObject(user_id=user_id, uuid=uuid)
                     if DBContainer.get_current_containers(user_id) is None:
-                        log_simple("whale", "[CTFd Whale] 检测到幽灵镜像：" + whale_id)
+                        log_simple("whale", "[{date}] [CTFd Whale] 检测到幽灵镜像：" + whale_id)
                         try:
                             DockerUtils.remove_container(container)
                             Router.reload()

@@ -1,17 +1,18 @@
 import json
-import shutil
-import sys
 import logging
 import os
+import shutil
+import sys
 import tempfile
 import zipfile
 from datetime import datetime
 from functools import wraps
 from io import BytesIO
-import schedule
-import pytz
 
 import dataset
+import pytz
+import schedule
+from flask import request, render_template, Blueprint, send_file
 from flask_apscheduler import APScheduler
 from flask_restx import Namespace
 
@@ -20,14 +21,12 @@ from CTFd.plugins import (
     register_admin_plugin_menu_bar,
 )
 from CTFd.utils import get_config, set_config, get_app_config, current_backend_time
-from flask import request, render_template, Blueprint, send_file
-
 from ...api import CTFd_API_v1
 from ...cache import cache
 from ...utils.config import ctf_name
 from ...utils.decorators import admins_only
 from ...utils.exports import freeze_export
-from ...utils.logging import log, log_simple
+from ...utils.logging import log_simple
 from ...utils.migrations import get_current_revision
 from ...utils.uploads import get_uploader
 
@@ -53,6 +52,30 @@ time = 3
 def load(app):
     config(app)
     plugin_name = __name__.split('.')[-1]
+
+    # 初始化日志
+    logger_backup = logging.getLogger("backup")
+    logger_backup.setLevel(logging.INFO)
+
+    log_dir = app.config["LOG_FOLDER"]
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+    logs = {
+        "backup": os.path.join(log_dir, "backup.log"),
+    }
+    try:
+        for log in logs.values():
+            if not os.path.exists(log):
+                open(log, "a").close()
+        backup_log = logging.handlers.RotatingFileHandler(
+            logs["backup"], maxBytes=10485760, backupCount=5
+        )
+        logger_backup.addHandler(backup_log)
+    except IOError:
+        pass
+    stdout = logging.StreamHandler(stream=sys.stdout)
+    logger_backup.addHandler(stdout)
+    logger_backup.propagate = 0
 
     global interval, time
     interval = get_config("backup:interval")
@@ -88,7 +111,7 @@ def load(app):
         if get_config("backup:interval") is not interval or get_config("backup:time") is not time:
             interval = get_config("backup:interval")
             time = get_config("backup:time")
-            print("[Auto Backup] 自动备份配置已更新，正在重设计划任务！", flush=True)
+            log_simple("backup", "[{date}] [Auto Backup] 自动备份配置已更新，正在重设计划任务！")
             update_schedule(interval, time)
 
         upload_folder = os.path.join(
@@ -159,19 +182,6 @@ def load(app):
                 'message': '文件不存在！'
             }, 200
 
-    # 初始化日志
-    log_dir = app.config.get('LOG_FOLDER', os.path.join(os.path.dirname(__file__), 'logs'))
-    if not os.path.exists(log_dir):
-        os.makedirs(log_dir)
-
-    log_file = os.path.join(log_dir, 'backup.log')
-
-    if not os.path.exists(log_file):
-        open(log_file, 'a').close()
-    logger.addHandler(logging.handlers.RotatingFileHandler(log_file, maxBytes=10000))
-    logger.addHandler(logging.StreamHandler(stream=sys.stdout))
-    logger.propagate = 0
-
     def custom_export_ctf():
         db = dataset.connect(get_app_config("SQLALCHEMY_DATABASE_URI"))
         backup = tempfile.NamedTemporaryFile()
@@ -223,7 +233,8 @@ def load(app):
             # 删除最旧的文件
             file_to_delete = os.path.join(folder_path, files[0])
             os.remove(file_to_delete)
-            print(f"[Auto Backup] 删除了最旧的备份文件：{file_to_delete}", flush=True)
+            log_simple("backup", "[{date}] [Auto Backup] 删除了最旧的备份文件：{file_to_delete}",
+                       file_to_delete=file_to_delete)
 
     def write_backup():
         backup_file = custom_export_ctf()
@@ -241,7 +252,7 @@ def load(app):
         full_name = os.path.join(auto_backups_folder, f"{name}.{day}.zip")
         with open(full_name, "wb") as target:
             shutil.copyfileobj(backup_file, target)
-        print(f"[Auto Backup] 备份完成：{name}.{day}.zip", flush=True)
+        log_simple("backup", "[{date}] [Auto Backup] 备份完成：{name}.{day}.zip", name=name, day=day)
         # 删除旧备份
         delete_oldest_file(auto_backups_folder)
 
@@ -281,18 +292,17 @@ def load(app):
         with app.app_context():
             if get_config("backup:enabled"):
                 write_backup()
-                print("[Auto Backup] 自动备份完成！", flush=True)
+                log_simple("backup", "[{date}] [Auto Backup] 自动备份完成！")
             else:
-                print("[Auto Backup] 自动备份未启用。", flush=True)
+                log_simple("backup", "[{date}] [Auto Backup] 自动备份未启用。")
 
-    @single_task("backup-check", 5)
     def check():
         global interval, time
         with app.app_context():
             if get_config("backup:interval") is not interval or get_config("backup:time") is not time:
                 interval = get_config("backup:interval")
                 time = get_config("backup:time")
-                print("[Auto Backup] 自动备份配置已更新，正在重设计划任务！", flush=True)
+                log_simple("backup", "[{date}] [Auto Backup] 自动备份配置已更新，正在重设计划任务！")
                 update_schedule(interval, time)
             schedule.run_pending()
 
@@ -300,7 +310,8 @@ def load(app):
         schedule.clear()
         schedule.every(it).days.at(convert_hours_to_time_string(t),
                                    pytz.timezone(get_config("backend_timezone", "Asia/Shanghai"))).do(backup)
-        print("[Auto Backup] 计划任务重设完成！", flush=True)
+        log_simple("backup", "[{date}] [Auto Backup] 计划任务重设完成！")
+        log_simple("backup", '[{date}] [Auto Backup] 计划任务内容{jobs}', jobs=schedule.get_jobs())
 
     scheduler = APScheduler()
     scheduler.init_app(app)
@@ -312,5 +323,6 @@ def load(app):
 
     schedule.every(interval).days.at(convert_hours_to_time_string(time),
                                      pytz.timezone(get_config("backend_timezone", "Asia/Shanghai"))).do(backup)
+    log_simple("backup", "[{date}] [Auto Backup] 计划任务内容{jobs}", jobs=schedule.get_jobs())
 
     app.register_blueprint(page_blueprint)

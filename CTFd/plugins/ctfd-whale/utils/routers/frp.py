@@ -133,7 +133,7 @@ class FrpRouter(BaseRouter):
                 redis_util.add_available_port(container.port)
             except Exception as e:
                 logging.log_simple(
-                    'whale', '[CTFd Whale] 从缓存中删除端口时出错'
+                    'whale', '[{date}] [CTFd Whale] 从缓存中删除端口时出错'
                 )
                 if language == "zh":
                     return False, '从缓存中删除端口时出错'

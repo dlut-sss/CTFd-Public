@@ -11,9 +11,9 @@ SECRET_KEY=${SECRET_KEY:-}
 # Check that a .ctfd_secret_key file or SECRET_KEY envvar is set
 if [ ! -f .ctfd_secret_key ] && [ -z "$SECRET_KEY" ]; then
     if [ $WORKERS -gt 1 ]; then
-        echo "[ ERROR ] You are configured to use more than 1 worker."
-        echo "[ ERROR ] To do this, you must define the SECRET_KEY environment variable or create a .ctfd_secret_key file."
-        echo "[ ERROR ] Exiting..."
+        echo "[ ERROR ] 您配置为使用超过 1 个工作线程。"
+        echo "[ ERROR ] 为此，您必须定义 SECRET_KEY 环境变量或创建 .ctfd_secret_key 文件。"
+        echo "[ ERROR ] 正在退出..."
         exit 1
     fi
 fi

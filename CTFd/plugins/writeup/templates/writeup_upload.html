@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="jumbotron" style="height: 220px;">
+    <div class="container">
+        <h1><b>{{ 'Writeup Upload' if en else '题解上传' }}</b></h1>
+    </div>
+</div>
+<div class="container" style="height: 228px;">
+    <div class="form-group" id="drop">
+        <p>{{"You can upload your writeup file below, only support pdf file!" if en else "您可以在下面上传题解文件，只支持PDF！"}}</p>
+        <div class="drop-area" ondragover="event.preventDefault()" ondrop="handleDrop(event)"
+             style="border: 2px dashed #ccc;padding: 20px;text-align: center;height: 250px;display: flex;align-items: center;justify-content: center;">
+            <div class="centered-content"
+                 style="display: flex;flex-direction: column;align-items: center;justify-content: center;height: 100%;">
+                <h2>{{"Drag and drop the writeup file here to upload" if en else "将题解文件拖拽至此处上传"}}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function handleDrop(event) {
+        event.preventDefault();
+        var files = event.dataTransfer.files;
+        var progressBarContainer = document.getElementById("drop");
+        var file = files[0];
+        var progressBar = createProgressBar(progressBarContainer);
+        var fileNameElement = document.createElement('div');
+        fileNameElement.classList.add('file-name');
+        fileNameElement.textContent = file.name;
+        fileNameElement.style = "margin-bottom: 5px;"
+        progressBarContainer.appendChild(fileNameElement);
+        uploadFile(file, progressBar, fileNameElement);
+    }
+
+    function createProgressBar(progressBarContainer) {
+        var progressBar = document.createElement('div');
+        progressBar.classList.add('progress-bar');
+        progressBar.style = "width: 100%;background-color: #f5f5f5;border-radius: 4px;overflow: hidden;margin-bottom: 10px;margin-top: 5px;"
+
+        var progress = document.createElement('div');
+        progress.classList.add('progress');
+        progress.style = "width: 0;height: 20px;background-color: #4caf50;transition: width 0.3s ease-in-out;"
+
+        progressBar.appendChild(progress);
+        progressBarContainer.appendChild(progressBar);
+
+        return progressBar;
+    }
+
+    function updateProgress(progressBar, percent) {
+        progressBar.getElementsByClassName('progress')[0].style.width = percent + '%';
+    }
+
+    function uploadFile(file, progressBar, fileNameElement) {
+        var formData = new FormData();
+        formData.append('writeup', file);
+        formData.append("nonce", init.csrfNonce);
+
+        $.ajax({
+            url: '/plugins/writeup/upload',
+            type: 'POST',
+            headers: {
+                "Accept": "application/json; charset=utf-8"
+            },
+            data: formData,
+            processData: false,
+            contentType: false,
+            xhr: function () {
+                var xhr = new window.XMLHttpRequest();
+                xhr.upload.addEventListener('progress', function (event) {
+                    if (event.lengthComputable) {
+                        var percent = Math.round((event.loaded / event.total) * 100);
+                        progressBar.getElementsByClassName('progress')[0].style.width = percent + '%';
+                    }
+                }, false);
+                return xhr;
+            },
+            success: function (response) {
+                fileNameElement.remove();
+                progressBar.remove();
+                var e = new Object;
+                e.title = "{{'Upload success!' if en else '上传成功！'}}";
+                e.body = "{{'Writeup upload success!' if en else '题解上传完成！'}}";
+                CTFd.ui.ezq.ezToast(e)
+            },
+            error: function (xhr, status, error) {
+                fileNameElement.remove();
+                progressBar.remove();
+                var e = new Object;
+                e.title = "{{'Upload fail!' if en else '上传失败！'}}";
+                e.body = JSON.parse(xhr.responseText).message;
+                e.button="{{'Got it' if en else '知道了'}}";
+                CTFd.ui.ezq.ezAlert(e)
+            }
+        });
+    }
+</script>
+{% endblock %}

@@ -20,6 +20,7 @@ services:
       - .data/CTFd/uploads:/var/uploads
       - .:/opt/CTFd:ro
       - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime
     depends_on:
       - db
       - frpc

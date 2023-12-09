@@ -299,6 +299,9 @@ def setup():
             set_config("register_uid", 0)
             set_config("register_uid_empty", 0)
 
+            # 时区默认设置
+            set_config("backend_timezone", "Asia/Shanghai")
+
             set_config("setup", True)
 
             try:
