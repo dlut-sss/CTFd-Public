@@ -22,10 +22,25 @@ def get_class_by_tablename(tablename):
     :param tablename: String with name of table.
     :return: Class reference or None.
     """
+    classes = []
     for c in db.Model._decl_class_registry.values():
         if hasattr(c, "__tablename__") and c.__tablename__ == tablename:
-            return c
-    return None
+            classes.append(c)
+
+    # We didn't find this class
+    if len(classes) == 0:
+        return None
+    # 在这一类中，我们只有一个可能的候选者。
+    # 它要么是顶级类，要么是具有特定硬编码表名称的多态类
+    elif len(classes) == 1:
+        return classes[0]
+    # 在这种情况下，我们正在处理一个多态表，其中所有表都具有相同的表名。
+    # 但是，为了识别父类，我们可以查找定义了 polymorphic_on arg 的类
+    else:
+        for c in classes:
+            mapper_args = dict(c.__mapper_args__)
+            if mapper_args.get("polymorphic_on") is not None:
+                return c
 
 
 @compiles(db.DateTime, "mysql")
@@ -346,7 +361,10 @@ class Users(db.Model):
     team_id = db.Column(db.Integer, db.ForeignKey("teams.id"))
 
     field_entries = db.relationship(
-        "UserFieldEntries", foreign_keys="UserFieldEntries.user_id", lazy="joined"
+        "UserFieldEntries",
+        foreign_keys="UserFieldEntries.user_id",
+        lazy="joined",
+        back_populates="user",
     )
 
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
@@ -400,7 +418,12 @@ class Users(db.Model):
 
     @property
     def score(self):
-        return self.get_score(admin=False)
+        from CTFd.utils.config.visibility import scores_visible
+
+        if scores_visible():
+            return self.get_score(admin=False)
+        else:
+            return None
 
     @property
     def place(self):
@@ -627,7 +650,10 @@ class Teams(db.Model):
     captain = db.relationship("Users", foreign_keys=[captain_id])
 
     field_entries = db.relationship(
-        "TeamFieldEntries", foreign_keys="TeamFieldEntries.team_id", lazy="joined"
+        "TeamFieldEntries",
+        foreign_keys="TeamFieldEntries.team_id",
+        lazy="joined",
+        back_populates="team",
     )
 
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
@@ -659,7 +685,12 @@ class Teams(db.Model):
 
     @property
     def score(self):
-        return self.get_score(admin=False)
+        from CTFd.utils.config.visibility import scores_visible
+
+        if scores_visible():
+            return self.get_score(admin=False)
+        else:
+            return None
 
     @property
     def place(self):
@@ -1091,10 +1122,14 @@ class FieldEntries(db.Model):
 class UserFieldEntries(FieldEntries):
     __mapper_args__ = {"polymorphic_identity": "user"}
     user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"))
-    user = db.relationship("Users", foreign_keys="UserFieldEntries.user_id")
+    user = db.relationship(
+        "Users", foreign_keys="UserFieldEntries.user_id", back_populates="field_entries"
+    )
 
 
 class TeamFieldEntries(FieldEntries):
     __mapper_args__ = {"polymorphic_identity": "team"}
     team_id = db.Column(db.Integer, db.ForeignKey("teams.id", ondelete="CASCADE"))
-    team = db.relationship("Teams", foreign_keys="TeamFieldEntries.team_id")
+    team = db.relationship(
+        "Teams", foreign_keys="TeamFieldEntries.team_id", back_populates="field_entries"
+    )

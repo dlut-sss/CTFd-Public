@@ -139,6 +139,20 @@ def check_email_is_whitelisted(email_address):
     domain_whitelist = get_config("domain_whitelist")
     if domain_whitelist:
         domain_whitelist = [d.strip() for d in domain_whitelist.split(",")]
-        if domain not in domain_whitelist:
-            return False
+        for allowed_domain in domain_whitelist:
+            if allowed_domain.startswith("*."):
+                # 域名永远不应该包含“*”字符
+                if "*" in domain:
+                    return False
+
+                # 处理通配符域名情况
+                suffix = allowed_domain[1:]  # Remove the "*" prefix
+                if domain.endswith(suffix):
+                    return True
+
+            elif domain == allowed_domain:
+                return True
+
+        # 指定了白名单，但电子邮件与任何域名都不匹配
+        return False
     return True

@@ -93,7 +93,8 @@ class DockerUtils:
         service = client.services.create(
             image=container.challenge.docker_image,
             name=f'{container.user_id}-{container.uuid}',
-            env={'FLAG': container.flag}, dns_config=docker.types.DNSConfig(nameservers=dns),
+            env={'FLAG': container.flag, 'TZ': get_config("backend_timezone", "Asia/Shanghai")},
+            dns_config=docker.types.DNSConfig(nameservers=dns),
             networks=[get_config("whale:docker_auto_connect_network", "ctfd_frp_containers")],
             resources=docker.types.Resources(
                 mem_limit=DockerUtils.convert_readable_text(
@@ -193,7 +194,7 @@ class DockerUtils:
                 image=image, name=container_name, networks=[
                     docker.types.NetworkAttachmentConfig(network_name, aliases=[name])
                 ],
-                env={'FLAG': container.flag},
+                env={'FLAG': container.flag, 'TZ': get_config("backend_timezone", "Asia/Shanghai")},
                 dns_config=docker.types.DNSConfig(nameservers=dns),
                 resources=docker.types.Resources(
                     mem_limit=DockerUtils.convert_readable_text(

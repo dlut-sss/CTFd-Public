@@ -127,12 +127,14 @@ def init_logs(app):
     logger_registrations = logging.getLogger("registrations")
     logger_request = logging.getLogger("request")
     logger_bot = logging.getLogger("bot")
+    logger_email = logging.getLogger("email")
 
     logger_submissions.setLevel(logging.INFO)
     logger_logins.setLevel(logging.INFO)
     logger_registrations.setLevel(logging.INFO)
     logger_request.setLevel(logging.INFO)
     logger_bot.setLevel(logging.INFO)
+    logger_email.setLevel(logging.INFO)
 
     log_dir = app.config["LOG_FOLDER"]
     if not os.path.exists(log_dir):
@@ -144,6 +146,7 @@ def init_logs(app):
         "registrations": os.path.join(log_dir, "registrations.log"),
         "request": os.path.join(log_dir, "request.log"),
         "bot": os.path.join(log_dir, "bot.log"),
+        "email": os.path.join(log_dir, "email.log"),
     }
 
     try:
@@ -166,12 +169,16 @@ def init_logs(app):
         bot_log = logging.handlers.RotatingFileHandler(
             logs["bot"], maxBytes=10485760, backupCount=5
         )
+        email_log = logging.handlers.RotatingFileHandler(
+            logs["email"], maxBytes=10485760, backupCount=5
+        )
 
         logger_submissions.addHandler(submission_log)
         logger_logins.addHandler(login_log)
         logger_registrations.addHandler(registration_log)
         logger_request.addHandler(request_log)
         logger_bot.addHandler(bot_log)
+        logger_email.addHandler(email_log)
     except IOError:
         pass
 
@@ -182,12 +189,14 @@ def init_logs(app):
     logger_registrations.addHandler(stdout)
     logger_request.addHandler(stdout)
     logger_bot.addHandler(stdout)
+    logger_email.addHandler(stdout)
 
     logger_submissions.propagate = 0
     logger_logins.propagate = 0
     logger_registrations.propagate = 0
     logger_request.propagate = 0
     logger_bot.propagate = 0
+    logger_email.propagate = 0
 
 
 def init_events(app):

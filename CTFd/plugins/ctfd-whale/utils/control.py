@@ -148,8 +148,8 @@ class ControlUtil:
         timeout = int(get_config("whale:docker_timeout", "3600"))
         container.start_time = container.start_time + \
                                datetime.timedelta(seconds=timeout)
-        if container.start_time > datetime.datetime.now():
-            container.start_time = datetime.datetime.now()
+        if container.start_time > datetime.datetime.utcnow():
+            container.start_time = datetime.datetime.utcnow()
             # race condition? useless maybe?
             # useful when docker_timeout < poll timeout (10 seconds)
             # doesn't make any sense

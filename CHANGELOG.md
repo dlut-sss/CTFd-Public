@@ -1,3 +1,30 @@
+# 3.6.1 S-2 / 2023-12-27
+**版本号**
+- 题解上传增加文件校验，同时增加错误的文件名设置导致的文件名格式化失败异常捕捉
+
+# 3.6.1 S-1 / 2023-12-15
+**版本号**
+- 更改更新日志版本号命名方式为 整合到的官方版本 S-自定义子版本
+
+**更新整合**
+- Fix remove db from connection string (#2372)
+- Add email whitelist wildcard (#2375)
+- Fix SQLAlchemy warning about back_populates (#2378)
+- Fix issues with CSV exporting (#2412)
+- Fix missing next_id on dynamic challenges
+- Add linear decay function to dynamic challenges (#2347)
+- Fix issue where the API was not respecting score visibility
+- bug: S3 uploader incorrect timezone (#2432)
+- When unlocking a hint, always use an accounts true score and not their public visible score (#2441)
+
+# 3.5.3 dev-41/ 2023-12-13
+**日志记录**
+- 增加email日志
+
+**Whale**
+- 修复时区二次格式化的问题
+- 增加题目容器时区映射
+
 # 3.5.3 dev-40/ 2023-12-07
 **日志记录**
 - 调整时区默认设置，增加插件日志时间

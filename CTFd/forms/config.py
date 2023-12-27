@@ -31,7 +31,7 @@ class ResetInstanceForm(BaseForm):
 class AccountSettingsForm(BaseForm):
     domain_whitelist = StringField(
         "账户邮箱白名单",
-        description="用户可以注册的逗号分隔电子邮件域（例如 ctfd.io、gmail.com、yahoo.com）",
+        description="用户可以注册的逗号分隔电子邮件域（例如 ctfd.io, example.com, *.example.com）",
     )
     team_creation = SelectField(
         "团队创建",

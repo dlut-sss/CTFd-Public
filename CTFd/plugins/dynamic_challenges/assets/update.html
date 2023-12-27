@@ -24,11 +24,31 @@
 </div>
 
 <div class="form-group">
-	<label for="value">{{ 'Decay Limit' if en else '衰减极限' }}<br>
-		<small class="form-text text-muted">
-            {{ 'The amount of solves before the challenge reaches its minimum value' if en else '题目分值达到最小值之前解出的数量' }}
-		</small>
-	</label>
+    <label for="value">{{ 'Decay Function' if en else '衰减函数' }}<br>
+        <small class="form-text text-muted">
+            <span>{{ 'How the dynamic value will be calculated based on the Decay value' if en else '如何根据 Decay 值计算动态值' }}</span>
+            <ul>
+                <li>Linear: {{ 'Calculated as ' if en else '按' }}<code>Initial - (Decay * SolveCount)</code>{{ '' if en else '计算' }}</li>
+                <li>Logarithmic: {{ 'Calculated as ' if en else '按' }}<code>(((Minimum - Initial) / (Decay^2)) * (SolveCount^2)) + Initial</code>{{ '' if en else '计算' }}</li>
+            </ul>
+        </small>
+    </label>
+    <select name="function" class="custom-select">
+        <option value="linear" {% if challenge.function == "linear" %}selected{% endif %}>Linear</option>
+        <option value="logarithmic" {% if challenge.function == "logarithmic" %}selected{% endif %}>Logarithmic</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="value">{{ 'Decay' if en else '衰减' }}<br>
+        <small class="form-text text-muted">
+            <span>{{ 'The decay value is used differently depending on the above Decay Function' if en else '根据上述衰减函数的不同，衰减值的使用也不同' }}</span>
+            <ul>
+                <li>Linear: {{ 'The amount of points deducted per solve. Equal deduction per solve.' if en else '每次解出所扣除的分数。 每次解出均等扣除。' }}</li>
+                <li>Logarithmic: {{ 'The amount of solves before the challenge reaches its minimum value. Earlier solves will lose less points. Later solves will lose more points' if en else '分值达到最小值之前解出的数量。 较早解出的问题会损失较少的分数。 稍后解出会失去更多分数' }}</li>
+            </ul>
+        </small>
+    </label>
 	<input type="number" class="form-control chal-decay" min="1" name="decay" value="{{ challenge.decay }}" required>
 </div>
 

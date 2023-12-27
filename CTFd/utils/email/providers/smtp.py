@@ -5,6 +5,7 @@ from socket import timeout
 
 from CTFd.utils import get_app_config, get_config
 from CTFd.utils.email.providers import EmailProvider
+from CTFd.utils.logging import log_simple
 
 
 class SMTPEmailProvider(EmailProvider):
@@ -56,21 +57,22 @@ class SMTPEmailProvider(EmailProvider):
                 smtp.send_message(msg, from_addr=mailsender_addr)
 
             smtp.quit()
-            print(f"[CTFd] 发往{addr}的邮件已成功发送。", flush=True)
+            log_simple("email", "[{date}] [CTFd] 发往{addr}的邮件已成功发送。",addr=addr)
             return True, f"发往{addr}的邮件已成功发送。"
         except smtplib.SMTPException as e:
-            print(f"[CTFd] 邮件发送失败，出现了SMTPException异常{str(e)}", flush=True)
+            log_simple("email", "[{date}] [CTFd] 邮件发送失败，出现了SMTPException异常{e}", e=str(e))
             return False, f"邮件发送失败，出现了SMTPException异常{str(e)}"
         except timeout:
-            print("[CTFd] 邮件发送失败，SMTP 服务器连接超时", flush=True)
+            log_simple("email", "[{date}] [CTFd] 邮件发送失败，SMTP 服务器连接超时")
             return False, "SMTP 服务器连接超时"
         except Exception as e:
             if "WRONG_VERSION_NUMBER" in str(e):
-                print(f"[CTFd] 邮件发送失败，出现了异常{str(e)}", flush=True)
-                print(f"[CTFd] WRONG_VERSION_NUMBER代表你可能开启了tls，但是服务器端口仍然为25，应设置为465", flush=True)
+                log_simple("email", "[{date}] [CTFd] 邮件发送失败，出现了异常{e}", e=str(e))
+                log_simple("email",
+                           "[{date}] [CTFd] WRONG_VERSION_NUMBER代表你可能开启了tls，但是服务器端口仍然为25，应设置为465")
                 return False, f"邮件发送失败，出现了异常{str(e)}，代表你可能开启了tls，但是服务器端口仍然为25，应设置为465"
             else:
-                print(f"[CTFd] 邮件发送失败，出现了异常{str(e)}", flush=True)
+                log_simple("email", "[{date}] [CTFd] 邮件发送失败，出现了异常{e}", e=str(e))
                 return False, f"邮件发送失败，出现了异常{str(e)}"
 
 

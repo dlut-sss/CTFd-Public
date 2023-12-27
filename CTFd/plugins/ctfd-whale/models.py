@@ -83,7 +83,7 @@ class WhaleContainer(db.Model):
     def __init__(self, user_id, challenge_id):
         self.user_id = user_id
         self.challenge_id = challenge_id
-        self.start_time = datetime.now()
+        self.start_time = datetime.utcnow()
         self.renew_count = 0
         self.uuid = str(uuid.uuid4())
         self.flag = Template(get_config(

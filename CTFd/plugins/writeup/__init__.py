@@ -5,6 +5,8 @@ import tempfile
 import zipfile
 from datetime import datetime
 from functools import wraps
+from PyPDF2 import PdfReader
+from io import BytesIO
 
 from flask_restx import Namespace, Resource
 from lxml import etree
@@ -187,6 +189,19 @@ def load(app):
                 'message': '文件不存在！'
             }, 200
 
+    def is_pdf(file):
+        try:
+            original_position = file.tell()
+            # 使用BytesIO将文件内容读取到内存中
+            file_content = BytesIO(file.read())
+            file.seek(original_position)
+            pdf_reader = PdfReader(file_content)
+            # 判断PDF文件是否能成功读取
+            len(pdf_reader.pages)
+            return True
+        except Exception as e:
+            return False
+
     @page_blueprint.route("/upload", methods=['GET', 'POST'])
     @authed_only
     def UserUpload():
@@ -197,9 +212,17 @@ def load(app):
                     return redirect(url_for("challenges.listing"))
 
             if get_config("writeup:enabled"):
+                filename_for_store = ""
                 user = current_user.get_current_user()
-                filename_for_store = get_config("writeup:name").format(user=user)
-
+                try:
+                    filename_for_store = get_config("writeup:name").format(user=user)
+                except Exception as e:
+                    log_simple("writeup", "[{date}] [Writeup] 用户上传writeup时格式化名称出错，请检查后台文件名配置！：{e}",
+                               e=str(e))
+                    return {
+                        'success': False,
+                        'message': '后端处理失败，请联系管理员！'
+                    }, 500
                 upload_folder = os.path.join(
                     os.path.normpath(app.root_path), app.config.get("UPLOAD_FOLDER")
                 )
@@ -221,6 +244,15 @@ def load(app):
                     }, 400
 
                 if file:
+                    try:
+                        if not is_pdf(file):
+                            log_simple("writeup", "[{date}] [Writeup] pdf校验失败，可能用户{name}上传的是恶意文件！",
+                                       name=user.name)
+                            return {'success': False, 'message': "文件未通过校验！"}, 400
+                    except:
+                        log_simple("writeup", "[{date}] [Writeup] pdf校验失败，可能用户{name}上传的是恶意文件！",
+                                   name=user.name)
+                        return {'success': False, 'message': "文件未通过校验！"}, 400
                     try:
                         filepath = os.path.join(writeup_folder, filename_for_store)
                         file.save(filepath)
@@ -270,9 +302,9 @@ def load(app):
                 return page
 
         try:
-            language = "zh"
+            language = "en"
             try:
-                language = request.cookies.get("Scr1wCTFdLanguage", "zh")
+                language = request.cookies.get("Scr1wCTFdLanguage", "en")
             except:
                 pass
 
