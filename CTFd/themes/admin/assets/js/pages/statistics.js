@@ -2,8 +2,7 @@ import "./main";
 import "core/utils";
 import CTFd from "core/CTFd";
 import $ from "jquery";
-import echarts from "echarts/dist/echarts.common";
-import echarts_en from "echarts/dist/echarts-en.common";
+import * as echarts from 'echarts';
 import { colorHash } from "core/utils";
 
 function language(en,zh) {
@@ -15,6 +14,17 @@ function language(en,zh) {
     }
   }
   return zh;
+}
+
+function getCookieForLanguage(name) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === name) {
+      return decodeURIComponent(cookieValue);
+    }
+  }
+  return "zh";
 }
 
 const graph_configs = {
@@ -535,14 +545,7 @@ const createGraphs = () => {
     const $elem = $(key);
     $elem.empty();
 
-    let chart;
-    if (language("0","1")==="0")
-    {
-      chart = echarts_en.init(document.querySelector(key));
-    }else
-    {
-      chart = echarts.init(document.querySelector(key));
-    }
+    let chart = echarts.init(document.querySelector(key),null,{locale:getCookieForLanguage("Scr1wCTFdLanguage")});
 
 
     cfg
@@ -564,14 +567,7 @@ function updateGraphs() {
     const cfg = graph_configs[key];
 
 
-    let chart;
-    if (language("0","1")==="0")
-    {
-      chart = echarts_en.init(document.querySelector(key));
-    }else
-    {
-      chart = echarts.init(document.querySelector(key));
-    }
+    let chart = echarts.init(document.querySelector(key),null,{locale:getCookieForLanguage("Scr1wCTFdLanguage")});
 
     cfg
       .data()

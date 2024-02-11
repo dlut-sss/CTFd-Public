@@ -1,9 +1,10 @@
 import "./main";
 import $ from "jquery";
 import CTFd from "../CTFd";
-import echarts from "echarts/dist/echarts.common";
-import echarts_en from "echarts/dist/echarts-en.common";
-import dayjs from "dayjs"; import 'dayjs/locale/zh-cn';import 'dayjs/locale/en';
+import * as echarts from 'echarts';
+import dayjs from "dayjs";
+import 'dayjs/locale/zh-cn';
+import 'dayjs/locale/en';
 import { htmlEntities, cumulativeSum, colorHash } from "../utils";
 
 const graph = $("#score-graph");
@@ -44,7 +45,7 @@ function getCookieForLanguage(name) {
       return decodeURIComponent(cookieValue);
     }
   }
-  return null;
+  return "zh";
 }
 
 const buildGraphData = () => {
@@ -161,14 +162,7 @@ const createGraph = () => {
 
     graph.empty(); // Remove spinners
 
-    let chart;
-    if (getCookieForLanguage("Scr1wCTFdLanguage") === "en")
-    {
-      chart = echarts_en.init(document.querySelector("#score-graph"));
-    }else
-    {
-      chart = echarts.init(document.querySelector("#score-graph"));
-    }
+    let chart = echarts.init(document.querySelector("#score-graph"),null,{locale:getCookieForLanguage("Scr1wCTFdLanguage")});
 
     chart.setOption(option);
 
@@ -183,15 +177,7 @@ const createGraph = () => {
 const updateGraph = () => {
   buildGraphData().then(option => {
 
-    let chart;
-    if (getCookieForLanguage("Scr1wCTFdLanguage") === "en")
-    {
-      chart = echarts_en.init(document.querySelector("#score-graph"));
-    }else
-    {
-      chart = echarts.init(document.querySelector("#score-graph"));
-    }
-
+    let chart = echarts.init(document.querySelector("#score-graph"),null,{locale:getCookieForLanguage("Scr1wCTFdLanguage")});
     chart.setOption(option);
   });
 };

@@ -24,6 +24,7 @@ from CTFd.models import (
 from CTFd.schemas.awards import AwardSchema
 from CTFd.schemas.submissions import SubmissionSchema
 from CTFd.schemas.users import UserSchema
+from CTFd.utils import get_config
 from CTFd.utils.config import get_mail_provider
 from CTFd.utils.decorators import admins_only, authed_only, ratelimit
 from CTFd.utils.decorators.visibility import (
@@ -315,20 +316,26 @@ class UserPrivate(Resource):
     def patch(self):
         user = get_current_user()
         data = request.get_json()
-        sid = data.get("sid")
 
+        # 如果开启了实名注册，就禁止用户修改学号和姓名
+        sso_enabled = get_config("sso_enabled")
+        if sso_enabled == 1:
+            if "sname" in data:
+                if data.get("sname") != user.sname:
+                    return {"success": False, "errors": {"sname": "实名注册已启用，禁止修改真实姓名！"}}, 400
+            if "sid" in data:
+                if data.get("sid") != user.sid:
+                    return {"success": False, "errors": {"sid": "实名注册已启用，禁止修改学号！"}}, 400
+
+        # 判断学号是否重复
+        sid = data.get("sid")
         if sid:
             userquery = Users.query.filter_by(sid=sid).first()
             if userquery:
                 if userquery.id != user.id:
                     return {"success": False, "errors": {"sid": "学号已存在"}}, 400
 
-        # 添加前面提到的验证和限制代码片段
         schema = UserSchema(view="self", instance=user, partial=True)
-        for field in ["sid", "sname"]:
-            if field in data:
-                return {"success": False, "errors": {field: "禁止修改该字段"}}, 400
-
         response = schema.load(data)
         if response.errors:
             return {"success": False, "errors": response.errors}, 400

@@ -1,6 +1,6 @@
 {% if en %}
 <div role="tabpanel" class="tab-pane config-section" id="email">
-    <form method="POST" autocomplete="off" class="w-100">
+    <form method="POST" autocomplete="new-password" class="w-100">
         <h5>Email Content</h5>
         <small class="form-text text-muted">
             Customize CTFd emails with <a href="https://docs.ctfd.io/docs/settings/emails/#email-content" target="_blank">predefined variables</a> and custom content
@@ -202,7 +202,7 @@
                             <sup class="form-text text-muted">A mail server username is currently set</sup>
                         </label>
                         {% endif %}
-                        <input class="form-control" id='mail_username' name='mail_username' autocomplete='off' type='text'>
+                        <input class="form-control" id='mail_username' name='mail_username' autocomplete='new-password' type='text'>
                     </div>
                     <div class="form-group">
                         <label for="mail_password">
@@ -216,7 +216,7 @@
                             <sup class="form-text text-muted">An mail server password is currently set</sup>
                         </label>
                         {% endif %}
-                        <input class="form-control" id='mail_password' name='mail_password' autocomplete='off' type='password'>
+                        <input class="form-control" id='mail_password' name='mail_password' autocomplete='new-password' type='password'>
                     </div>
                     <sup>Uncheck setting and update to remove username and password</sup>
                     <br>
@@ -266,7 +266,7 @@
 </div>
 {% else %}
 <div role="tabpanel" class="tab-pane config-section" id="email">
-    <form method="POST" autocomplete="off" class="w-100">
+    <form method="POST" autocomplete="new-password" class="w-100">
         <h5>电子邮件内容</h5>
         <small class="form-text text-muted">
             使用<a href="https://docs.ctfd.io/docs/settings/emails/#email-content" target="_blank">预定义变量</a>和自定义内容自定义 CTFd 电子邮件
@@ -467,7 +467,7 @@
                             <small class="form-text text-muted" style="color: red">当前已设置邮件服务器用户名(已隐藏)</small>
                         </label>
                         {% endif %}
-                        <input class="form-control" id='mail_username' name='mail_username' autocomplete='off' type='text'>
+                        <input class="form-control" id='mail_username' name='mail_username' autocomplete='new-password' type='text'>
                     </div>
                     <div class="form-group">
                         <label for="mail_password">
@@ -481,7 +481,7 @@
                             <small class="form-text text-muted" style="color: red">当前已设置邮件服务器密码(已隐藏)</small>
                         </label>
                         {% endif %}
-                        <input class="form-control" id='mail_password' name='mail_password' autocomplete='off' type='password'>
+                        <input class="form-control" id='mail_password' name='mail_password' autocomplete='new-password' type='password'>
                     </div>
                     <sup>取消选中设置并点击更新以删除用户名和密码</sup>
                     <br>

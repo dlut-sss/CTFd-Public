@@ -1,0 +1,74 @@
+{% extends "admin/base.html" %}
+
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+{% set en = true %}
+{% else %}
+{% set en = false %}
+{% endif %}
+
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <h1><b>{{ "SMTPViaHTTP Setting" if en else "SMTPViaHTTP设置" }}</b></h1>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="pill"
+                       href="#settings">{{ "Settings" if en else "插件设置" }}</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-9">
+            <div class="tab-content">
+                <div class="config-section tab-pane fade show active" id="settings" role="tabpanel"
+                     aria-autocomplete="none">
+                    <form method="POST" accept-charset="utf-8" action="/admin/plugins/writeup"
+                          class="form-horizontal">
+                        {% set enabled = get_config('SMTPViaHTTP:enabled') %}
+                        <div class="form-group">
+                            <label for="enabled">
+                                {{ "Enable Switch" if en else "插件开关" }}
+                                <small class="form-text text-muted">
+                                    {{ "Whether to enable plugin" if en else "是否开启SMTP的HTTP代理" }}
+                                </small>
+                            </label>
+                            <select id="enabled" name="SMTPViaHTTP:enabled" class="form-control custom-select">
+                                <option value="true" {{
+                                "selected" if enabled == true }}>{{ "ON" if en else "开启" }}</option>
+                                <option value="false" {{
+                                "selected" if enabled == false }}>{{ "OFF" if en else "关闭" }}</option>
+                            </select>
+                        </div>
+
+                        {% set ServerName = get_config('SMTPViaHTTP:ServerName') %}
+                        <div class="form-group">
+                            <label for="ServerName">
+                                {{ "Proxy Http Server" if en else "SMTP HTTP代理服务器" }}
+                            </label>
+                            <div class="input-group">
+                                <input class="form-control" id='ServerName' name='SMTPViaHTTP:ServerName'
+                                       {% if ServerName is defined and ServerName !=None %}value="{{ ServerName }}" {% endif %}>
+                            </div>
+                        </div>
+
+                        <div class="submit-row float-right">
+                            <button type="submit" tabindex="0" class="btn btn-md btn-primary btn-outlined">
+                                {{ "Submit" if en else "确定" }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script defer src="/plugins/SMTPViaHTTP/static/config.js"></script>
+{% endblock %}

@@ -34,7 +34,7 @@
     "css-loader": "^6.8.1",
     "dayjs": "^1.11.1",
     "easymde": "^2.10.1",
-    "echarts": "^4.9.0",
+    "echarts": "^5.4.3",
     "eslint": "~8.54.0",
     "event-source-polyfill": "1.0.31",
     "file-loader": "~6.2.0",
