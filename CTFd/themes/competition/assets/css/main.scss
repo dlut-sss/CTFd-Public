@@ -32,12 +32,26 @@ a{
 }
 
 .category-bar{
+  border: 2px dashed white;
+  border-radius: .15rem;
   margin-top: 60px;
   top: 80px;
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 10px 10px 12px rgba(255, 255, 255, 0.1);
   width:200px;
   position: sticky;
   z-index: 1020;
+  transition: all 0.3s ease;
+}
+.category-bar:hover{
+  border: 2px dashed white;
+  border-radius: .25rem;
+  margin-top: 60px;
+  top: 80px;
+  box-shadow: 16px 16px 18px rgba(255, 255, 255, 0.1);
+  width:200px;
+  position: sticky;
+  z-index: 1020;
+  transition: all 0.3s ease;
 }
 
 h1,

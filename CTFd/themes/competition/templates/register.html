@@ -53,7 +53,6 @@
                 {% endif %}
                 {% endif %}
 
-                {% endif %}
                 <div class="form-group">
                     <b>{{ 'Email' if en else form.email.label }}</b>
                     {{ form.email(class="form-control", value=email) }}
@@ -75,15 +74,15 @@
                 <div class="row pt-3">
                     <div class="col-md-12">
                         {% if Configs.sso_enabled == 1 %}
-                            {% if en %}
-                                <input class="btn btn-md btn-primary btn-outlined float-right"
-                                       style="margin-left: 10px;margin-bottom: 10px;" id="sso" value="change SSO auth"
-                                       name="_sso" type="button" onclick="ssoregister()">
-                            {% else %}
-                                <input class="btn btn-md btn-primary btn-outlined float-right"
-                                       style="margin-left: 10px;margin-bottom: 10px;" id="sso" value="重新认证"
-                                       name="_sso" type="button" onclick="ssoregister()">
-                            {% endif %}
+                        {% if en %}
+                        <input class="btn btn-md btn-primary btn-outlined float-right"
+                               style="margin-left: 10px;margin-bottom: 10px;" id="sso" value="change SSO auth"
+                               name="_sso" type="button" onclick="ssoregister()">
+                        {% else %}
+                        <input class="btn btn-md btn-primary btn-outlined float-right"
+                               style="margin-left: 10px;margin-bottom: 10px;" id="sso" value="重新认证"
+                               name="_sso" type="button" onclick="ssoregister()">
+                        {% endif %}
                         {% endif %}
                         {% if en %}
                         {{ form.submit(class="btn btn-md btn-primary btn-outlined float-right",value="register") }}

@@ -28,15 +28,16 @@ from .utils.docker import DockerUtils
 from .utils.exceptions import WhaleWarning
 from .utils.setup import setup_default_configs
 from .utils.routers import Router
+from CTFd.plugins.migrations import upgrade
 
 
 def load(app):
-    # upgrade()
     plugin_name = __name__.split('.')[-1]
     set_config('whale:plugin_name', plugin_name)
     app.db.create_all()
     if not get_config("whale:setup"):
         setup_default_configs()
+    upgrade(plugin_name=plugin_name)
 
     register_plugin_assets_directory(
         app,

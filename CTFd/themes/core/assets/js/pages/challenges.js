@@ -459,13 +459,13 @@ function loadChals() {
 
       if (solves.indexOf(chalinfo.id) == -1) {
         chalbutton = $(
-          "<button class='btn btn-dark challenge-button w-100 text-truncate pt-3 pb-3 mb-2 challenge-button-content' value='{0}' onmouseover=\"this.style.transform = 'translate(-2px,-2px)';\" onmouseout=\"this.style.transform = 'none';\"></button>".format(
+          "<button class='btn btn-dark challenge-button w-100 text-truncate pt-3 pb-3 mb-2 challenge-button-content' value='{0}'></button>".format(
             chalinfo.id
           )
         );
       } else {
         chalbutton = $(
-          "<button class='btn btn-dark challenge-button solved-challenge w-100 text-truncate pt-3 pb-3 mb-2 challenge-button-content' value='{0}' onmouseover=\"this.style.transform = 'translate(-2px,-2px)';\" onmouseout=\"this.style.transform = 'none';\"><i class='fas fa-check'></i></button>".format(
+          "<button class='btn btn-dark challenge-button solved-challenge w-100 text-truncate pt-3 pb-3 mb-2 challenge-button-content' value='{0}'><i class='fas fa-check'></i></button>".format(
             chalinfo.id
           )
         );

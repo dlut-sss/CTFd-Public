@@ -46,7 +46,9 @@
 .challenge-button {
   box-shadow: 3px 3px #3312d5 !important;
   background-color: #2378c0 !important;
-  border-color: #2378c0 !important
+  border-color: #2378c0 !important;
+  transform: none;
+  transition: all 0.3s ease;
 }
 
 .challenge-button span:before {
@@ -61,7 +63,9 @@
 
 .challenge-button:hover {
   background-color: #ff0e66 !important;
-  border-color: #8f0034 !important
+  border-color: #8f0034 !important;
+  transform: translate(-2px,-2px);
+  transition: all 0.3s ease;
 }
 
 .challenge-tag {

@@ -135,6 +135,13 @@ html, body, main {
 }
 .challenge-button {
   box-shadow: 0 0 0  #006fce;
+  transform: none;
+  transition: all 0.3s ease;
+}
+.challenge-button:hover {
+  box-shadow: 0 0 0  #006fce;
+  transform: translate(-2px,-2px);
+  transition: all 0.3s ease;
 }
 .challenge-input {
   border-radius: 5px!important;
@@ -159,8 +166,19 @@ html, body, main {
   padding: 14px 10px 10px;
   margin-top:40px;
   border-radius: 10px;
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  box-shadow: 10px 10px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  width:200px;
+  position: sticky;
+  z-index: 1020;
+}
+.category-bar:hover{
+  top: 80px;
+  padding: 14px 10px 10px;
+  margin-top:40px;
+  border-radius: 10px;
+  box-shadow: 16px 16px 18px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
   width:200px;
   position: sticky;
   z-index: 1020;
