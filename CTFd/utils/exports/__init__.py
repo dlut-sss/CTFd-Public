@@ -12,6 +12,7 @@ from pathlib import Path
 import dataset
 from flask import current_app as app
 from flask_migrate import upgrade as migration_upgrade
+from progress.bar import IncrementalBar
 from sqlalchemy.engine.url import make_url
 from sqlalchemy.exc import IntegrityError, ProgrammingError
 from sqlalchemy.sql import sqltypes
@@ -77,13 +78,15 @@ def export_ctf():
     for root, _dirs, files in os.walk(upload_folder):
         for file in files:
             parent_dir = os.path.basename(root)
-            backup_zip.write(
-                os.path.join(root, file),
-                arcname=os.path.join("uploads", parent_dir, file),
-            )
+            if not "autoBackups" in parent_dir:
+                backup_zip.write(
+                    os.path.join(root, file),
+                    arcname=os.path.join("uploads", parent_dir, file),
+                )
 
     backup_zip.close()
     backup.seek(0)
+    db.close()
     return backup
 
 
@@ -121,7 +124,7 @@ def import_ctf(backup, erase=True):
             "Exception: SQLite 数据库当前不支持导入。 请参阅 Github 问题 #1988。"
         )
         raise Exception(
-            "SQLite 数据库当前不支持导入。 请参阅 Github 问题 #1988。"
+            "[CTFd Import] SQLite 数据库当前不支持导入。 请参阅 Github 问题 #1988。"
         )
 
     if not zipfile.is_zipfile(backup):
@@ -148,7 +151,7 @@ def import_ctf(backup, erase=True):
     if "db" not in member_dirs:
         set_import_error("Exception: db 文件夹丢失")
         raise Exception(
-            'CTFd 在此备份中找不到“db”文件夹。'
+            '[CTFd Import] CTFd 在此备份中找不到“db”文件夹。'
             "备份可能格式错误或已损坏，并且导入过程无法继续。"
         )
 
@@ -158,7 +161,7 @@ def import_ctf(backup, erase=True):
     except Exception:
         set_import_error("Exception: 无法确定合适的数据库版本")
         raise Exception(
-            "无法确定适当的数据库版本。 该备份无法自动导入。"
+            "[CTFd Import] 无法确定适当的数据库版本。 该备份无法自动导入。"
         )
 
     # Check if the alembic version is from CTFd 1.x
@@ -181,7 +184,7 @@ def import_ctf(backup, erase=True):
             "Exception: 此备份所在的 CTFd 版本太旧，无法自动导入。"
         )
         raise Exception(
-            "此备份所在的 CTFd 版本太旧，无法自动导入。"
+            "[CTFd Import] 此备份所在的 CTFd 版本太旧，无法自动导入。"
         )
 
     start_time = unix_time(datetime.datetime.utcnow())
@@ -189,7 +192,7 @@ def import_ctf(backup, erase=True):
     set_import_start_time(value=start_time, skip_print=True)
     set_import_end_time(value=None, skip_print=True)
 
-    set_import_status("开始导入")
+    set_import_status("[CTFd Import] 开始导入")
 
     sqlite = get_app_config("SQLALCHEMY_DATABASE_URI").startswith("sqlite")
     postgres = get_app_config("SQLALCHEMY_DATABASE_URI").startswith("postgres")
@@ -202,11 +205,11 @@ def import_ctf(backup, erase=True):
             "Exception: 此备份中的目标迁移在此版本的 CTFd 中不可用。"
         )
         raise Exception(
-            "此备份中的目标迁移在此版本的 CTFd 中不可用。"
+            "[CTFd Import] 此备份中的目标迁移在此版本的 CTFd 中不可用。"
         )
 
     if erase:
-        set_import_status("正在清除数据")
+        set_import_status("[CTFd Import] 正在清除当前数据。。。")
         # Clear out existing connections to release any locks
         db.session.close()
         db.engine.dispose()
@@ -233,18 +236,18 @@ def import_ctf(backup, erase=True):
         create_database()
         # We explicitly do not want to upgrade or stamp here.
         # The import will have this information.
-        set_import_status("数据擦除完成")
+        set_import_status("[CTFd Import] 数据擦除完成")
 
     side_db = dataset.connect(get_app_config("SQLALCHEMY_DATABASE_URI"))
 
     try:
-        set_import_status("正在尝试禁用外键检查")
+        set_import_status("[CTFd Import] 正在尝试禁用外键检查")
         if postgres:
             side_db.query("SET session_replication_role=replica;")
         else:
             side_db.query("SET FOREIGN_KEY_CHECKS=0;")
     except Exception:
-        print("无法禁用外键检查。 继续导入。")
+        print("[CTFd Import] 无法禁用外键检查。继续执行导入。")
 
     first = [
         "db/teams.json",
@@ -298,92 +301,94 @@ def import_ctf(backup, erase=True):
 
                     saved = json.loads(data)
                     count = len(saved["results"])
-                    for i, entry in enumerate(saved["results"]):
-                        set_import_status(f"导入 {member} {i}/{count}")
-                        # This is a hack to get SQLite to properly accept datetime values from dataset
-                        # See Issue #246
-                        if sqlite:
-                            direct_table = get_class_by_tablename(table.name)
-                            for k, v in entry.items():
-                                if isinstance(v, string_types):
-                                    # We only want to apply this hack to columns that are expecting a datetime object
+                    with IncrementalBar(f"[CTFd Import] 导入 {member}:", max=count) as bar:
+                        for i, entry in enumerate(saved["results"]):
+                            set_import_status(f"导入 {member} {i}/{count}", skip_print=True)
+                            bar.next()
+                            # This is a hack to get SQLite to properly accept datetime values from dataset
+                            # See Issue #246
+                            if sqlite:
+                                direct_table = get_class_by_tablename(table.name)
+                                for k, v in entry.items():
+                                    if isinstance(v, string_types):
+                                        # We only want to apply this hack to columns that are expecting a datetime object
+                                        try:
+                                            is_dt_column = (
+                                                type(getattr(direct_table, k).type)
+                                                == sqltypes.DateTime
+                                            )
+                                        except AttributeError:
+                                            is_dt_column = False
+
+                                        # If the table is expecting a datetime, we should check if the string is one and convert it
+                                        if is_dt_column:
+                                            match = re.match(
+                                                r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d",
+                                                v,
+                                            )
+                                            if match:
+                                                entry[k] = datetime.datetime.strptime(
+                                                    v, "%Y-%m-%dT%H:%M:%S.%f"
+                                                )
+                                                continue
+                                            match = re.match(
+                                                r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}", v
+                                            )
+                                            if match:
+                                                entry[k] = datetime.datetime.strptime(
+                                                    v, "%Y-%m-%dT%H:%M:%S"
+                                                )
+                                                continue
+                            # From v2.0.0 to v2.1.0 requirements could have been a string or JSON because of a SQLAlchemy issue
+                            # This is a hack to ensure we can still accept older exports. See #867
+                            if member in (
+                                "db/challenges.json",
+                                "db/hints.json",
+                                "db/awards.json",
+                            ):
+                                requirements = entry.get("requirements")
+                                if requirements and isinstance(requirements, string_types):
+                                    entry["requirements"] = json.loads(requirements)
+
+                            # From v3.1.0 to v3.5.0 FieldEntries could have been varying levels of JSON'ified strings.
+                            # For example "\"test\"" vs "test". This results in issues with importing backups between
+                            # databases. Specifically between MySQL and MariaDB. Because CTFd standardizes against MySQL
+                            # we need to have an edge case here.
+                            if member == "db/field_entries.json":
+                                value = entry.get("value")
+                                if value is not None:
                                     try:
-                                        is_dt_column = (
-                                            type(getattr(direct_table, k).type)
-                                            == sqltypes.DateTime
-                                        )
-                                    except AttributeError:
-                                        is_dt_column = False
+                                        # Attempt to convert anything to its original Python value
+                                        entry["value"] = str(json.loads(value))
+                                    except (json.JSONDecodeError, TypeError):
+                                        pass
+                                    finally:
+                                        # Dump the value into JSON if its mariadb or skip the conversion if not mariadb
+                                        if mariadb:
+                                            entry["value"] = json.dumps(entry["value"])
 
-                                    # If the table is expecting a datetime, we should check if the string is one and convert it
-                                    if is_dt_column:
-                                        match = re.match(
-                                            r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d",
-                                            v,
-                                        )
-                                        if match:
-                                            entry[k] = datetime.datetime.strptime(
-                                                v, "%Y-%m-%dT%H:%M:%S.%f"
-                                            )
-                                            continue
-                                        match = re.match(
-                                            r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}", v
-                                        )
-                                        if match:
-                                            entry[k] = datetime.datetime.strptime(
-                                                v, "%Y-%m-%dT%H:%M:%S"
-                                            )
-                                            continue
-                        # From v2.0.0 to v2.1.0 requirements could have been a string or JSON because of a SQLAlchemy issue
-                        # This is a hack to ensure we can still accept older exports. See #867
-                        if member in (
-                            "db/challenges.json",
-                            "db/hints.json",
-                            "db/awards.json",
-                        ):
-                            requirements = entry.get("requirements")
-                            if requirements and isinstance(requirements, string_types):
-                                entry["requirements"] = json.loads(requirements)
-
-                        # From v3.1.0 to v3.5.0 FieldEntries could have been varying levels of JSON'ified strings.
-                        # For example "\"test\"" vs "test". This results in issues with importing backups between
-                        # databases. Specifically between MySQL and MariaDB. Because CTFd standardizes against MySQL
-                        # we need to have an edge case here.
-                        if member == "db/field_entries.json":
-                            value = entry.get("value")
-                            if value is not None:
-                                try:
-                                    # Attempt to convert anything to its original Python value
-                                    entry["value"] = str(json.loads(value))
-                                except (json.JSONDecodeError, TypeError):
-                                    pass
-                                finally:
-                                    # Dump the value into JSON if its mariadb or skip the conversion if not mariadb
-                                    if mariadb:
-                                        entry["value"] = json.dumps(entry["value"])
-
-                        try:
-                            table.insert(entry)
-                        except ProgrammingError:
-                            # MariaDB does not like JSON objects and prefers strings because it internally
-                            # represents JSON with LONGTEXT.
-                            # See Issue #973
-                            requirements = entry.get("requirements")
-                            if requirements and isinstance(requirements, dict):
-                                entry["requirements"] = json.dumps(requirements)
-                            table.insert(entry)
-                        except IntegrityError:
-                            # Catch odd situation where for some reason config keys are reinserted before import completes
-                            if member == "db/config.json":
-                                config_id = int(entry["id"])
-                                side_db.query(  # nosec B608
-                                    f"DELETE FROM config WHERE id={config_id}"
-                                )
+                            try:
                                 table.insert(entry)
-                            else:
-                                raise
+                            except ProgrammingError:
+                                # MariaDB does not like JSON objects and prefers strings because it internally
+                                # represents JSON with LONGTEXT.
+                                # See Issue #973
+                                requirements = entry.get("requirements")
+                                if requirements and isinstance(requirements, dict):
+                                    entry["requirements"] = json.dumps(requirements)
+                                table.insert(entry)
+                            except IntegrityError:
+                                # Catch odd situation where for some reason config keys are reinserted before import completes
+                                if member == "db/config.json":
+                                    config_id = int(entry["id"])
+                                    side_db.query(  # nosec B608
+                                        f"DELETE FROM config WHERE id={config_id}"
+                                    )
+                                    table.insert(entry)
+                                else:
+                                    raise
 
-                        db.session.commit()
+                            db.session.commit()
                     if postgres:
                         # This command is to set the next primary key ID for the re-inserted tables in Postgres. However,
                         # this command is very difficult to translate into SQLAlchemy code. Because Postgres is not
@@ -399,21 +404,21 @@ def import_ctf(backup, erase=True):
                                 f"Exception: 表名 {table_name} 包含引号"
                             )
                             raise Exception(
-                                "表名 {table_name} 包含引号".format(
+                                "[CTFd Import] 表名 {table_name} 包含引号".format(
                                     table_name=table_name
                                 )
                             )
 
     # Insert data from official tables
-    set_import_status("导入数据表")
+    set_import_status("[CTFd Import] 导入数据表")
     insertion(first)
 
     # Create tables created by plugins
     # Run plugin migrations
-    set_import_status("导入插件")
+    set_import_status("[CTFd Import] 开始导入插件：")
     plugins = get_plugin_names()
     for plugin in plugins:
-        set_import_status(f"导入插件 {plugin}")
+        set_import_status(f"[CTFd Import] 导入插件 {plugin}。。。")
         revision = plugin_current(plugin_name=plugin)
         plugin_upgrade(plugin_name=plugin, revision=revision, lower=None)
 
@@ -426,7 +431,7 @@ def import_ctf(backup, erase=True):
         plugin_upgrade(plugin_name=plugin)
 
     # Extracting files
-    set_import_status("正在导入上传的题目附件和媒体")
+    set_import_status("[CTFd Import] 正在导入上传的题目附件和媒体")
     files = [f for f in backup.namelist() if f.startswith("uploads/")]
     uploader = get_uploader()
     for f in files:
@@ -442,7 +447,7 @@ def import_ctf(backup, erase=True):
         uploader.store(fileobj=source, filename=filename)
 
     # Alembic sqlite support is lacking so we should just create_all anyway
-    set_import_status("执行头部迁移")
+    set_import_status("[CTFd Import] 执行头部迁移")
     if sqlite:
         app.db.create_all()
         stamp_latest_revision()
@@ -453,16 +458,16 @@ def import_ctf(backup, erase=True):
         app.db.create_all()
 
     try:
-        set_import_status("重新启用外键检查")
+        set_import_status("[CTFd Import] 重新启用外键检查")
         if postgres:
             side_db.query("SET session_replication_role=DEFAULT;")
         else:
             side_db.query("SET FOREIGN_KEY_CHECKS=1;")
     except Exception:
-        print("无法启用外键检查。 继续导入。")
+        print("[CTFd Import] 无法启用外键检查。 继续导入。")
 
     # Invalidate all cached data
-    set_import_status("清除缓存")
+    set_import_status("[CTFd Import] 清除缓存")
     cache.clear()
 
     # Set default theme in case the current instance or the import does not provide it

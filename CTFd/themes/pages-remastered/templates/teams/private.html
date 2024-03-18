@@ -8,7 +8,7 @@
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h2 class="modal-action text-center w-100">Edit Team</h2>
+					<h2 class="modal-action text-center w-100">{{ 'Edit Team' if en else '编辑队伍' }}</h2>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute;top: 0;right: 0;padding: 30px;">
 						<span aria-hidden="true">&times;</span>
 					</button>
@@ -173,57 +173,57 @@
                 {% endif %}
 			</h2>
 			<div class="pt-3">
-				<a class="edit-team no-decoration">
-					{% if team.captain_id == user.id %}
-						<i class="btn-fa fas fa-cogs fa-2x px-2"
-						   data-toggle="tooltip"
-						   data-placement="top"
-						   title="{{ 'Edit Team' if en else '编辑队伍' }}"></i>
-
-						<a class="edit-captain no-decoration">
-							<i class="btn-fa fas fa-user-tag fa-2x px-2" data-toggle="tooltip" data-placement="top"
-							   title="{{ 'Choose Captain' if en else '选择队长' }}"></i>
-						</a>
-
-						<a class="invite-members no-decoration">
-							<i class="btn-fa fas fa-ticket-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
-							   title="{{ 'Invite Users' if en else '邀请用户' }}"></i>
-						</a>
-						<a class="disband-team no-decoration">
-							<i class="btn-fa fas fa-trash-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
-								title="{{ 'Disband Team' if en else '解散队伍' }}"></i>
-						</a>
-					{% else %}
-						<i class="btn-fa fas fa-cogs fa-2x px-2 fa-disabled"
-						   data-toggle="tooltip"
-						   data-placement="top"
-						   title="{{ 'Only team captains can edit team information' if en else '只有队长可以编辑队伍信息' }}"></i>
-						<a class="edit-captain no-decoration">
-							<i class="btn-fa fas fa-user-tag fa-2x px-2 fa-disabled"
-							   data-toggle="tooltip"
-							   data-placement="top"
-							   title="{{ 'Only team captains can choose a new captain' if en else '只有队长才能选择新队长' }}"></i>
-						</a>
-						<a class="invite-members no-decoration">
-							<i class="btn-fa fas fa-ticket-alt fa-2x px-2"
-								data-toggle="tooltip"
-								data-placement="top"
-								title="{{ 'Only team captains can generate invite links' if en else '只有队长才能生成邀请链接' }}"></i>
-						</a>
-						<a class="disband-team no-decoration">
-							<i class="btn-fa fas fa-trash-alt fa-2x px-2 fa-disabled"
-								data-toggle="tooltip"
-								data-placement="top"
-								title="{{ 'Only team captains can disband the team' if en else '只有队长可以解散队伍' }}"></i>
-						</a>
-					{% endif %}
-				</a>
-				{% if team.website and (team.website.startswith('http://') or team.website.startswith('https://')) %}
-					<a href="{{ team.website }}" target="_blank" style="color: inherit;" rel="noopener">
-						<i class="fas fa-external-link-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
-						   title="{{ team.website }}"></i>
-					</a>
-				{% endif %}
+                {% if team.captain_id == user.id %}
+                <a class="edit-team no-decoration" style="text-decoration: none;">
+                    <i class="btn-fa fas fa-cogs fa-2x px-2 no-decoration"
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       title="{{ 'Edit Team' if en else '编辑队伍' }}"></i>
+                </a>
+                <a class="edit-captain no-decoration" style="text-decoration: none;">
+                    <i class="btn-fa fas fa-user-tag fa-2x px-2" data-toggle="tooltip" data-placement="top"
+                       title="{{ 'Choose Captain' if en else '选择队长' }}"></i>
+                </a>
+                <a class="invite-members no-decoration" style="text-decoration: none;">
+                    <i class="btn-fa fas fa-ticket-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
+                       title="{{ 'Invite Users' if en else '邀请用户' }}"></i>
+                </a>
+                <a class="disband-team no-decoration" style="text-decoration: none;">
+                    <i class="btn-fa fas fa-trash-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
+                       title="{{ 'Disband Team' if en else '解散队伍' }}"></i>
+                </a>
+                {% else %}
+                <a class="edit-team no-decoration" style="text-decoration: none;">
+                    <i class="btn-fa fas fa-cogs fa-2x px-2 fa-disabled no-decoration"
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       title="{{ 'Only team captains can edit team information' if en else '只有队长可以编辑队伍信息' }}"></i>
+                </a>
+                <a class="edit-captain no-decoration" style="text-decoration: none;">
+                    <i class="btn-fa fas fa-user-tag fa-2x px-2 fa-disabled no-decoration"
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       title="{{ 'Only team captains can choose a new captain' if en else '只有队长才能选择新队长' }}"></i>
+                </a>
+                <a class="invite-members no-decoration" style="text-decoration: none;">
+                    <i class="btn-fa fas fa-ticket-alt fa-2x px-2 fa-disabled no-decoration"
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       title="{{ 'Only team captains can generate invite links' if en else '只有队长才能生成邀请链接' }}"></i>
+                </a>
+                <a class="disband-team no-decoration" style="text-decoration: none;">
+                    <i class="btn-fa fas fa-trash-alt fa-2x px-2 fa-disabled no-decoration"
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       title="{{ 'Only team captains can disband the team' if en else '只有队长可以解散队伍' }}"></i>
+                </a>
+                {% endif %}
+                {% if team.website and (team.website.startswith('http://') or team.website.startswith('https://')) %}
+                <a href="{{ team.website }}" target="_blank" style="color: inherit;" rel="noopener" style="text-decoration: none;">
+                    <i class="fas fa-external-link-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
+                       title="{{ team.website }}"></i>
+                </a>
+                {% endif %}
 			</div>
 		</div>
 	</div>

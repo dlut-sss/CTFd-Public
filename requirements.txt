@@ -175,6 +175,7 @@ Flask-APScheduler==1.11.0
 flask-redis==0.4.0
     # via ctfd_whale
 cryptography==3.4.8
+progress==1.6
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

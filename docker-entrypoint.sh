@@ -33,4 +33,5 @@ exec gunicorn 'CTFd:create_app()' \
     --worker-class "$WORKER_CLASS" \
     --access-logfile "$ACCESS_LOG" \
     --error-logfile "$ERROR_LOG" \
+    --timeout 600 \
     --access-logformat '%(t)s (IP:%(h)s) 访问:"%(r)s" 响应状态:%(s)s Referer:"%(f)s"'

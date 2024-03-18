@@ -219,6 +219,7 @@ def load(app):
 
         backup_zip.close()
         backup.seek(0)
+        db.close()
         return backup
 
     def delete_oldest_file(folder_path):

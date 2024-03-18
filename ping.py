@@ -1,6 +1,6 @@
 """
-Script for checking that a database server is available.
-Essentially a cross-platform, database agnostic mysqladmin.
+用于检查数据库服务器是否可用的脚本。
+本质上是一个跨平台、与数据库无关的 mysqladmin。
 """
 import time
 
@@ -11,24 +11,24 @@ from CTFd.config import Config
 
 url = make_url(Config.DATABASE_URL)
 
-# Ignore sqlite databases
+# 忽略sqlite数据库
 if url.drivername.startswith("sqlite"):
     exit(0)
 
-# Null out the database so raw_connection doesn't error if it doesn't exist
-# CTFd will create the database if it doesn't exist
+# 清空数据库，以便 raw_connection 在数据库不存在时不会出错
+# 如果数据库不存在，CTFd 将创建该数据库
 url.database = None
 
-# Wait for the database server to be available
+# 等待数据库服务器可用
 engine = create_engine(url)
-print(f"[CTFd] 等待{url.host}就绪。。。")
+print(f"[CTFd] 等待{url.host}就绪。。。", end="", flush=True)
 while True:
     try:
         engine.raw_connection()
         break
     except Exception:
-        print(".", end="", flush=True)
-        time.sleep(1)
+        print("。", end="", flush=True)
+        time.sleep(3)
 
-print(f"[CTFd] {url.host}已就绪")
+print(f"[CTFd] {url.host}已就绪！", flush=True)
 time.sleep(1)
