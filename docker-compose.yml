@@ -18,6 +18,7 @@ services:
     volumes:
       - .data/CTFd/logs:/var/log/CTFd
       - .data/CTFd/uploads:/var/uploads
+      - ./CTFd/plugins/ctfd-owl/source:/opt/CTFd/CTFd/plugins/ctfd-owl/source
       - .:/opt/CTFd:ro
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime
@@ -53,7 +54,7 @@ services:
         internal:
 
   frpc:
-    image: glzjin/frp:latest
+    image: shiraikuroko/frp:latest
     restart: always
     volumes:
       - ./conf/frp:/conf/
@@ -66,6 +67,21 @@ services:
         frp_containers:
         frp_connect:
             ipv4_address: 172.1.0.4
+
+  compose-frpc:
+    image: shiraikuroko/frp:latest
+    restart: always
+    volumes:
+      - ./conf/compose-frp:/conf/
+    entrypoint:
+      - /usr/local/bin/frpc
+      - -c
+      - /conf/frpc.ini
+    networks:
+      default:
+      frp_containers:
+      frp_connect:
+        ipv4_address: 172.1.0.5
 
 networks:
     default:

@@ -29,6 +29,6 @@ while True:
     except Exception:
         print("。", end="", flush=True)
         time.sleep(3)
-
+print("", flush=True)
 print(f"[CTFd] {url.host}已就绪！", flush=True)
 time.sleep(1)

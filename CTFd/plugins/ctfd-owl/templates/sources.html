@@ -1,0 +1,85 @@
+{% extends "admin/base.html" %}
+
+{% block stylesheets %}
+{% endblock %}
+
+{% block content %}
+	<div class="jumbotron">
+		<div class="container">
+            <h1><b>{{"CTFd Owl Sources" if en else "CTFd Owl 题目源码列表"}}</b></h1>
+		</div>
+	</div>
+	<div class="container">
+		<svg hidden>
+			<symbol id="copy" viewBox="0 0 24 24">
+				<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"></path>
+			</symbol>
+		</svg>
+		<div class="row">
+			<div class="col-md-3">
+				<ul class="nav nav-pills flex-column">
+					<li class="nav-item">
+						<a class="nav-link rounded-0" href="/plugins/ctfd-owl/admin/settings">🔗{{"Owl Settings" if en else "Owl设置"}}</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link rounded-0" href="/plugins/ctfd-owl/admin/containers">🔗{{"Instances" if en else "实例列表"}}</a>
+					</li>
+                    <li class="nav-item">
+                        <a class="nav-link rounded-0" href="/plugins/ctfd-owl/admin/upload">🔗{{"Upload" if en else "上传题目"}}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link rounded-0 active" href="#">{{"Sources" if en else "源码列表"}}</a>
+                    </li>
+				</ul>
+			</div>
+			<div class="col-md-9">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th class="text-center">{{ "Folder Name" if en else "文件夹" }}</th>
+                        <th class="text-center">{{ "Size" if en else "大小" }}</th>
+                        <th class="text-center">{{ "Date" if en else "日期" }}</th>
+                        <th class="text-center" colspan="2">{{ "Actions" if en else "操作" }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for file in source_folders %}
+                    <tr>
+                        <td>{{ file['name'] }}</td>
+                        <td class="text-center">{{ file['size'] }}</td>
+                        <td class="text-center">
+                            <span data-time="{{ file['date'] | isoformat }}"></span>
+                        </td>
+                        <td class="text-center">
+                            <a href="/plugins/ctfd-owl/admin/download?name={{file['name']}}" target="_blank" data-toggle="tooltip"
+                               data-placement="top">
+                                {{ "Download" if en else "下载" }}
+                                <i class="fas fa-file-download"></i>
+                            </a>
+                        </td>
+                        <td class="text-center">
+                            <a class="delete-source" data-folder-name="{{file['name']}}" href="javascript:void(0)" data-toggle="tooltip"
+                               data-placement="top">
+                                {{ "Delete" if en else "删除" }}
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="submit-row float-right">
+                    <button type="button" tabindex="0" class="btn btn-md btn-primary btn-outlined download-all">
+                        {{ "Download All" if en else "下载全部" }}
+                    </button>
+                </div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block scripts %}
+  <script defer src="{{ url_for('plugins.ctfd-owl.assets', path='sources.js') }}"></script>
+{% endblock %}
+

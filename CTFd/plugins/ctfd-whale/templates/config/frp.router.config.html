@@ -56,8 +56,8 @@ subdomain_host = {{ get_config('whale:frp_http_domain_suffix', '127.0.0.1.xip.io
     "HTTP 域后缀": ("frp_http_domain_suffix", "将被附加到容器的哈希值中"),
     "HTTP端口": ("frp_http_port", "用于http重定向"),
     "直连IP地址":("frp_direct_ip_address","用于直连重定向"),
-    "直连最小端口": ("frp_direct_port_minimum", "用于直连重定向（pwn 挑战）"),
-    "直连最大端口": ("frp_direct_port_maximum", "用于直连重定向（pwn 挑战）"),
+    "直连最小端口": ("frp_direct_port_minimum", "用于直连重定向"),
+    "直连最大端口": ("frp_direct_port_maximum", "用于直连重定向"),
 }.items() %}
         {% set value = get_config('whale:' + val[0]) %}
         <div class="form-group">

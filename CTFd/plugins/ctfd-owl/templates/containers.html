@@ -1,0 +1,162 @@
+{% extends "admin/base.html" %}
+
+{% block stylesheets %}
+{% endblock %}
+
+{% block content %}
+	<div class="jumbotron">
+		<div class="container">
+			<h1><b>{{"CTFd Owl Instances" if en else "CTFd Owl 实例列表"}}</b></h1>
+		</div>
+	</div>
+	<div class="container">
+		<svg hidden>
+			<symbol id="copy" viewBox="0 0 24 24">
+				<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"></path>
+			</symbol>
+		</svg>
+		<div class="row">
+			<div class="col-md-3">
+				<ul class="nav nav-pills flex-column">
+					<li class="nav-item">
+						<a class="nav-link rounded-0" href="/plugins/ctfd-owl/admin/settings">🔗{{"Owl Settings" if en else "Owl设置"}}</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link rounded-0 active" href="#">{{"Instances" if en else "实例列表"}}</a>
+					</li>
+                    <li class="nav-item">
+                        <a class="nav-link rounded-0" href="/plugins/ctfd-owl/admin/upload">🔗{{"Upload" if en else "上传题目"}}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link rounded-0" href="/plugins/ctfd-owl/admin/sources">🔗{{"Sources" if en else "源码列表"}}</a>
+                    </li>
+				</ul>
+			</div>
+			<div class="col-md-9">
+				<div class="float-right pb-3">
+					<div class="btn-group" role="group">
+						<button type="button" class="btn btn-outline-secondary"
+							data-toggle="tooltip" title="{{'Renew Container' if en else '延期容器'}}" id="containers-renew-button">
+							<i class="btn-fa fas fa-sync"></i>
+						</button>
+						<button type="button" class="btn btn-outline-danger"
+							data-toggle="tooltip" title="{{'Destroy Container' if en else '销毁容器'}}" id="containers-delete-button">
+							<i class="btn-fa fas fa-times"></i>
+						</button>
+					</div>
+				</div>
+				<table class="table table-striped border">
+					<thead>
+					<tr>
+						<th class="border-right" data-checkbox>
+							<div class="form-check text-center">&nbsp;
+								<input type="checkbox" class="form-check-input" data-checkbox-all>
+							</div>
+						</th>
+						<th class="sort-col text-center"><b>ID</b></th>
+						<th class="sort-col text-center"><b>{% if mode == 'users' %}{{"Username" if en else "用户昵称"}}{% else %}{{"Teamname" if en else "队伍昵称"}}{% endif %}</b></th>
+						<th class="sort-col text-center"><b>{{"Challenge" if en else "题目"}}</b></th>
+						<th class="text-center"><b>{{"Access Method" if en else "访问方式"}}</b></th>
+						<th class="text-center"><b>Flag</b></th>
+						<th class="sort-col text-center"><b>{{"Deploy Time" if en else "开启时间"}}</b></th>
+						<th class="sort-col text-center"><b>{{"Renew Count" if en else "延期次数"}}</b></th>
+						<th class="text-center"><b>{{"Destroy Container" if en else "关闭实例"}}</b></th>
+					</tr>
+					</thead>
+					<tbody>
+					{% for container in containers %}
+						<tr>
+							<td class="border-right" data-checkbox>
+								<div class="form-check text-center">&nbsp;
+									<input type="checkbox" class="form-check-input" data-user-id="{{ container.user.id }}">
+								</div>
+							</td>
+							<td class="text-center">
+								{{ container.id }}
+							</td>
+							<td class="text-center">
+								{% if mode == 'users' %}
+								<a href="{{ url_for('admin.users_detail', user_id=container.user_id) }}">
+                                    {{ container.user.name | truncate(12) }}
+                                </a>
+								{% else %}
+                                 <a href="{{ url_for('admin.teams_detail', team_id=container.user.team_id) }}">
+                                    Team {{ container.user.team_id }}
+                                </a>
+								{% endif %}
+							</td>
+							<td class="text-center">
+								<a href="{{ url_for('admin.challenges_detail', challenge_id=container.challenge.id) }}">
+                                    {{ container.challenge.name }}
+                                </a>
+							</td>
+							<td class="text-center">
+								{{ container.challenge.redirect_type }}&nbsp;
+								<svg class="click-copy" data-copy="{% if container.challenge.redirect_type == 'http' %}{% if get_config('owl:frp_http_port', "80") == "80" %}{{ "http://" + container.uuid + get_config('owl:frp_http_domain_suffix', "") }}{% else %}{{ "http://" + container.uuid + get_config('owl:frp_http_domain_suffix', "") + ":" + get_config('owl:frp_http_port', "80")}}{% endif %}{% else %}{{ get_config('owl:frp_direct_ip_address', "")}}:{{ container.port }}{% endif %}"
+									height="24" width="24" style="cursor: pointer;">
+									<use xlink:href="#copy" />
+								</svg>
+							</td>
+							<td class="text-center">
+								<svg class="click-copy" data-copy="{{ container.flag }}"
+									height="24" width="24" style="cursor: pointer;">
+									<use xlink:href="#copy" />
+								</svg>
+							</td>
+                            <td class="text-center">
+                                <span data-time="{{ container.start_time | isoformat }}"></span>
+                            </td>
+                            <td class="text-center">
+                                {{ container.renew_count }}&nbsp;
+                                <a class="renew-container" container-id="{{ container.id }}" data-toggle="tooltip"
+                                       user-id="{{ container.user.id }}" data-placement="top"
+                                       challenge-id="{{ container.challenge_id }}" title="{{'Renew Container' if en else '延期容器'}} #{{ container.id }}">
+                                    <i class="fas fa-sync"></i>
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a class="delete-container" container-id="{{ container.id }}" data-toggle="tooltip"
+                                     user-id="{{ container.user.id }}" data-placement="top"
+                                     title="{{'Destroy Container' if en else '销毁容器'}} #{{ container.id }}">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </td>
+                        </tr>
+					{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+		{% if pages > 1 %}
+			<div class="row">
+				<div class="col-md-12">
+					<div class="text-center">Page
+						<br>
+						{% if curr_page != 1 %}
+							<a href="/plugins/ctfd-owl/admin/containers?page={{ curr_page - 1 }}">
+								&lt;&lt;&lt;
+							</a>
+						{% endif %}
+						{% for page in range(1, pages + 1) %}
+							{% if curr_page != page %}
+								<a href="/plugins/ctfd-owl/admin/containers?page={{ page }}">{{ page }}</a>
+							{% else %}
+								<b>{{ page }}</b>
+							{% endif %}
+						{% endfor %}
+						{% if curr_page != pages %}
+							<a href="/plugins/ctfd-owl/admin/containers?page={{ curr_page + 1 }}">
+								&gt;&gt;&gt;
+							</a>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		{% endif %}
+	</div>
+{% endblock %}
+
+{% block scripts %}
+  <script defer src="{{ url_for('plugins.ctfd-owl.assets', path='containers.js') }}"></script>
+{% endblock %}
+

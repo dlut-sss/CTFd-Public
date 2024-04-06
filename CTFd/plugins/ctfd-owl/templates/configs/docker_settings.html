@@ -1,0 +1,66 @@
+<div role="tabpanel" class="tab-pane config-section active" id="docker">
+	<form method="POST" autocomplete="off" class="w-100">
+        {% set value = get_config('owl:docker_flag_prefix') %}
+        <div class="form-group">
+			<label>
+				{{"Docker Flag Prefix" if en else "实例Flag前缀"}}
+				<small class="form-text text-muted">
+                    {{"Docker flag prefix in containers (eg. ctf,flag )" if en else "实例中的Flag前缀(eg. ctf,flag )"}}
+				</small>
+			</label>
+			<input type="text" class="form-control" id="docker-flag-prefix" name="owl:docker_flag_prefix" value="{{ value }}">
+		</div>
+        {% set value = get_config('owl:docker_run_folder') %}
+        <div class="form-group">
+            <label>
+                {{"Docker Run Folder" if en else "实例容器运行目录（默认/tmp）"}}
+                <small class="form-text text-muted">
+                    {{"Temp folder to run instance (/tmp by default)" if en else "实例容器运行临时目录（默认/tmp）"}}
+                </small>
+            </label>
+            <input type="text" class="form-control" id="docker-run-folder" name="owl:docker_run_folder" value="{{ value }}">
+        </div>
+        {% set value = get_config('owl:docker_api_url') %}
+        <div class="form-group">
+			<label>
+				{{"Docker APIs URL" if en else "Dokcer API地址"}}
+				<small class="form-text text-muted">
+					{{"Docker APIs URL to connect. (Separated by commas)" if en else "要连接的 Docker API"}}
+				</small>
+			</label>
+			<input type="text" class="form-control" id="docker-api-url" name="owl:docker_api_url" value="{{ value }}">
+		</div>
+        {% set value = get_config('owl:docker_max_container_count') %}
+        <div class="form-group">
+			<label>
+				{{"Max Container Count" if en else "最大容器数目"}}
+				<small class="form-text text-muted">
+					{{"Max Container Count" if en else "服务器允许的最大容器数"}}
+				</small>
+			</label>
+			<input type="text" class="form-control" id="docker-max-container-count" name="owl:docker_max_container_count" value="{{ value }}">
+		</div>
+        {% set value = get_config('owl:docker_timeout') %}
+		<div class="form-group">
+			<label>
+				{{"Docker Container Timeout" if en else "容器超时时长"}}
+				<small class="form-text text-muted">
+					{{"Docker container running timeout. 3600 mean 3600s." if en else "容器在 [timeout] 秒后超时。"}}
+				</small>
+			</label>
+			<input type="number" class="form-control" id="docker-timeout" name="owl:docker_timeout" value="{{ value }}">
+		</div>
+        {% set value = get_config('owl:docker_max_renew_count') %}
+        <div class="form-group">
+			<label>
+				{{"Max Renewal Times" if en else "最大延期次数"}}
+				<small class="form-text text-muted">
+					{{"Max Renewal Times" if en else "允许用户续订容器的最大次数"}}
+				</small>
+			</label>
+			<input type="text" class="form-control" id="docker-max-renew-count" name="owl:docker_max_renew_count" value="{{ value }}">
+		</div>
+		
+		<button type="submit" class="btn btn-md btn-primary float-right">{{"Update" if en else "更新"}}</button>
+	</form>
+</div>

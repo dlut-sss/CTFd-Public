@@ -2,6 +2,7 @@ import shutil
 
 from CTFd.models import ChallengeFiles, Files, PageFiles, db
 from CTFd.utils import get_app_config
+from CTFd.utils.logging import log_simple
 from CTFd.utils.uploads.uploaders import FilesystemUploader, S3Uploader
 
 UPLOADERS = {"filesystem": FilesystemUploader, "s3": S3Uploader}
@@ -35,6 +36,8 @@ def upload_file(*args, **kwargs):
     file_row = model(**model_args)
     db.session.add(file_row)
     db.session.commit()
+    log_simple("files", "[{date}] [CTFd] 文件{name}上传成功！位置：{location}。", name=file_obj.filename,
+               location=location)
     return file_row
 
 
@@ -46,6 +49,7 @@ def delete_file(file_id):
 
     db.session.delete(f)
     db.session.commit()
+    log_simple("files", "[{date}] [CTFd] 文件{location}删除成功！", location=f.location)
     return True
 
 

@@ -1,0 +1,109 @@
+{% extends "admin/challenges/update.html" %}
+
+{% if request.cookies.get('Scr1wCTFdLanguage') == 'en' %}
+{% set en = true %}
+{% else %}
+{% set en = false %}
+{% endif %}
+
+{% block value %}
+<div class="form-group">
+    <label for="deployment">{{ 'Deployment Type' if en else '部署模式' }}<br>
+    </label>
+    <select class="form-control custom-select" name="deployment">
+        <option value="single-docker-compose" {% if challenge.deployment == "single-docker-compose" %}selected{% endif %}>{{ 'Single-docker-compose' if en else '单docker-compose' }}</option>
+        <option value="single-docker-swarm" {% if challenge.deployment == "single-docker-swarm" %}selected{% endif %}>{{ 'Single-docker-swarm' if en else '单docker-swarm' }}</option>
+    </select>
+</div>
+<div class="form-group">
+    <label for="dirname">{{ 'Dirname' if en else '目录名称' }}<br>
+        <small class="form-text text-muted">
+            {{ 'The name of your challenge dirname' if en else '题目目录名称' }}
+        </small>
+    </label>
+    <input type="text" class="form-control chal-name" name="dirname" value="{{ challenge.dirname }}">
+</div>
+<div class="form-group">
+    <label for="value">{{ 'Frp Redirect Type' if en else 'Frp重定向类型' }}<br>
+        <small class="form-text text-muted">
+            {{ 'Decide the redirect type how frp redirect traffic' if en else '决定frp如何重定向流量的重定向类型' }}
+        </small>
+    </label>
+    <select class="form-control custom-select" name="redirect_type">
+        <option value="DIRECT" {% if challenge.redirect_type == "DIRECT" %}selected{% endif %}>DIRECT</option>
+        <option value="HTTP" {% if challenge.redirect_type == "HTTP" %}selected{% endif %}>HTTP</option>
+    </select>
+</div>
+<div class="form-group">
+    <label for="value">{{ 'Frp Redirect Port' if en else 'Frp重定向端口' }}<br>
+        <small class="form-text text-muted">
+            {{ 'Decide which port in the instance that frp should redirect traffic for' if en else '决定 frp 应将流量重定向到实例中的哪个端口' }}
+        </small>
+    </label>
+    <input type="text" class="form-control" name="redirect_port" placeholder="{{ 'Enter the port you want to open' if en else '输入你想开启的端口' }}" value="{{ challenge.redirect_port }}">
+</div>
+<div class="form-group">
+    <label for="value">{{ 'Current Value' if en else '当前分值' }}<br>
+        <small class="form-text text-muted">
+            {{ 'This is how many points the challenge is worth right now.' if en else '题目的当前分值' }}
+        </small>
+    </label>
+    <input type="number" class="form-control chal-value" name="value" value="{{ challenge.value }}" disabled>
+</div>
+<div class="form-group">
+    <label for="value">{{ 'Score Type' if en else '分值类型' }}<br>
+        <small class="form-text text-muted">
+            {{ 'Decide it use dynamic score or not' if en else '是否使用动态分数' }}
+        </small>
+    </label>
+    <select class="form-control" name="dynamic_score">
+        <option value="0" {% if challenge.dynamic_score == 0 %}selected{% endif %}>{{ 'Static Score' if en else '静态分数' }}</option>
+        <option value="1" {% if challenge.dynamic_score == 1 %}selected{% endif %}>{{ 'Dynamic Score' if en else '动态分数' }}</option>
+    </select>
+</div>
+<div class="form-group">
+    <label for="value">{{ 'Initial Value' if en else '初始分值' }}<br>
+        <small class="form-text text-muted">
+            {{ 'This is how many points the challenge was worth initially.' if en else '这是题目最初的分值。' }}
+        </small>
+    </label>
+    <input type="number" class="form-control chal-initial" name="initial" value="{{ challenge.initial }}" required>
+</div>
+
+<div class="form-group">
+    <label for="value">{{ 'Decay Function' if en else '衰减函数' }}<br>
+        <small class="form-text text-muted">
+            <span>{{ 'How the dynamic value will be calculated based on the Decay value' if en else '如何根据 Decay 值计算动态值' }}</span>
+            <ul>
+                <li>Linear: {{ 'Calculated as ' if en else '按' }}<code>Initial - (Decay * SolveCount)</code>{{ '' if en else '计算' }}</li>
+                <li>Logarithmic: {{ 'Calculated as ' if en else '按' }}<code>(((Minimum - Initial) / (Decay^2)) * (SolveCount^2)) + Initial</code>{{ '' if en else '计算' }}</li>
+            </ul>
+        </small>
+    </label>
+    <select name="function" class="custom-select">
+        <option value="linear" {% if challenge.function == "linear" %}selected{% endif %}>Linear</option>
+        <option value="logarithmic" {% if challenge.function == "logarithmic" %}selected{% endif %}>Logarithmic</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="value">{{ 'Decay' if en else '衰减' }}<br>
+        <small class="form-text text-muted">
+            <span>{{ 'The decay value is used differently depending on the above Decay Function' if en else '根据上述衰减函数的不同，衰减值的使用也不同' }}</span>
+            <ul>
+                <li>Linear: {{ 'The amount of points deducted per solve. Equal deduction per solve.' if en else '每次解出所扣除的分数。 每次解出均等扣除。' }}</li>
+                <li>Logarithmic: {{ 'The amount of solves before the challenge reaches its minimum value. Earlier solves will lose less points. Later solves will lose more points' if en else '分值达到最小值之前解出的数量。 较早解出的问题会损失较少的分数。 稍后解出会失去更多分数' }}</li>
+            </ul>
+        </small>
+    </label>
+    <input type="number" class="form-control chal-decay" min="1" name="decay" value="{{ challenge.decay }}" required>
+</div>
+<div class="form-group">
+    <label for="value">{{ 'Minimum Value' if en else '最小分值' }}<br>
+        <small class="form-text text-muted">
+            {{ 'This is the lowest that the challenge can be worth' if en else '这是题目的最低分值' }}
+        </small>
+    </label>
+    <input type="number" class="form-control chal-minimum" name="minimum" value="{{ challenge.minimum }}" required>
+</div>
+{% endblock %}

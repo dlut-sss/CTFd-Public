@@ -15,6 +15,8 @@ from freezegun import freeze_time
 from CTFd.utils import get_app_config
 from CTFd.utils import fixed_secure_filename
 from CTFd.utils.encoding import hexencode
+from CTFd.utils.logging import log_simple
+from CTFd.utils.user import get_current_user
 
 
 class BaseUploader(object):
@@ -65,6 +67,9 @@ class FilesystemUploader(BaseUploader):
         return self.store(file_obj, file_path)
 
     def download(self, filename):
+        user = get_current_user()
+        if user:
+            log_simple("files", "[{date}] [CTFd] {username}下载了文件{filename}", username=user.name, filename=filename)
         return send_file(safe_join(self.base_path, filename), as_attachment=True)
 
     def delete(self, filename):

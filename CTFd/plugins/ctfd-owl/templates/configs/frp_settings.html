@@ -1,0 +1,66 @@
+<div role="tabpanel" class="tab-pane config-section" id="frp">
+	<form method="POST" autocomplete="off" class="w-100">
+        {% set value = get_config('owl:frp_http_domain_suffix') %}
+        <div class="form-group">
+			<label>
+                {{"Frp Http Domain Suffix" if en else "HTTP 域后缀"}}
+				<small class="form-text text-muted">
+					{{"Container URL to show" if en else "显示的HTTP 域后缀"}}
+				</small>
+			</label>
+			<input type="text" class="form-control" id="frp-http-domain-suffix" name="owl:frp_http_domain_suffix" value="{{ value }}">
+		</div>
+        {% set value = get_config('owl:frp_direct_ip_address') %}
+        <div class="form-group">
+			<label>
+                {{"Frp Direct IP Address" if en else "直连IP地址"}}
+				<small class="form-text text-muted">
+                    {{"For direct redirect" if en else "用于直连重定向"}}
+				</small>
+			</label>
+			<input type="text" class="form-control" id="frp-direct-ip-address" name="owl:frp_direct_ip_address" value="{{ value }}">
+		</div>
+        {% set value = get_config('owl:frp_direct_port_minimum') %}
+        <div class="form-group">
+			<label>
+				{{"Frp Direct Minimum Port" if en else "直连最小端口"}}
+				<small class="form-text text-muted">
+					{{"For direct redirect" if en else "用于直连重定向"}}
+				</small>
+			</label>
+			<input type="text" class="form-control" id="frp-direct-port-minimum" name="owl:frp_direct_port_minimum" value="{{ value }}">
+		</div>
+        {% set value = get_config('owl:frp_direct_port_maximum') %}
+        <div class="form-group">
+			<label>
+				{{"Frp Direct Maximum Port" if en else "直连最大端口"}}
+				<small class="form-text text-muted">
+					{{"For direct redirect" if en else "用于直连重定向"}}
+				</small>
+			</label>
+			<input type="text" class="form-control" id="frp-direct-port-maximum" name="owl:frp_direct_port_maximum" value="{{ value }}">
+		</div>
+        {% set value = get_config('owl:frpc_api_url') %}
+        <div class="form-group">
+            <label>
+                {{"Frpc API URL" if en else "Frpc API网址"}}
+                <small class="form-text text-muted">
+                    {{"Frpc API to connect to" if en else "Frpc API 连接的地址"}}
+                </small>
+            </label>
+            <input type="text" class="form-control" id="frpc-api-url" name="owl:frpc_api_url" value="{{ value }}">
+        </div>
+        {% set value = get_config('owl:frpc_config_template') %}
+        <div class="form-group">
+			<label>
+				{{"Frpc config template" if en else "Frpc 配置模板"}}
+				<small class="form-text text-muted">
+                    {{"Frpc config template, only need common section!" if en else "Frp配置模板，只需要Common部分！"}}
+				</small>
+			</label>
+			<textarea class="form-control" id="frp-config-template" name="owl:frpc_config_template" rows="7">{{ value }}</textarea>
+		</div>
+
+		<button type="submit" class="btn btn-md btn-primary float-right">{{"Update" if en else "更新"}}</button>
+	</form>
+</div>
