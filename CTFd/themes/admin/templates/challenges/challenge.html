@@ -2,6 +2,11 @@
 
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{ url_for('views.themes', theme='admin', path='css/challenge-board.css') }}">
+    <style type="text/css">
+        .challenge-desc img {
+            max-width: 100%!important;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}

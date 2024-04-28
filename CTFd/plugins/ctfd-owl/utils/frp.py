@@ -41,36 +41,45 @@ class FrpUtils:
             dynamic_docker_challenge = DynamicCheckChallenge.query \
                 .filter(DynamicCheckChallenge.id == c.challenge_id) \
                 .first_or_404()
-            dirname = dynamic_docker_challenge.dirname.split("/")[1]
             redirect_port = dynamic_docker_challenge.redirect_port
-            container_service_local_ip = "{}_user{}_{}_service_1".format(prefix, c.user_id,
-                                                                         dirname).lower()  # nginx, etc
-            if dynamic_docker_challenge.redirect_type.upper() == 'HTTP':
-                output += http_template % (
-                    container_service_local_ip
-                    , container_service_local_ip
-                    , redirect_port
-                    , c.docker_id)
-            else:
-                output += direct_template % (
-                    container_service_local_ip
-                    , container_service_local_ip
-                    , redirect_port
-                    , c.port
-                    , container_service_local_ip
-                    , container_service_local_ip
-                    , redirect_port
-                    , c.port)
+            # 使用9999替换成随机端口，无需frp映射
+            if redirect_port != 9999:
+                container_service_local_ip = "{}_user{}_challenge{}-service-1".format(prefix, c.user_id,
+                                                                                      c.challenge_id).lower()
+                if dynamic_docker_challenge.redirect_type.upper() == 'HTTP':
+                    output += http_template % (
+                        container_service_local_ip
+                        , container_service_local_ip
+                        , redirect_port
+                        , c.docker_id)
+                else:
+                    output += direct_template % (
+                        container_service_local_ip
+                        , container_service_local_ip
+                        , redirect_port
+                        , c.port
+                        , container_service_local_ip
+                        , container_service_local_ip
+                        , redirect_port
+                        , c.port)
+
         frp_api = get_config("owl:frpc_api_url", "http://compose-frpc:7400")
-        # print(output)
         try:
             if get_config("owl:frpc_config_template") is not None:
-                assert requests.put(frp_api + "/api/config", output,
-                                    timeout=5).status_code == 200
-                assert requests.get(frp_api + "/api/reload",
-                                    timeout=5).status_code == 200
-            else:
-                pass
+                response = requests.put(frp_api + "/api/config", output, timeout=5)
+                if response.status_code != 200:
+                    log("owl",
+                        '[CTFd-owl] [{date}] frp设定配置出错: [{code}] {re}',
+                        code=response.status_code, re=response.text, flush=True
+                        )
+                else:
+                    response = requests.get(frp_api + "/api/reload", timeout=5)
+                    if response.status_code != 200:
+                        log("owl",
+                            '[CTFd-owl] [{date}] frp配置重载出错: [{code}] {re}',
+                            code=response.status_code, re=response.text, flush=True
+                            )
+
         except Exception as e:
             log("owl",
                 '[CTFd-owl] [{date}] Error: {e}\n{trace}',

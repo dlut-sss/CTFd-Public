@@ -40,8 +40,7 @@ class DockerUtils:
             parent_dir = os.path.dirname(os.path.dirname(__file__))
             sname = os.path.join(parent_dir, "source/" + challenge.dirname)  # 源文件目录
             prefix = get_config("owl:docker_flag_prefix")
-            dirname = challenge.dirname.split("/")[1]
-            name = "{}_user{}_{}".format(prefix, user_id, dirname).lower()
+            name = "{}_user{}_challenge{}".format(prefix, user_id, challenge_id).lower()
             problem_docker_run_dir = get_config('owl:docker_run_folder', '/tmp')
             dname = os.path.join(problem_docker_run_dir, name)  # 目标文件目录
 
@@ -68,7 +67,7 @@ class DockerUtils:
 
             # 进入目标目录并启动
             socket = DockerUtils.get_socket()
-            command = "cd " + dname + " && docker-compose -H={} -f run.yml up -d".format(socket)
+            command = "cd " + dname + " && docker -H={} compose -f run.yml up -d".format(socket)
             subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             log(
                 "owl",
@@ -77,27 +76,40 @@ class DockerUtils:
             )
             docker_id = str(uuid.uuid3(uuid.NAMESPACE_DNS, name)).replace("-", "")
             return (docker_id, port, flag, challenge.redirect_type)
+        except subprocess.CalledProcessError as e:
+            log("owl",
+                '[CTFd-owl] [{date}] Error: {e}\n{stdout}\n{stderr}\n{trace}',
+                e=e, stdout=str(e.stdout), stderr=str(e.stderr),
+                trace=''.join(traceback.format_exception(type(e), e, e.__traceback__)), flush=True
+                )
+            try:
+                DockerUtils.down_docker_compose(user_id, challenge_id)
+            except:
+                pass
+            raise e
         except Exception as e:
             log("owl",
                 '[CTFd-owl] [{date}] Error: {e}\n{trace}',
                 e=e, trace=''.join(traceback.format_exception(type(e), e, e.__traceback__)), flush=True
                 )
+            try:
+                DockerUtils.down_docker_compose(user_id, challenge_id)
+            except:
+                pass
             raise e
 
     @staticmethod
     def down_docker_compose(user_id, challenge_id):
         try:
             # 生成目标目录信息
-            challenge = DynamicCheckChallenge.query.filter_by(id=challenge_id).first_or_404()
-            dirname = challenge.dirname.split("/")[1]
             prefix = get_config("owl:docker_flag_prefix")
-            name = "{}_user{}_{}".format(prefix, user_id, dirname).lower()
+            name = "{}_user{}_challenge{}".format(prefix, user_id, challenge_id).lower()
             problem_docker_run_dir = get_config('owl:docker_run_folder', '/tmp')
             dname = os.path.join(problem_docker_run_dir, name)
 
             # 关闭实例
             socket = DockerUtils.get_socket()
-            command = "cd {} && docker-compose -H={} -f run.yml down".format(dname, socket)
+            command = "cd {} && docker -H={} compose -f run.yml down".format(dname, socket)
             subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
             # 清空缓存目录
@@ -109,6 +121,13 @@ class DockerUtils:
                 msg=name + "关闭完成。",
             )
             return True
+        except subprocess.CalledProcessError as e:
+            log("owl",
+                '[CTFd-owl] [{date}] Error: {e}\n{stdout}\n{stderr}\n{trace}',
+                e=e, stdout=str(e.stdout), stderr=str(e.stderr),
+                trace=''.join(traceback.format_exception(type(e), e, e.__traceback__)), flush=True
+                )
+            raise e
         except Exception as e:
             log("owl",
                 '[CTFd-owl] [{date}] Error: {e}\n{trace}',

@@ -43,7 +43,7 @@ RUN sed -i "s|http://deb.debian.org/debian|https://mirror.sjtu.edu.cn/debian|g" 
     && curl -fsSL https://mirrors.aliyun.com/docker-ce/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg \
     && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://mirrors.aliyun.com/docker-ce/linux/debian \
        $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
-    && apt-get update && apt-get install -y --no-install-recommends docker-ce docker-ce-cli containerd.io \
+    && apt-get update && apt-get install -y --no-install-recommends docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin\
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

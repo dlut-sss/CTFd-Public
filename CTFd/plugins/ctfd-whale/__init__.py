@@ -227,7 +227,7 @@ def load(app):
                     'success': True,
                     'message': logs_text.decode('utf-8')
                 }, 200
-            except e:
+            except Exception as e:
                 return {
                     'success': False,
                     'message': '日志获取失败：<br>' + str(e.__cause__)

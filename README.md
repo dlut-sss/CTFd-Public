@@ -6,7 +6,7 @@
 
 修复了一些原生CTFd的UI和代码问题（如提示创建和附件名称）
 
-## [开发日志](https://github.com/dlut-sss/CTFd_3.5.3/blob/main/CHANGELOG.md)
+## [开发日志](https://github.com/dlut-sss/CTFd-Public/blob/main/CHANGELOG.md)
 
 ## 配置方法
 
@@ -27,7 +27,7 @@
    ```
    ### **⚠⚠⚠然后将下载完的本仓库目录重命名为CTFd⚠⚠⚠**
    ```bash
-   mv CTFd_3.5.3/ CTFd/
+   mv CTFd-Public/ CTFd/
    ```
    如果说没有进行这步导致创建网络出现错误，请先查找所有ctfd相关的docker网络并进行移除，移除不了的重启后再移除！
    
@@ -173,3 +173,16 @@
 - 容器监测与日志查看
 ![img](docs/docker-1.png)
 ![img](docs/docker-2.png)
+
+## 清理owl缓存方法
+其中sssctf为你设置中flag的前缀
+```bash
+docker images | grep '^sssctf_user' | awk '{print $3}' | xargs docker rmi -f
+```
+## 清理none镜像方法
+```bash
+docker images | grep '<none>' | awk '$1 == "<none>" && $2 == "<none>" {print $3}' | xargs docker rmi
+```
+## 老版本CTFd更新方法（备忘）
+
+先导出备份，防止更新时出现问题造成数据丢失，切记先down把旧版CTFd关了再git pull更新，更新完之后disable旧的frps服务，删除旧的frps配置文件，再按照上面的重新配置frp服务，再重新build+up -d即可

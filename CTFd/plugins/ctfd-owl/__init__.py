@@ -1,6 +1,7 @@
 from __future__ import division  # Use floating point for math calculations
 
 import shutil
+import subprocess
 from datetime import datetime
 import fcntl
 import logging
@@ -194,6 +195,12 @@ def load(app):
             size /= 1024.0
         return "{:.2f} {}".format(size, unit)
 
+    def get_dir_size(dir):
+        size = 0
+        for root, dirs, files in os.walk(dir):
+            size += sum([os.path.getsize(os.path.join(root, name)) for name in files])
+        return size
+
     @owl_blueprint.route("/admin/sources")
     @admins_only
     def admin_list_source():
@@ -207,7 +214,7 @@ def load(app):
                 for child_entry in second_entries:
                     second_path = os.path.join(first_path, child_entry)
                     if os.path.isdir(second_path):
-                        file_size = os.path.getsize(second_path)
+                        file_size = get_dir_size(second_path)
                         file_date = os.path.getctime(second_path)
                         source_folders.append({
                             'name': (entry + "/" + child_entry),
@@ -367,6 +374,15 @@ def load(app):
                         return jsonify({'success': True})
                     else:
                         return jsonify({'success': False, 'msg': str(result)})
+                except subprocess.CalledProcessError as e:
+                    custom_log("owl",
+                               '[CTFd-owl] [{date}] Error: {e}\n{stdout}\n{stderr}\n{trace}',
+                               e=e, stdout=e.stdout, stderr=e.stderr,
+                               trace=''.join(traceback.format_exception(type(e), e, e.__traceback__)), flush=True
+                               )
+                    return jsonify(
+                        {'success': False,
+                         'msg': '实例启动失败，请联系管理员解决！<br>{} {}'.format(str(e), str(e.stderr))})
                 except Exception as e:
                     custom_log("owl",
                                '[CTFd-owl] [{date}] Error: {e}\n{trace}',
