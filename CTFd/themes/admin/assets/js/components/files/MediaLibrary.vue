@@ -278,7 +278,7 @@ export default {
       let img =
         this.getIconClass(this.selectedFile.location) === "far fa-file-image";
       let filename = url.split("/").pop();
-      link = "[{0}]({1})".format(filename, url);
+      let link = "[{0}]({1})".format(filename, url);
       if (img) {
         link = "!" + link;
       }

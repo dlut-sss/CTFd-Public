@@ -1,0 +1,27 @@
+version: "3"
+services:
+    web-service:
+        image: ephemerally/checkin
+        env_file:
+          - .env
+        environment:
+          - FLAG=${FLAG}
+        networks:
+          - default
+
+    service: #对外暴露的服务如果用frp,这里服务名必须是service,否则使用ports映射到9999由插件部署时修改,nginx使用conf必须build，不要映射
+        build:
+          context: .
+          dockerfile: NginxDockerfile
+        restart: always
+        expose:
+            - 80
+        networks:
+          - default
+          - net
+
+networks:
+    default:
+    net:
+      external: true
+      name: ctfd_frp_containers

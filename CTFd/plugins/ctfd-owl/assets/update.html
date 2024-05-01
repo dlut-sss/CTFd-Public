@@ -11,8 +11,8 @@
     <label for="deployment">{{ 'Deployment Type' if en else '部署模式' }}<br>
     </label>
     <select class="form-control custom-select" name="deployment">
-        <option value="single-docker-compose" {% if challenge.deployment == "single-docker-compose" %}selected{% endif %}>{{ 'Single-docker-compose' if en else '单docker-compose' }}</option>
-        <option value="single-docker-swarm" {% if challenge.deployment == "single-docker-swarm" %}selected{% endif %}>{{ 'Single-docker-swarm' if en else '单docker-swarm' }}</option>
+        <option value="standalone" {% if challenge.deployment == "standalone" %}selected{% endif %}>docker-compose standalone</option>
+        <option value="plugin" {% if challenge.deployment == "plugin" %}selected{% endif %}>{{ 'docker compose plugin' if en else 'docker compose 插件' }}</option>
     </select>
 </div>
 <div class="form-group">

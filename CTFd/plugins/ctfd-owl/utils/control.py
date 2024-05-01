@@ -8,6 +8,7 @@ from CTFd.models import Challenges, Users
 from .db import DBUtils
 from .docker import DockerUtils
 from .extensions import log
+from .frp import FrpUtils
 
 
 class ControlUtil:
@@ -16,6 +17,7 @@ class ControlUtil:
         rq = DockerUtils.up_docker_compose(user_id=user_id, challenge_id=challenge_id)
         if isinstance(rq, tuple):
             DBUtils.new_container(user_id, challenge_id, flag=rq[2], port=rq[1], docker_id=rq[0], ip=rq[3])
+            FrpUtils.update_frp_redirect()
             return True
         else:
             return rq
@@ -23,7 +25,9 @@ class ControlUtil:
     @staticmethod
     def destroy_container(user_id):
         try:
-            return DockerUtils.remove_current_docker_container(user_id)
+            result = DockerUtils.remove_current_docker_container(user_id)
+            FrpUtils.update_frp_redirect()
+            return result
         except Exception as e:
             log("owl",
                 '[CTFd-owl] [{date}] Error: {e}\n{trace}',

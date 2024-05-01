@@ -118,7 +118,8 @@ def load(app):
                     log_simple("email", "[{date}] [CTFd] 发往{addr}的邮件已通过SMTPViaHTTP成功发送。", addr=addr)
                     return True, f"发往{addr}的邮件已通过SMTPViaHTTP成功发送。"
                 else:
-                    log_simple("email", "[{date}] [CTFd] 发往{addr}的邮件通过SMTPViaHTTP发送失败！\n{exception}", addr=addr,
+                    log_simple("email", "[{date}] [CTFd] 发往{addr}的邮件通过SMTPViaHTTP发送失败！\n{exception}",
+                               addr=addr,
                                exception=response_json['exception'])
                     return False, f"发往{addr}的邮件通过SMTPViaHTTP发送失败。"
             else:
@@ -131,7 +132,6 @@ def load(app):
             log_simple("email", "[{date}] [CTFd] 发往{addr}的邮件通过SMTPViaHTTP发送失败！错误{err}", addr=addr,
                        err=err)
             return False, f"发往{addr}的邮件通过SMTPViaHTTP发送失败。错误{err}"
-
 
     def set_smtp_decorator(func):
         @wraps(func)

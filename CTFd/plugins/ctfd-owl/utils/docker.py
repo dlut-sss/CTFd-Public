@@ -41,7 +41,7 @@ class DockerUtils:
             sname = os.path.join(parent_dir, "source/" + challenge.dirname)  # 源文件目录
             prefix = get_config("owl:docker_flag_prefix")
             name = "{}_user{}_challenge{}".format(prefix, user_id, challenge_id).lower()
-            problem_docker_run_dir = get_config('owl:docker_run_folder', '/tmp')
+            problem_docker_run_dir = get_config('owl:docker_run_folder', '/home/owl')
             dname = os.path.join(problem_docker_run_dir, name)  # 目标文件目录
 
             # 确定可用端口
@@ -67,8 +67,12 @@ class DockerUtils:
 
             # 进入目标目录并启动
             socket = DockerUtils.get_socket()
-            command = "cd " + dname + " && docker -H={} compose -f run.yml up -d".format(socket)
-            subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if challenge.deployment == "plugin":
+                command = "cd " + dname + " && docker -H={} compose -f run.yml up -d".format(socket)
+                subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            else:
+                command = "cd " + dname + " && docker-compose -H={} -f run.yml up -d".format(socket)
+                subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             log(
                 "owl",
                 '[CTFd-owl] [{date}] {msg}',
@@ -101,16 +105,21 @@ class DockerUtils:
     @staticmethod
     def down_docker_compose(user_id, challenge_id):
         try:
+            challenge = DynamicCheckChallenge.query.filter_by(id=challenge_id).first_or_404()
             # 生成目标目录信息
             prefix = get_config("owl:docker_flag_prefix")
             name = "{}_user{}_challenge{}".format(prefix, user_id, challenge_id).lower()
-            problem_docker_run_dir = get_config('owl:docker_run_folder', '/tmp')
+            problem_docker_run_dir = get_config('owl:docker_run_folder', '/home/owl')
             dname = os.path.join(problem_docker_run_dir, name)
 
             # 关闭实例
             socket = DockerUtils.get_socket()
-            command = "cd {} && docker -H={} compose -f run.yml down".format(dname, socket)
-            subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if challenge.deployment == "plugin":
+                command = "cd {} && docker -H={} compose -f run.yml down".format(dname, socket)
+                subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            else:
+                command = "cd {} && docker-compose -H={} -f run.yml down".format(dname, socket)
+                subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
             # 清空缓存目录
             command = "rm -rf {}".format(dname)

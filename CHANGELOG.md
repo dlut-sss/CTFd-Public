@@ -1,3 +1,14 @@
+# 3.6.1 S-9 / 2023-05-01
+**CTFd-Matrix**
+- 修复filter错误
+- 将用户模型中的计分方式更改与本体分离
+
+**CTFd-Owl**
+- 修改deployment参数为设置使用docker-compose还是docker compose 插件
+- 优化示例题目和说明
+- 修改默认目录为/home/owl
+- 优化frp更新逻辑，减少请求
+
 # 3.6.1 S-8 / 2023-04-27
 **General**
 - 更新数据库版本

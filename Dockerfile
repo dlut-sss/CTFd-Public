@@ -44,6 +44,9 @@ RUN sed -i "s|http://deb.debian.org/debian|https://mirror.sjtu.edu.cn/debian|g" 
     && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://mirrors.aliyun.com/docker-ce/linux/debian \
        $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
     && apt-get update && apt-get install -y --no-install-recommends docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin\
+    && curl -SL https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose \
+    && ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose \
+    && chmod +x /usr/bin/docker-compose \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -54,8 +57,9 @@ RUN useradd \
     --shell /bin/bash \
     -u 1001 \
     ctfd \
+    && mkdir -p /home/owl \
     && mkdir -p /var/log/CTFd /var/uploads \
-    && chown -R 1001:1001 /var/log/CTFd /var/uploads /opt/CTFd \
+    && chown -R 1001:1001 /var/log/CTFd /var/uploads /opt/CTFd /home/owl \
     && chmod +x /opt/CTFd/docker-entrypoint.sh
 
 COPY --chown=1001:1001 --from=build /opt/venv /opt/venv

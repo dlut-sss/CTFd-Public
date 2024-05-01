@@ -1,29 +1,24 @@
 import datetime
-import os
 from collections import defaultdict
 from decimal import Decimal
+from functools import wraps
 
 from flask import (
     render_template,
-    jsonify,
     Blueprint,
     url_for,
-    session,
     redirect,
     request
 )
 from sqlalchemy.sql import or_
 
 import CTFd.utils.scores
-from CTFd import utils, scoreboard
+from CTFd import utils
 from CTFd.models import db, Solves, Challenges, Users, Teams, Awards
 from CTFd.plugins import (
-    register_plugin_assets_directory,
     register_admin_plugin_menu_bar,
-    override_template,
 )
 from CTFd.utils import get_config, set_config
-from CTFd.utils.challenges import get_all_challenges
 from CTFd.utils.config import is_scoreboard_frozen, ctf_theme, is_users_mode
 from CTFd.utils.config.visibility import challenges_visible, scores_visible
 from CTFd.utils.dates import (
@@ -117,8 +112,8 @@ def load(app):
         mode = get_config("user_mode")
         if freeze:
             freeze = unix_time_to_utc(freeze)
-            solves = solves.filter(Solves.date < freeze)
-            awards = awards.filter(Awards.date < freeze)
+            solves = [solve for solve in solves if solve.date < freeze]
+            awards = [award for award in awards if award.date < freeze]
         # 创建一个字典来存储每个challenge_id的前三条数据
         top_solves = defaultdict(list)
         # 将solves数据按照challenge_id和date排序
@@ -268,6 +263,88 @@ def load(app):
             categories = sorted(categories, key=lambda x: x['category'])
             return challenges_list
         return []
+
+    def matrix_user_get_score(self, admin=False):
+        from CTFd.utils.modes import USERS_MODE
+        import traceback
+        try:
+            # 获取所有题目数据并获取数目
+            challenges = Challenges.query.filter(*[]).order_by(Challenges.id.asc()).all()
+            # 获取所有分数数据和解题数据，并过滤无效数据
+            solves = db.session.query(Solves.date.label('date'), Solves.challenge_id.label('challenge_id'),
+                                      Solves.user_id.label('user_id')).all()
+            award_score = db.func.sum(Awards.value).label("award_score")
+            award = db.session.query(award_score).filter_by(user_id=self.id)
+            if not admin:
+                freeze = utils.get_config('freeze')
+                if freeze:
+                    freeze = unix_time_to_utc(freeze)
+                    solves = [solve for solve in solves if solve.date < freeze]
+                    award = award.filter(Awards.date < freeze)
+            # 创建一个字典来存储每个challenge_id的前三条数据
+            top_solves = defaultdict(list)
+            # 将solves数据按照challenge_id和date排序
+            sorted_solves = sorted(solves, key=lambda x: (x.challenge_id, x.date))
+            # 遍历排序后的solves数据
+            for solve in sorted_solves:
+                challenge_id = solve.challenge_id
+                # 检查是否已经存储了三条数据，如果是，跳过
+                if len(top_solves[challenge_id]) >= 3:
+                    continue
+                # 否则将数据添加到对应的challenge_id中
+                top_solves[challenge_id].append({
+                    'date': solve.date,
+                    'user_id': solve.user_id
+                })
+            user_solves = [solve for solve in solves if solve[2] == self.id]
+            total_score = 0
+            for solve in user_solves:
+                challenge_id = solve[1]
+                rank = 4
+                for index, top_solve in enumerate(top_solves[challenge_id]):
+                    if top_solve['user_id'] == self.id:
+                        rank = index + 1
+                # 按血加分
+                score = self.get_score_by_challenge_id(challenges, challenge_id)
+                if rank == 1:
+                    score *= Decimal('1.1')
+                elif rank == 2:
+                    score *= Decimal('1.05')
+                elif rank == 3:
+                    score *= Decimal('1.03')
+
+                total_score += score
+
+            # 新生加分
+            mode = get_config("user_mode")
+            if mode == USERS_MODE:
+                if get_config("matrix:score_switch"):
+                    if self.sid:
+                        if str(self.sid[:4]) in str(get_config("matrix:score_grade")):
+                            total_score += get_config("matrix:score_num")
+
+            # 奖项加分
+            award = award.first()
+            if award:
+                total_score += int(award.award_score or 0)
+
+            return total_score
+        except Exception as e:
+            print(e, flush=True)
+            print(''.join(traceback.format_exception(type(e), e, e.__traceback__)), flush=True)
+            return 0
+
+    def set_matrix_user_score_wrapper(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            if get_config("matrix:switch"):
+                return matrix_user_get_score(*args, **kwargs)
+            else:
+                return func(*args, **kwargs)
+
+        return wrapper
+
+    CTFd.models.Users.get_score = set_matrix_user_score_wrapper(CTFd.models.Users.get_score)
 
     def color_hash(text):
         hash_value = 0

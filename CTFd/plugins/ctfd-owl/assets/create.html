@@ -16,8 +16,8 @@
 <div class="form-group">
     <label for="deployment" class="control-label">{{ 'Deployment Type' if en else '部署模式' }}</label>
     <select class="form-control custom-select" name="deployment">
-        <option value="single-docker-compose" selected>{{ 'Single-docker-compose' if en else '单docker-compose' }}</option>
-        <option value="single-docker-swarm">{{ 'Single-docker-swarm' if en else '单docker-swarm' }}</option>
+        <option value="standalone" selected>docker-compose standalone</option>
+        <option value="plugin">{{ 'docker compose plugin' if en else 'docker compose 插件' }}</option>
     </select>
 </div>
 <div class="form-group">

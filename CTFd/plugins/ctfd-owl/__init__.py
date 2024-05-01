@@ -23,7 +23,6 @@ from .models import DynamicCheckChallenge
 from .utils.control import ControlUtil
 from .utils.db import DBUtils
 from .utils.extensions import get_mode
-from .utils.frp import FrpUtils
 from .utils.setup import setup_default_configs
 from .utils.extensions import log as custom_log
 
@@ -313,32 +312,25 @@ def load(app):
                     .first_or_404()
                 lan_domain = str(user_id) + "-" + data.docker_id
 
-                if dynamic_docker_challenge.deployment == "single":
+                if dynamic_docker_challenge.redirect_type == "http":
+                    if int(get_config('owl:frp_http_port', "80")) == 80:
+                        return jsonify({'success': True, 'type': 'http', 'domain': data.docker_id + "." + domain,
+                                        'remaining_time': timeout - (
+                                                datetime.utcnow() - data.start_time).seconds,
+                                        'lan_domain': lan_domain})
+                    else:
+                        return jsonify({'success': True, 'type': 'http',
+                                        'domain': data.docker_id + "." + domain + ":" + get_config(
+                                            'owl:frp_http_port', "80"),
+                                        'remaining_time': timeout - (
+                                                datetime.utcnow() - data.start_time).seconds,
+                                        'lan_domain': lan_domain})
+                else:
                     return jsonify(
                         {'success': True, 'type': 'redirect', 'ip': get_config('owl:frp_direct_ip_address', ""),
                          'port': data.port,
                          'remaining_time': timeout - (datetime.utcnow() - data.start_time).seconds,
                          'lan_domain': lan_domain})
-                else:
-                    if dynamic_docker_challenge.redirect_type == "http":
-                        if int(get_config('owl:frp_http_port', "80")) == 80:
-                            return jsonify({'success': True, 'type': 'http', 'domain': data.docker_id + "." + domain,
-                                            'remaining_time': timeout - (
-                                                    datetime.utcnow() - data.start_time).seconds,
-                                            'lan_domain': lan_domain})
-                        else:
-                            return jsonify({'success': True, 'type': 'http',
-                                            'domain': data.docker_id + "." + domain + ":" + get_config(
-                                                'owl:frp_http_port', "80"),
-                                            'remaining_time': timeout - (
-                                                    datetime.utcnow() - data.start_time).seconds,
-                                            'lan_domain': lan_domain})
-                    else:
-                        return jsonify(
-                            {'success': True, 'type': 'redirect', 'ip': get_config('owl:frp_direct_ip_address', ""),
-                             'port': data.port,
-                             'remaining_time': timeout - (datetime.utcnow() - data.start_time).seconds,
-                             'lan_domain': lan_domain})
             else:
                 return jsonify({'success': True})
         except Exception as e:
@@ -435,7 +427,6 @@ def load(app):
                 results = DBUtils.get_all_expired_container()
                 for r in results:
                     ControlUtil.destroy_container(r.user_id)
-                FrpUtils.update_frp_redirect()
 
     app.register_blueprint(owl_blueprint)
 
