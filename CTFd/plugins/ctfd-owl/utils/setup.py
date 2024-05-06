@@ -14,6 +14,6 @@ def setup_default_configs():
         'frp_direct_port_minimum': '10100',
         'frp_direct_port_maximum': '10200',
         'frpc_api_url': 'http://compose-frpc:7400',
-        'docker_run_folder': '/home/owl',
+        'docker_run_folder': '/home/docker',
     }.items():
         set_config('owl:' + key, val)

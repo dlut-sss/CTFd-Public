@@ -6,8 +6,9 @@
 **CTFd-Owl**
 - 修改deployment参数为设置使用docker-compose还是docker compose 插件
 - 优化示例题目和说明
-- 修改默认目录为/home/owl
+- 修改默认目录为/home/docker
 - 优化frp更新逻辑，减少请求
+- 增加/home/docker的映射
 
 # 3.6.1 S-8 / 2023-04-27
 **General**

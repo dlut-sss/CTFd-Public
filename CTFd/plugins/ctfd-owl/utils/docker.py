@@ -41,7 +41,7 @@ class DockerUtils:
             sname = os.path.join(parent_dir, "source/" + challenge.dirname)  # 源文件目录
             prefix = get_config("owl:docker_flag_prefix")
             name = "{}_user{}_challenge{}".format(prefix, user_id, challenge_id).lower()
-            problem_docker_run_dir = get_config('owl:docker_run_folder', '/home/owl')
+            problem_docker_run_dir = get_config('owl:docker_run_folder', '/home/docker')
             dname = os.path.join(problem_docker_run_dir, name)  # 目标文件目录
 
             # 确定可用端口
@@ -109,7 +109,7 @@ class DockerUtils:
             # 生成目标目录信息
             prefix = get_config("owl:docker_flag_prefix")
             name = "{}_user{}_challenge{}".format(prefix, user_id, challenge_id).lower()
-            problem_docker_run_dir = get_config('owl:docker_run_folder', '/home/owl')
+            problem_docker_run_dir = get_config('owl:docker_run_folder', '/home/docker')
             dname = os.path.join(problem_docker_run_dir, name)
 
             # 关闭实例

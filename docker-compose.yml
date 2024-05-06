@@ -21,6 +21,7 @@ services:
       - ./CTFd/plugins/ctfd-owl/source:/opt/CTFd/CTFd/plugins/ctfd-owl/source
       - .:/opt/CTFd:ro
       - /var/run/docker.sock:/var/run/docker.sock
+      - /home/docker:/home/docker
       - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime
     depends_on:
       - db

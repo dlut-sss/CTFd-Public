@@ -13,9 +13,9 @@
         {% set value = get_config('owl:docker_run_folder') %}
         <div class="form-group">
             <label>
-                {{"Docker Run Folder" if en else "实例容器运行目录（默认/home/owl）"}}
+                {{"Docker Run Folder" if en else "实例容器运行目录（默认/home/docker）"}}
                 <small class="form-text text-muted">
-                    {{"Temp folder to run instance (/home/owl by default)" if en else "实例容器运行临时目录（默认/home/owl）"}}
+                    {{"Temp folder to run instance (/home/docker by default)" if en else "实例容器运行临时目录（默认/home/docker）"}}
                 </small>
             </label>
             <input type="text" class="form-control" id="docker-run-folder" name="owl:docker_run_folder" value="{{ value }}">
